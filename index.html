@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Simulator - Metaverse Yaşam</title>
+    <title>Apex Simulator - Sürüş ve Yaşam</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -153,7 +153,7 @@
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
                 <div class="datetime" id="datetime">Yükleniyor...</div>
-                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Yaşam Modu</div>
+                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Sürüş Modu</div>
             </div>
             <div class="finance-summary">
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
@@ -181,11 +181,10 @@
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
                     <div class="grid-container">
                         <div class="card" style="grid-column: 1 / -1;">
-                            <h3><i class="fa-solid fa-circle-info"></i> Metaverse Yaşam Kuralları</h3>
+                            <h3><i class="fa-solid fa-circle-info"></i> Sürüş ve Etkileşim Kuralları</h3>
                             <p style="color: var(--text-muted); line-height: 1.6;">
-                                <strong>1. Açılır Kapanır Kapılar (`E` Tuşu):</strong> Arsandaki evinize yaklaşıp klavyeden <b>E</b> tuşuna basarak kapınızı açabilir veya kapatabilirsiniz!<br>
-                                <strong>2. Gerçekçi Pencereler:</strong> Evler artık detaylı beyaz çerçeveli ve cam pencerelere sahip.<br>
-                                <strong>3. Arsa ve Güvenlik:</strong> 1000 TL'ye arsa alıp evini sergileyebilirsin. Sadece izin verdiğin kişiler kalkanı geçebilir.
+                                <strong>1. Kapı Kontrolü (`E` Tuşu):</strong> Evine yaklaşıp E tuşuna basarak kapıyı açıp kapatabilirsin.<br>
+                                <strong>2. Araca Binme (`F` Tuşu):</strong> Arsanın önündeki aracına yaklaşarak <b>F</b> tuşuna basıp sürücü koltuğuna binebilir ve W, A, S, D ile sürebilirsin. İnmek için tekrar <b>F</b> tuşuna basman yeterlidir!
                             </p>
                         </div>
                     </div>
@@ -255,13 +254,13 @@
                             <div id="plot-ui"></div>
                         </div>
                     </div>
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Ev Galerisi (Satın Al ve Arsana İnşa Et)</h3>
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Ev Galerisi</h3>
                     <div class="grid-container" id="realestate-list"></div>
                 </div>
                 
                 <div id="tab-vehicles" class="tab-content">
                     <h2><i class="fa-solid fa-car"></i> Garaj & Taşıtlar</h2>
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Satın Al ve Arsan İçin Seç)</h3>
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi</h3>
                     <div class="grid-container" id="vehicles-list"></div>
                 </div>
 
@@ -277,7 +276,7 @@
             <div id="tag-username">Oyuncu</div>
             <div id="tag-money">0 TL</div>
         </div>
-        <div class="hud-controls"><span>W,A,S,D</span> Yürü | <span>Shift</span> Koş | <span>Space</span> Zıpla | <span>E</span> Kapıyı Aç/Kapat | <span>ESC</span> Menü</div>
+        <div class="hud-controls"><span>W,A,S,D</span> Yürü/Sür | <span>Shift</span> Koş | <span>Space</span> Zıpla | <span>E</span> Kapı | <span>F</span> Araca Bin/İn | <span>ESC</span> Menü</div>
         <div id="esc-menu">
             <h2>Oyun Menüsü</h2>
             <button class="btn-primary" style="width: 300px; padding: 15px; font-size: 18px; margin-bottom: 20px;" onclick="resumeWorld()">Oyuna Dön</button>
@@ -291,7 +290,12 @@
         let globalPlotsGroup; 
         let plotRenderCache = {}; 
         let colliders = []; 
-        let interactiveDoors = []; // Açılır kapanır kapılar listesi
+        let interactiveDoors = []; 
+        let playerVehicleObjects = []; // Aktif sürülen araç objeleri
+
+        let isDriving = false; // Sürüş modu aktif mi?
+        let activeVehicleMesh = null; // Sürülen araç objesi
+        let vehicleSpeed = 0;
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
@@ -348,7 +352,7 @@
             { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
-        // MİMARİ VE ETKİLEŞİMLİ KAPI MOTORU
+        // MİMARİ VE ÇİZİM MOTORLARI
         function createFenceWall(width) {
             let grp = new THREE.Group();
             let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
@@ -373,8 +377,8 @@
             
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#e2e8f0' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#1e293b' }), new THREE.MeshStandardMaterial({ color: '#475569' })]; 
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#1e293b', metalness: 0.9, roughness: 0.1 }); // Gerçekçi koyu cam
-            const frameMat = new THREE.MeshStandardMaterial({ color: '#ffffff' }); // Pencere çerçevesi
+            const glassMat = new THREE.MeshStandardMaterial({ color: '#1e293b', metalness: 0.9, roughness: 0.1 }); 
+            const frameMat = new THREE.MeshStandardMaterial({ color: '#ffffff' }); 
 
             let bHeight = 8 * scaleMult; let bWidth = 14 * scaleMult; let bDepth = 12 * scaleMult;
             
@@ -389,19 +393,15 @@
                 roof.position.y = bHeight; roof.castShadow = true; bGroup.add(roof);
             }
             
-            // --- AÇILIR KAPANIR KAPI SİSTEMİ (Menteşeli Pivot) ---
             let doorPivot = new THREE.Group();
-            doorPivot.position.set(-1.5 * scaleMult, 0, bDepth/2 + 0.05); // Sol menteşe
-            
+            doorPivot.position.set(-1.5 * scaleMult, 0, bDepth/2 + 0.05);
             let doorMesh = new THREE.Mesh(new THREE.BoxGeometry(3 * scaleMult, 4 * scaleMult, 0.2), new THREE.MeshStandardMaterial({ color: '#78350f', roughness: 0.5 }));
             doorMesh.position.set(1.5 * scaleMult, (4*scaleMult)/2, 0); doorMesh.castShadow = true;
             doorPivot.add(doorMesh);
             bGroup.add(doorPivot);
 
-            // Etkileşim listesine ekle
             interactiveDoors.push({ pivot: doorPivot, isOpen: false, targetRot: 0 });
 
-            // --- GERÇEKÇİ PENCERELER ---
             const createWindow = (x, y) => {
                 let wGrp = new THREE.Group();
                 let frame = new THREE.Mesh(new THREE.BoxGeometry(4.2 * scaleMult, 4.2 * scaleMult, 0.15), frameMat);
@@ -948,10 +948,10 @@
                 if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
                 if(e.key === 'Shift') keys.shift = true;
                 
-                // 'E' TUŞU İLE KAPIYI AÇ / KAPAT
-                if(e.key.toLowerCase() === 'e' && isInWorld) {
-                    toggleNearestDoor();
-                }
+                // E Tuşu (Kapı)
+                if(e.key.toLowerCase() === 'e' && isInWorld) { toggleNearestDoor(); }
+                // F Tuşu (Araca Bin / İn)
+                if(e.key.toLowerCase() === 'f' && isInWorld) { toggleVehicleDrive(); }
 
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
             });
@@ -981,23 +981,55 @@
             syncPlots(); animateWorld();
         }
 
-        // YAKINDAKİ KAPIYI AÇMA KAPANMA KONTROLÜ (E Tuşu)
         function toggleNearestDoor() {
             if(!worldPlayerObj) return;
             let pPos = worldPlayerObj.root.position;
             interactiveDoors.forEach(door => {
                 let dWorldPos = new THREE.Vector3();
                 door.pivot.getWorldPosition(dWorldPos);
-                if(pPos.distanceTo(dWorldPos) < 10) { // 10 birim yakınlıktaysa
+                if(pPos.distanceTo(dWorldPos) < 10) {
                     door.isOpen = !door.isOpen;
-                    door.targetRot = door.isOpen ? Math.PI / 2 : 0; // 90 derece açılır
+                    door.targetRot = door.isOpen ? Math.PI / 2 : 0;
                 }
             });
         }
 
+        // F TUŞU İLE ARACA BİNME / İNME SİSTEMİ
+        function toggleVehicleDrive() {
+            if(!worldPlayerObj) return;
+            if(isDriving) {
+                // Araçtan in
+                isDriving = false;
+                if(activeVehicleMesh) {
+                    worldPlayerObj.root.position.copy(activeVehicleMesh.position).add(new THREE.Vector3(4, 0, 0)); // Yanına bırak
+                    activeVehicleMesh = null;
+                }
+                worldPlayerObj.root.visible = true;
+                logActivity("<strong>[SÜRÜŞ]</strong> Araçtan inildi.");
+            } else {
+                // Yakındaki araca bin
+                let pPos = worldPlayerObj.root.position;
+                let foundVeh = null;
+                playerVehicleObjects.forEach(vObj => {
+                    if(pPos.distanceTo(vObj.position) < 8) {
+                        foundVeh = vObj;
+                    }
+                });
+
+                if(foundVeh) {
+                    isDriving = true;
+                    activeVehicleMesh = foundVeh;
+                    vehicleSpeed = 0;
+                    worldPlayerObj.root.visible = false; // Karakteri gizle (aracın içine bindi)
+                    logActivity("<strong>[SÜRÜŞ]</strong> Sürücü koltuğuna oturuldu.");
+                }
+            }
+        }
+
         function syncPlots() {
             if(!globalPlotsGroup) return;
-            interactiveDoors = []; // Listeyi yenile
+            interactiveDoors = []; 
+            playerVehicleObjects = [];
             let activeUsers = [player, ...Object.values(otherPlayers)];
             activeUsers.forEach(u => {
                 let pid = u.assets ? u.assets.plotId : u.plotId; 
@@ -1054,6 +1086,10 @@
                     if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
                     else vMesh = createParametricCar(vData.color, type);
                     vMesh.position.set(0, 0, 15); plotGrp.add(vMesh);
+                    
+                    if(userData.username === player.username) {
+                        playerVehicleObjects.push(vMesh); // Kendi aracımızı sürüş listesine ekle
+                    }
                 }
             }
 
@@ -1064,7 +1100,7 @@
             let plotBoxes = [];
             [bFence, lFence, rFence, fFenceL, fFenceR, pilL, pilR].forEach(m => plotBoxes.push(new THREE.Box3().setFromObject(m)));
             if(bMesh) plotBoxes.push(new THREE.Box3().setFromObject(bMesh));
-            if(vMesh) plotBoxes.push(new THREE.Box3().setFromObject(vMesh));
+            if(vMesh && !isDriving) plotBoxes.push(new THREE.Box3().setFromObject(vMesh)); // Sürerken hitbox kalkar
             plotGrp.userData.colliders = plotBoxes;
         }
 
@@ -1082,7 +1118,7 @@
         
         function exitWorld() { 
             if(document.activeElement) document.activeElement.blur();
-            isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; 
+            isInWorld = false; isDriving = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; 
         }
         
         function resumeWorld() { 
@@ -1095,7 +1131,6 @@
             const delta = Math.min((performance.now() - lastTime) / 1000, 0.1); 
             lastTime = performance.now();
 
-            // Kapı animasyonu (Yumuşak açılma kapanma)
             interactiveDoors.forEach(door => {
                 door.pivot.rotation.y += (door.targetRot - door.pivot.rotation.y) * 0.1;
             });
@@ -1108,104 +1143,116 @@
             if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) { nameTag.style.display = 'none'; return; }
 
             if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
-            if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
-                worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
-            }
 
-            velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
-            if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
+            // --- SÜRÜŞ MODU FİZİĞİ ---
+            if(isDriving && activeVehicleMesh) {
+                let acc = 15; let maxSpeed = 25;
+                if(keys.w) vehicleSpeed = Math.min(maxSpeed, vehicleSpeed + acc * delta);
+                else if(keys.s) vehicleSpeed = Math.max(-maxSpeed/2, vehicleSpeed - acc * delta);
+                else vehicleSpeed *= 0.95; // Sürtünme
 
-            const speed = keys.shift ? 12 : 5; 
-            let moveDir = new THREE.Vector3();
-            if(keys.w) moveDir.z -= 1; if(keys.s) moveDir.z += 1; if(keys.a) moveDir.x -= 1; if(keys.d) moveDir.x += 1;
-            let isMoving = moveDir.length() > 0;
+                if(keys.a) activeVehicleMesh.rotation.y += 2 * delta * (vehicleSpeed > 0 ? 1 : -1);
+                if(keys.d) activeVehicleMesh.rotation.y -= 2 * delta * (vehicleSpeed > 0 ? 1 : -1);
 
-            if(keys.space && canJump) { velocityY = 8; canJump = false; }
+                let moveV = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), activeVehicleMesh.rotation.y);
+                activeVehicleMesh.position.addScaledVector(moveV, vehicleSpeed * delta);
+                worldPlayerObj.root.position.copy(activeVehicleMesh.position);
 
-            if(isMoving) {
-                moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
-                let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
-                
-                let collision = false;
-                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
-                
-                for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
-                
-                if(!collision) {
-                    let activeUsers = [player, ...Object.values(otherPlayers)];
-                    for(let u of activeUsers) {
-                        let pid = u.assets ? u.assets.plotId : u.plotId;
-                        if(pid !== undefined && pid !== -1) {
-                            let c = getPlotCenter(pid);
-                            if(nextPos.x > c.x - 30 && nextPos.x < c.x + 30 && nextPos.z > c.z - 30 && nextPos.z < c.z + 30) {
-                                let uname = u.username;
-                                let perms = u.permissions || [];
-                                if(uname !== player.username && !perms.includes(player.username)) {
-                                    collision = true; break;
+                // Araç Kamera Takibi
+                let targetCamX = activeVehicleMesh.position.x + 10 * Math.sin(activeVehicleMesh.rotation.y);
+                let targetCamY = activeVehicleMesh.position.y + 4;
+                let targetCamZ = activeVehicleMesh.position.z + 10 * Math.cos(activeVehicleMesh.rotation.y);
+                camera.position.set(targetCamX, targetCamY, targetCamZ);
+                camera.lookAt(activeVehicleMesh.position);
+
+            } else {
+                // --- YÜRÜME MODU FİZİĞİ ---
+                if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
+                    worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
+                }
+
+                velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
+                if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
+
+                const speed = keys.shift ? 12 : 5; 
+                let moveDir = new THREE.Vector3();
+                if(keys.w) moveDir.z -= 1; if(keys.s) moveDir.z += 1; if(keys.a) moveDir.x -= 1; if(keys.d) moveDir.x += 1;
+                let isMoving = moveDir.length() > 0;
+
+                if(keys.space && canJump) { velocityY = 8; canJump = false; }
+
+                if(isMoving) {
+                    moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
+                    let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
+                    
+                    let collision = false;
+                    let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
+                    
+                    for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
+                    
+                    if(!collision) {
+                        let activeUsers = [player, ...Object.values(otherPlayers)];
+                        for(let u of activeUsers) {
+                            let pid = u.assets ? u.assets.plotId : u.plotId;
+                            if(pid !== undefined && pid !== -1) {
+                                let c = getPlotCenter(pid);
+                                if(nextPos.x > c.x - 30 && nextPos.x < c.x + 30 && nextPos.z > c.z - 30 && nextPos.z < c.z + 30) {
+                                    let uname = u.username;
+                                    let perms = u.permissions || [];
+                                    if(uname !== player.username && !perms.includes(player.username)) {
+                                        collision = true; break;
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                if(!collision && globalPlotsGroup) {
-                    for(let plot of globalPlotsGroup.children) {
-                        if(plot.userData.colliders) {
-                            for(let box of plot.userData.colliders) {
-                                if(box.intersectsBox(playerBox)) { collision = true; break; }
+                    if(!collision && globalPlotsGroup) {
+                        for(let plot of globalPlotsGroup.children) {
+                            if(plot.userData.colliders) {
+                                for(let box of plot.userData.colliders) {
+                                    if(box.intersectsBox(playerBox)) { collision = true; break; }
+                                }
                             }
+                            if(collision) break;
                         }
-                        if(collision) break;
                     }
+                    
+                    if(!collision) worldPlayerObj.root.position.copy(nextPos);
+                    worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
                 }
+
+                if(isMoving || canJump === false) emitMovement(isMoving);
+
+                if(isMoving && canJump) {
+                    animTime += delta * (keys.shift ? 15 : 10);
+                    worldPlayerObj.lArm.rotation.x = -Math.sin(animTime) * 0.8; worldPlayerObj.rArm.rotation.x = Math.sin(animTime) * 0.8;
+                    worldPlayerObj.lLeg.rotation.x = Math.sin(animTime) * 0.8; worldPlayerObj.rLeg.rotation.x = -Math.sin(animTime) * 0.8;
+                } else {
+                    worldPlayerObj.lArm.rotation.x += (0 - worldPlayerObj.lArm.rotation.x) * 0.1; worldPlayerObj.rArm.rotation.x += (0 - worldPlayerObj.rArm.rotation.x) * 0.1;
+                    worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
+                }
+
+                const scY = worldPlayerObj.model.scale.y || 1;
+                let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
+                let targetCamY = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
+                let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
                 
-                if(!collision) worldPlayerObj.root.position.copy(nextPos);
-                worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
-            }
-
-            if(isMoving || canJump === false) emitMovement(isMoving);
-
-            if(isMoving && canJump) {
-                animTime += delta * (keys.shift ? 15 : 10);
-                worldPlayerObj.lArm.rotation.x = -Math.sin(animTime) * 0.8; worldPlayerObj.rArm.rotation.x = Math.sin(animTime) * 0.8;
-                worldPlayerObj.lLeg.rotation.x = Math.sin(animTime) * 0.8; worldPlayerObj.rLeg.rotation.x = -Math.sin(animTime) * 0.8;
-            } else {
-                worldPlayerObj.lArm.rotation.x += (0 - worldPlayerObj.lArm.rotation.x) * 0.1; worldPlayerObj.rArm.rotation.x += (0 - worldPlayerObj.rArm.rotation.x) * 0.1;
-                worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
-            }
-
-            const scY = worldPlayerObj.model.scale.y || 1;
-            let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
-            let targetCamY = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
-            let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
-            
-            if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
-                camera.position.set(targetCamX, targetCamY, targetCamZ);
-                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+                if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
+                    camera.position.set(targetCamX, targetCamY, targetCamZ);
+                    camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+                }
             }
 
             let tagPos = new THREE.Vector3();
-            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
-            if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1) {
+            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * (worldPlayerObj.model.scale.y || 1); tagPos.project(camera);
+            if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1 || isDriving) {
                 nameTag.style.display = 'none';
             } else {
                 nameTag.style.display = 'block';
                 nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
                 document.getElementById('tag-username').innerText = player.profile.name || player.username;
                 document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
-            }
-
-            for(let id in otherPlayers) {
-                let op = otherPlayers[id];
-                if(op && op.group && op.model) {
-                    let opPos = new THREE.Vector3(); op.group.getWorldPosition(opPos); opPos.y += 5.0 * (op.model.scale.y || 1); opPos.project(camera);
-                    if(isNaN(opPos.x) || isNaN(opPos.y) || opPos.z > 1) {
-                        op.tag.style.display = 'none';
-                    } else {
-                        op.tag.style.display = 'block';
-                        op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
-                    }
-                }
             }
 
             renderer.render(scene, camera);
