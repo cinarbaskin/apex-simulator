@@ -58,8 +58,8 @@
 
         #app-screen { display: none; height: 100vh; flex-direction: column; background-color: var(--bg-dark); }
         header { background: var(--panel-bg); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--panel-hover); z-index: 10; }
-        .finance-summary { display: flex; gap: 20px; font-size: 15px; }
-        .stat-box { padding: 8px 15px; border-radius: 8px; background: var(--bg-dark); border: 1px solid var(--panel-hover); font-weight: bold; }
+        .finance-summary { display: flex; gap: 15px; font-size: 14px; }
+        .stat-box { padding: 8px 12px; border-radius: 8px; background: var(--bg-dark); border: 1px solid var(--panel-hover); font-weight: bold; }
         .stat-cash { color: var(--accent-green); } .stat-assets { color: var(--accent-blue); } .stat-debt { color: var(--accent-red); }
         .datetime { font-family: monospace; font-size: 16px; color: var(--accent-gold); background: var(--bg-dark); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--panel-hover); }
 
@@ -78,7 +78,7 @@
 
         .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
         .card { background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--panel-hover); transition: all 0.3s; }
-        .card h3 { margin-bottom: 10px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px; }
+        .card h3 { margin-bottom: 10px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px; font-size: 17px; }
         .market-list { display: flex; flex-direction: column; gap: 10px; max-height: 400px; overflow-y: auto; padding-right: 5px; }
         .market-item { display: flex; justify-content: space-between; align-items: center; background: var(--bg-dark); padding: 10px; border-radius: 8px; }
         .btn-buy { background: var(--accent-green); color: white; padding: 5px 10px; } .btn-sell { background: var(--accent-red); color: white; padding: 5px 10px; }
@@ -165,6 +165,8 @@
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
                 <div class="stat-box stat-assets">Varlıklar: <span id="ui-assets">0</span> TL</div>
                 <div class="stat-box stat-debt">Borç: <span id="ui-debt">0</span> TL</div>
+                <!-- BİLANÇO GÖSTERGESİ EKLENDİ -->
+                <div class="stat-box" style="border: 1px solid var(--accent-gold);">Net: <span id="ui-net" style="color: var(--accent-gold); font-weight:bold;">0</span> TL/sn</div>
             </div>
         </header>
 
@@ -186,7 +188,7 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Kariyer:</strong> Son mesleğin maaşını alırsın.<br><strong>2. Pasif Gelir:</strong> Ev ve taşıtlar saniyelik kira getirir.</p></div></div>
+                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Kariyer (Meslek):</strong> Sadece bulunduğun en yüksek seviyeli aktif mesleğin maaşını alırsın. Eski mesleklerin parası gelmez!<br><strong>2. Gayrimenkul & Araçlar:</strong> Satın aldığın tüm evler ve taşıtlar üst üste birikerek pasif kira getirir.<br><strong>3. Gerçek Zamanlı Ekonomi:</strong> Saniye başı elde ettiğin net kazancı (Net TL/sn) ekranın sağ üst köşesinden canlı olarak takip edebilirsin.</p></div></div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
@@ -233,7 +235,7 @@
                 <div id="tab-metals" class="tab-content"><h2>Madenler</h2><div class="card"><div class="market-list" id="metals-list"></div></div></div>
                 <div id="tab-jobs" class="tab-content"><h2>Kariyer</h2><div class="grid-container" id="jobs-list"></div></div>
                 <div id="tab-realestate" class="tab-content"><h2>Gayrimenkul</h2><div class="grid-container" id="realestate-list"></div></div>
-                <div id="tab-vehicles" class="tab-content"><h2>Taşıtlar</h2><div class="grid-container" id="vehicles-list"></div></div>
+                <div id="tab-vehicles" class="tab-content"><h2>Taşıtlar Galerisi</h2><div class="grid-container" id="vehicles-list"></div></div>
                 <div id="tab-activity" class="tab-content"><h2>Son İşlemler (Multiplayer)</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
             </main>
         </div>
@@ -257,7 +259,7 @@
     <script>
         let socket;
         let otherPlayers = {}; 
-        let colliders = []; // ÇARPIŞMA (COLLISION) KUTULARI GERİ EKLENDİ
+        let colliders = [];
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         let player = { username: "", cash: 0, debt: 0, inventory: { stocks: {}, metals: {} }, assets: { jobs: [], realEstate: [], vehicles: [] }, profile: { ...defaultProfile } };
@@ -266,7 +268,6 @@
         let stocks = generateMarket(["TechCo", "BankCorp", "AutoX", "HealthInc", "AeroSpace", "FoodChain", "RetailMax", "EnergyG", "MediaNet", "BuildPro", "GigaByte", "BioGen"], 100);
         let metals = generateMarket(["Altın", "Gümüş", "Bor", "Kömür", "Platin", "Paladyum", "Bakır", "Alüminyum"], 50);
         
-        // 20 ADET MESLEK GERİ EKLENDİ
         const jobs = [
             { id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
             { id: 4, name: "Çiçekçi", cost: 7500, income: 22 }, { id: 5, name: "Büfe", cost: 12000, income: 30 }, { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
@@ -277,7 +278,6 @@
             { id: 19, name: "Teknoloji Şirketi", cost: 50000000, income: 20000 }, { id: 20, name: "Uluslararası Holding", cost: 150000000, income: 50000 }
         ];
 
-        // 20 ADET GAYRİMENKUL GERİ EKLENDİ
         const realEstate = [
             { id: 1, name: "Çadır Kamp Alanı", cost: 15000, income: 40, tax: 5 }, { id: 2, name: "Konteyner Ev", cost: 40000, income: 90, tax: 10 },
             { id: 3, name: "Köy Evi", cost: 80000, income: 160, tax: 20 }, { id: 4, name: "Gecekondu", cost: 150000, income: 280, tax: 30 },
@@ -291,18 +291,28 @@
             { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
         ];
 
-        // 20 ADET TAŞIT GERİ EKLENDİ
+        // 20 ADET DETAYLANDIRILMIŞ YENİ TAŞIT LİSTESİ
         const vehicles = [
-            { id: 1, name: "Mavi Bisiklet", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Mavi' }, { id: 2, name: "Mavi Scooter", cost: 5000, income: 12, tax: 2, color: '#3b82f6', category: 'Mavi' },
-            { id: 3, name: "Sarı Scooter", cost: 8000, income: 18, tax: 3, color: '#f59e0b', category: 'Sarı' }, { id: 4, name: "Sarı 50cc Motor", cost: 15000, income: 30, tax: 5, color: '#f59e0b', category: 'Sarı' },
-            { id: 5, name: "Kırmızı Motorsiklet", cost: 30000, income: 55, tax: 8, color: '#ef4444', category: 'Kırmızı' }, { id: 6, name: "Kırmızı ATV", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Kırmızı' },
-            { id: 7, name: "Siyah Klasik Motor", cost: 110000, income: 180, tax: 25, color: '#111111', category: 'Siyah' }, { id: 8, name: "Siyah Hatchback", cost: 180000, income: 280, tax: 40, color: '#111111', category: 'Siyah' },
-            { id: 9, name: "Mor Hatchback", cost: 240000, income: 360, tax: 50, color: '#8b5cf6', category: 'Mor' }, { id: 10, name: "Mor Sedan", cost: 350000, income: 500, tax: 70, color: '#8b5cf6', category: 'Mor' },
-            { id: 11, name: "Yeşil Aile Aracı", cost: 500000, income: 680, tax: 90, color: '#10b981', category: 'Yeşil' }, { id: 12, name: "Yeşil Minivan", cost: 750000, income: 950, tax: 120, color: '#10b981', category: 'Yeşil' },
-            { id: 13, name: "Turuncu Pikap", cost: 1100000, income: 1300, tax: 160, color: '#f97316', category: 'Turuncu' }, { id: 14, name: "Turuncu Panelvan", cost: 1600000, income: 1800, tax: 220, color: '#f97316', category: 'Turuncu' },
-            { id: 15, name: "Kahverengi Klasik", cost: 2300000, income: 2500, tax: 300, color: '#78350f', category: 'Kahverengi' }, { id: 16, name: "Kahverengi Karavan", cost: 4000000, income: 4200, tax: 500, color: '#78350f', category: 'Kahverengi' },
-            { id: 17, name: "Kırmızı Spor Araba", cost: 7500000, income: 7500, tax: 900, color: '#ef4444', category: 'Kırmızı' }, { id: 18, name: "Siyah Lüks SUV", cost: 15000000, income: 14000, tax: 1800, color: '#111111', category: 'Siyah' },
-            { id: 19, name: "Sarı Süper Araba", cost: 35000000, income: 30000, tax: 4000, color: '#f59e0b', category: 'Sarı' }, { id: 20, name: "Siyah Özel Jet", cost: 150000000, income: 110000, tax: 15000, color: '#111111', category: 'Siyah' }
+            { id: 1, name: "Şehir Bisikleti (21 Vites)", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet' },
+            { id: 2, name: "Elektrikli Scooter (250W)", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter' },
+            { id: 3, name: "50cc Başlangıç Motoru", cost: 15000, income: 25, tax: 4, color: '#ef4444', category: 'Motor' },
+            { id: 4, name: "125cc Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#f8fafc', category: 'Motor' },
+            { id: 5, name: "250cc Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#3b82f6', category: 'Motor' },
+            { id: 6, name: "Off-Road 4x4 Arazi ATV'si", cost: 90000, income: 150, tax: 20, color: '#f59e0b', category: 'ATV' },
+            { id: 7, name: "600cc Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor' },
+            { id: 8, name: "2008 Model İkinci El Hatchback", cost: 280000, income: 400, tax: 60, color: '#94a3b8', category: 'Otomobil' },
+            { id: 9, name: "2015 Aile Tipi Sedan", cost: 450000, income: 650, tax: 90, color: '#111111', category: 'Otomobil' },
+            { id: 10, name: "Yeni Nesil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil' },
+            { id: 11, name: "Ticari Panelvan (Kargo Dağıtım)", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari' },
+            { id: 12, name: "Çift Kabin 4x4 Pikap", cost: 1500000, income: 1900, tax: 250, color: '#ef4444', category: 'Ticari' },
+            { id: 13, name: "VIP Turizm Minibüsü", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari' },
+            { id: 14, name: "Geniş Hacimli Tam Donanımlı Karavan", cost: 3500000, income: 4200, tax: 550, color: '#f8fafc', category: 'Özel' },
+            { id: 15, name: "Klasik Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks' },
+            { id: 16, name: "Premium V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks' },
+            { id: 17, name: "Tam Elektrikli Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor' },
+            { id: 18, name: "Zırhlı V8 Lüks Makam SUV'si", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks' },
+            { id: 19, name: "Sınırlı Üretim V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor' },
+            { id: 20, name: "Özel Tasarım Çift Motorlu İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık' }
         ];
 
         let dialogueStep = 0; let isTyping = false; let typeInterval;
@@ -449,7 +459,41 @@
         }
 
         function updateClock() { document.getElementById('datetime').innerHTML = `<i class="fa-regular fa-clock"></i> ${new Date().toLocaleTimeString('tr-TR')}`; }
-        function updateUI() { document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}); saveGame(); }
+        
+        function updateUI() { 
+            let totalAssets = player.cash;
+            if(player.inventory && player.inventory.stocks) { for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price; }
+            if(player.inventory && player.inventory.metals) { for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price; }
+            if(player.assets && player.assets.jobs) { player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost); }
+            if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost); }
+            if(player.assets && player.assets.vehicles) { player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost); }
+
+            document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}); 
+            document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
+            document.getElementById('ui-debt').innerText = player.debt.toLocaleString('tr-TR', {maximumFractionDigits:2});
+
+            // NET BİLANÇO HESAPLAMA (Mesleğin sadece sonuncusunun geliri eklendiğini gösterir)
+            let net = 0; let tax = 0;
+            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) {
+                net += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
+            }
+            if(player.assets && player.assets.realEstate) {
+                player.assets.realEstate.forEach(id => { net += realEstate.find(x=>x.id===id).income; tax += realEstate.find(x=>x.id===id).tax; });
+            }
+            if(player.assets && player.assets.vehicles) {
+                player.assets.vehicles.forEach(id => { net += vehicles.find(x=>x.id===id).income; tax += vehicles.find(x=>x.id===id).tax; });
+            }
+            
+            let finalNet = net - tax;
+            let netEl = document.getElementById('ui-net');
+            if(netEl) {
+                netEl.innerText = (finalNet > 0 ? "+" : "") + finalNet.toLocaleString('tr-TR');
+                netEl.style.color = finalNet >= 0 ? "var(--accent-green)" : "var(--accent-red)";
+            }
+
+            saveGame(); 
+        }
+        
         function logActivity(text) { const log = document.getElementById('activity-log'); const li = document.createElement('li'); li.style.cssText = "padding: 10px; background: var(--bg-dark); border-radius: 8px;"; li.innerHTML = `<span>${text}</span>`; log.prepend(li); }
         function saveGame() { localStorage.setItem('apex_save_' + player.username, JSON.stringify(player)); }
 
@@ -484,7 +528,27 @@
             const buildCards = (arr, invArr, category) => {
                 return arr.map(item => {
                     let owned = invArr && invArr.includes(item.id);
-                    return `<div class="card"><h3>${item.name}</h3><p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${owned ? `<button disabled style="background:var(--bg-dark); color:var(--text-muted); width:100%;">Sahipsin</button>` : `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`}</div>`;
+                    if (category === 'jobs') {
+                        let isHighest = owned && Math.max(...invArr) === item.id;
+                        let canBuy = !owned && (item.id === 1 || (invArr && invArr.includes(item.id - 1)));
+                        let info = `Maaş: <span style="color:var(--accent-green)">+${item.income} TL/sn</span>`;
+                        let btnHTML = '';
+                        if (isHighest) btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Aktif Meslek</button>`;
+                        else if (owned) btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--text-muted); padding:8px 10px; width:100%; border:1px solid var(--panel-hover);">Geçmiş Tecrübe</button>`;
+                        else if (canBuy) btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Terfi Et</button>`;
+                        else btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--accent-red); padding:8px 10px; width:100%; border:1px solid rgba(239,68,68,0.3);"><i class="fa-solid fa-lock"></i> Kilitli</button>`;
+
+                        return `<div class="card" style="${isHighest ? 'border-color:var(--accent-blue); box-shadow: 0 0 15px rgba(59,130,246,0.2);' : ''} ${!owned && !canBuy ? 'opacity:0.6;' : ''}">
+                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
+                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
+                    } else {
+                        let info = `Kira: <span style="color:var(--accent-green)">+${item.income} TL</span> | Vergi: <span style="color:var(--accent-red)">-${item.tax} TL</span>`;
+                        if(category === 'vehicles') info += ` <br>Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
+                        return `<div class="card" style="${owned ? 'border-color:var(--accent-green)' : ''}">
+                            <h3 style="font-size:16px;">${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">${info}</p>
+                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>
+                            ${owned ? `<button disabled style="background:var(--bg-dark); color:var(--accent-green); padding:8px 10px; width:100%; border:1px solid var(--accent-green);">Sahipsin</button>` : `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`}</div>`;
+                    }
                 }).join('');
             };
             document.getElementById('jobs-list').innerHTML = buildCards(jobs, player.assets.jobs, 'jobs');
@@ -494,14 +558,21 @@
 
         function buyAsset(category, id) {
             let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles; let item = list.find(x => x.id === id);
-            if(player.cash >= item.cost) { player.cash -= item.cost; player.assets[category].push(id); renderAssets(); updateUI(); } 
+            if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
+            if(player.cash >= item.cost) { 
+                player.cash -= item.cost; player.assets[category].push(id); 
+                renderAssets(); updateUI(); 
+            } else alert("Nakit paranız yetersiz!");
         }
 
         function processEconomy() {
             let totalIncome = 0; let totalTax = 0;
+            // SADECE EN YÜKSEK MESLEĞİN MAAŞI HESAPLANIR
             if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) totalIncome += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
+            
             if(player.assets && player.assets.realEstate) player.assets.realEstate.forEach(id => { totalIncome += realEstate.find(x=>x.id===id).income; totalTax += realEstate.find(x=>x.id===id).tax; });
             if(player.assets && player.assets.vehicles) player.assets.vehicles.forEach(id => { totalIncome += vehicles.find(x=>x.id===id).income; totalTax += vehicles.find(x=>x.id===id).tax; });
+            
             if(totalIncome > 0 || totalTax > 0) { player.cash += totalIncome; player.cash -= totalTax; if(player.cash < 0) { player.debt += Math.abs(player.cash); player.cash = 0; } updateUI(); }
         }
 
@@ -607,7 +678,7 @@
             let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
             floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
-            // 1. YOLLAR VE ŞERİTLER GERİ EKLENDİ
+            // YOLLAR VE ŞERİTLER GERİ EKLENDİ
             const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
             const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
             scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
@@ -621,7 +692,7 @@
                 }
             }
 
-            // 2. GAYRİMENKULLER (BİNALAR) VE ÇARPIŞMA KUTULARI GERİ EKLENDİ
+            // GAYRİMENKULLER (BİNALAR) VE ÇARPIŞMA KUTULARI GERİ EKLENDİ
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
 
@@ -638,7 +709,7 @@
                 colliders.push(new THREE.Box3().setFromObject(bBody));
             }
 
-            // 3. TAŞITLAR (ARABALAR) GERİ EKLENDİ
+            // TAŞITLAR (ARABALAR) GERİ EKLENDİ
             for(let i = 0; i < vehicles.length; i++) {
                 let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50; let carGrp = new THREE.Group();
                 let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 })); b.position.set(0, 0.8, 0); carGrp.add(b);
@@ -647,7 +718,7 @@
                 let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
             }
 
-            // 4. AĞAÇLAR GERİ EKLENDİ
+            // AĞAÇLAR GERİ EKLENDİ
             for(let i=0; i<200; i++) {
                 let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
                 if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
@@ -730,7 +801,6 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                // GÜVENLİ ÇARPIŞMA (COLLISION) KONTROLÜ GERİ EKLENDİ
                 let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
                 let collision = false;
                 for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
