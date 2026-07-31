@@ -52,8 +52,6 @@
         #claim-btn { display: none; background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; padding: 18px 45px; font-size: 22px; border-radius: 50px; box-shadow: 0 0 35px rgba(245, 158, 11, 0.6); animation: pulseGold 1.5s infinite; border: 2px solid #fde68a; text-transform: uppercase; letter-spacing: 1px; }
         #claim-btn:hover { transform: scale(1.08); background: linear-gradient(135deg, #fbbf24, #d97706); }
         @keyframes pulseGold { 0% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } 50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.9); } 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } }
-        @keyframes moneyFly { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-180px) scale(2.2); opacity: 0; } }
-        .money-anim { position: absolute; color: var(--accent-green); font-size: 32px; font-weight: bold; animation: moneyFly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; pointer-events: none; z-index: 1000; text-shadow: 0 3px 8px rgba(0,0,0,0.8); }
 
         #app-screen { display: none; height: 100vh; flex-direction: column; background-color: var(--bg-dark); }
         header { background: var(--panel-bg); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--panel-hover); z-index: 10; }
@@ -178,7 +176,7 @@
                     <div class="nav-item" onclick="openTab('metals')"><i class="fa-solid fa-coins"></i> <span class="nav-text">Değerli Madenler</span></div>
                     <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
                     <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul & Arsa</span></div>
-                    <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Taşıtlar & AI Ar-Ge</span></div>
+                    <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Garaj & Taşıtlar</span></div>
                     <div class="nav-item" onclick="openTab('activity')"><i class="fa-solid fa-list-check"></i> <span class="nav-text">Son İşlemler</span></div>
                 </div>
             </aside>
@@ -190,8 +188,8 @@
                         <div class="card" style="grid-column: 1 / -1;">
                             <h3><i class="fa-solid fa-circle-info"></i> Metaverse Kuralları</h3>
                             <p style="color: var(--text-muted); line-height: 1.6;">
-                                <strong>1. Kişisel Arsa (Parsel):</strong> Binalarınızın ve taşıtlarınızın açık dünyada gözükmesi için Gayrimenkul sekmesinden 1000 TL'ye Arsa satın almalısınız.<br>
-                                <strong>2. Otomatik Simetri:</strong> Satın aldığınız arabalar ve evler arsanıza düzgün ve simetrik bir şekilde milimetrik olarak yerleştirilir.<br>
+                                <strong>1. Kişisel Arsa (Parsel):</strong> Binalarınızın haritada gözükmesi için Gayrimenkul sekmesinden 1000 TL'ye Arsa almalısınız.<br>
+                                <strong>2. Garaj ve Taşıt Seçimi:</strong> Taşıtlar sekmesinden istediğiniz kadar araç alabilirsiniz. Ancak arsanızda sergilenmesi için aktif aracınızı <b>seçmeniz (Kullan)</b> gerekir.<br>
                                 <strong>3. Güvenlik Kalkanı:</strong> Arsanıza sadece siz ve "Profil" sekmesinden ismini eklediğiniz izinli arkadaşlarınız girebilir. Diğerleri görünmez duvara çarpar!
                             </p>
                         </div>
@@ -260,7 +258,7 @@
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <div>
                                 <h3 style="border:none; margin:0; color:var(--accent-gold);">Kişisel Parsel (Arsa)</h3>
-                                <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">Evlerin ve araçların ancak bir arsan varsa haritada simetrik olarak yerini alır.</p>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">Evlerin ve seçtiğin aracın ancak bir arsan varsa haritada simetrik olarak yerini alır.</p>
                             </div>
                             <div id="plot-ui"></div>
                         </div>
@@ -270,11 +268,13 @@
                 </div>
                 
                 <div id="tab-vehicles" class="tab-content">
-                    <h2><i class="fa-solid fa-car"></i> Taşıtlar & AI Ar-Ge</h2>
+                    <h2><i class="fa-solid fa-car"></i> Garaj, Taşıtlar & AI Ar-Ge</h2>
                     <div style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
                         <h3 style="color: var(--accent-purple); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> Ar-Ge Merkezi</h3>
                         <div class="grid-container" id="ai-tech-list"></div>
                     </div>
+                    
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Satın Al ve Arsan İçin Seç)</h3>
                     <div class="grid-container" id="vehicles-list"></div>
                 </div>
 
@@ -301,15 +301,15 @@
     <script>
         let socket;
         let otherPlayers = {}; 
-        let globalPlotsGroup; // Tüm arsaları ve eşyaları tutan ana 3D grup
-        let plotRenderCache = {}; // Performans için
+        let globalPlotsGroup; 
+        let plotRenderCache = {}; 
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
         let player = { 
             username: "", cash: 0, debt: 0, 
             inventory: { stocks: {}, metals: {} }, 
-            assets: { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1 }, 
+            assets: { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1, selectedVehicle: -1 }, 
             permissions: [],
             profile: { ...defaultProfile } 
         };
@@ -344,24 +344,24 @@
         const vehicles = [
             { id: 1, name: "Şehir Bisikleti", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet', modelType: 'bicycle' },
             { id: 2, name: "Elektrikli Scooter", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter', modelType: 'scooter' },
-            { id: 3, name: "Sarı Klasik Cruiser Motor", cost: 15000, income: 25, tax: 4, color: '#f59e0b', category: 'Motor', modelType: 'chopper' },
-            { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#3b82f6', category: 'Motor', modelType: 'standard' },
-            { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Motor', modelType: 'sportbike' },
-            { id: 6, name: "Yeşil Off-Road 4x4", cost: 90000, income: 150, tax: 20, color: '#84cc16', category: 'Ticari', modelType: 'suv' },
-            { id: 7, name: "Siyah Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor', modelType: 'chopper' },
-            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, income: 400, tax: 60, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' },
-            { id: 9, name: "Mavi Aile Tipi Hatchback", cost: 450000, income: 650, tax: 90, color: '#3b82f6', category: 'Otomobil', modelType: 'hatchback' },
-            { id: 10, name: "Yeşil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil', modelType: 'hatchback' },
-            { id: 11, name: "Beyaz Ticari Panelvan", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari', modelType: 'van' },
-            { id: 12, name: "Turuncu Çift Kabin Pikap", cost: 1500000, income: 1900, tax: 250, color: '#f97316', category: 'Ticari', modelType: 'pickup' },
-            { id: 13, name: "Siyah VIP Minibüs", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari', modelType: 'van' },
+            { id: 3, name: "Sarı Klasik Cruiser", cost: 15000, income: 25, tax: 4, color: '#f59e0b', category: 'Motor', modelType: 'chopper' },
+            { id: 4, name: "Mavi Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#3b82f6', category: 'Motor', modelType: 'standard' },
+            { id: 5, name: "Kırmızı Spor Motor", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Motor', modelType: 'sportbike' },
+            { id: 6, name: "Yeşil Off-Road", cost: 90000, income: 150, tax: 20, color: '#84cc16', category: 'Ticari', modelType: 'suv' },
+            { id: 7, name: "Siyah Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor', modelType: 'chopper' },
+            { id: 8, name: "Pembe Sedan", cost: 280000, income: 400, tax: 60, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' },
+            { id: 9, name: "Mavi Hatchback", cost: 450000, income: 650, tax: 90, color: '#3b82f6', category: 'Otomobil', modelType: 'hatchback' },
+            { id: 10, name: "Yeşil Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil', modelType: 'hatchback' },
+            { id: 11, name: "Beyaz Panelvan", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari', modelType: 'van' },
+            { id: 12, name: "Turuncu Pikap", cost: 1500000, income: 1900, tax: 250, color: '#f97316', category: 'Ticari', modelType: 'pickup' },
+            { id: 13, name: "Siyah Minibüs", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari', modelType: 'van' },
             { id: 14, name: "Gri Geniş Karavan", cost: 3500000, income: 4200, tax: 550, color: '#94a3b8', category: 'Özel', modelType: 'van' },
-            { id: 15, name: "Kırmızı Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks', modelType: 'sport' },
-            { id: 16, name: "Siyah V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks', modelType: 'sedan' },
-            { id: 17, name: "Mavi Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor', modelType: 'sport' },
-            { id: 18, name: "Zırhlı Siyah Lüks SUV", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks', modelType: 'suv' },
-            { id: 19, name: "Sarı V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor', modelType: 'super' },
-            { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
+            { id: 15, name: "Kırmızı Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks', modelType: 'sport' },
+            { id: 16, name: "Siyah Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks', modelType: 'sedan' },
+            { id: 17, name: "Mavi Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor', modelType: 'sport' },
+            { id: 18, name: "Zırhlı Siyah SUV", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks', modelType: 'suv' },
+            { id: 19, name: "Sarı Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor', modelType: 'super' },
+            { id: 20, name: "Beyaz İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
         const aiTechnologies = [
@@ -373,9 +373,9 @@
 
         let dialogueStep = 0; let isTyping = false; let typeInterval;
         const dialogues = [
-            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "Şirkete katkıların büyüktü ama yolları ayırıyoruz.", expression: { bossBrow: "M 43 41 Q 50 38 57 41", bossMouth: "M 50 70 Q 60 62 70 70", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" } },
-            { speaker: "Sen", title: "Şoke Olmuş Çalışan", type: "player", text: "Ne?! Beni böylece kapı önüne mi koyuyorsunuz!", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 68 Q 60 72 70 68", playerBrowL: "M 44 35 Q 51 28 58 35", playerBrowR: "M 76 35 Q 69 28 62 35", playerMouth: "M 50 62 C 55 80, 65 80, 70 62" } },
-            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "İşte tazminatın. Güle güle.", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 38 L 56 44", playerBrowR: "M 76 38 L 64 44", playerMouth: "M 52 70 L 68 70" } }
+            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "Şirkete katkıların büyüktü ama yolları ayırıyoruz." },
+            { speaker: "Sen", title: "Şoke Olmuş Çalışan", type: "player", text: "Ne?! Beni böylece kapı önüne mi koyuyorsunuz!" },
+            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "İşte tazminatın. Güle güle." }
         ];
 
         function login() {
@@ -386,9 +386,8 @@
             
             if(user === "Test" && pass === "1234") {
                 player.username = "Test"; player.cash = 999999999999; player.profile.name = "Test Milyarderi"; 
-                if(player.assets.plotId === -1) player.assets.plotId = 0; // Test hesabı için otomatik arsa 0
-                saveGame();
-                document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); return;
+                if(player.assets.plotId === -1) player.assets.plotId = 0; 
+                saveGame(); document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); return;
             }
 
             let saved = localStorage.getItem('apex_save_' + user);
@@ -396,7 +395,8 @@
                 try {
                     let parsed = JSON.parse(saved); player.username = user; player.cash = parsed.cash || 0; player.debt = parsed.debt || 0;
                     player.inventory = { ...player.inventory, ...(parsed.inventory || {}) }; 
-                    player.assets = { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1, ...(parsed.assets || {}) };
+                    player.assets = { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1, selectedVehicle: -1, ...(parsed.assets || {}) };
+                    if(player.assets.selectedVehicle === undefined) player.assets.selectedVehicle = -1;
                     player.permissions = parsed.permissions || [];
                     if(!player.assets.aiTech) player.assets.aiTech = [];
                     player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
@@ -414,11 +414,6 @@
             if(current.type === "boss") { box.classList.add('arrow-right'); document.getElementById('char-boss').classList.add('active'); } 
             else { box.classList.add('arrow-left'); document.getElementById('char-player').classList.add('active'); }
 
-            if(current.expression) {
-                document.getElementById('boss-brow-l').setAttribute('d', current.expression.bossBrow); document.getElementById('boss-mouth').setAttribute('d', current.expression.bossMouth);
-                document.getElementById('player-brow-l').setAttribute('d', current.expression.playerBrowL); document.getElementById('player-brow-r').setAttribute('d', current.expression.playerBrowR); document.getElementById('player-mouth').setAttribute('d', current.expression.playerMouth);
-            }
-
             const targetEl = document.getElementById('dialogue-text'); targetEl.innerHTML = ""; let i = 0; clearInterval(typeInterval);
             typeInterval = setInterval(() => { if (i < current.text.length) { targetEl.innerHTML += current.text.charAt(i); i++; } else { clearInterval(typeInterval); isTyping = false; } }, 30); 
         }
@@ -433,15 +428,9 @@
         function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
         function claimCapital(e) { player.cash = 10000; saveGame(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); }
 
-        // PERMISSION SYSTEM
         function addPermission() {
-            let input = document.getElementById('permission-input');
-            let val = input.value.trim();
-            if(val && !player.permissions.includes(val)) {
-                player.permissions.push(val);
-                input.value = "";
-                saveGame(); renderPermissions();
-            }
+            let input = document.getElementById('permission-input'); let val = input.value.trim();
+            if(val && !player.permissions.includes(val)) { player.permissions.push(val); input.value = ""; saveGame(); renderPermissions(); }
         }
         function renderPermissions() {
             let list = document.getElementById('permission-list');
@@ -466,19 +455,16 @@
                         op.animTime += 0.15; let swing = Math.sin(op.animTime) * 0.8;
                         op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing; op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
                     } else { op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0; }
-                    
                     op.tagUser.innerText = (playerInfo.profile && playerInfo.profile.name) ? playerInfo.profile.name : (playerInfo.username || "Bilinmeyen");
                     
-                    // Verileri Sync et
-                    op.plotId = playerInfo.plotId; op.realEstate = playerInfo.realEstate; op.vehicles = playerInfo.vehicles; 
+                    op.plotId = playerInfo.plotId; op.realEstate = playerInfo.realEstate; op.selectedVehicle = playerInfo.selectedVehicle; 
                     op.permissions = playerInfo.permissions; op.username = playerInfo.username;
                 } else { addOtherPlayer(playerInfo); }
             });
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
                     logActivity(`<strong style="color:var(--accent-red)">[SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} ayrıldı.`);
-                    if(scene) scene.remove(otherPlayers[id].group); if(otherPlayers[id].tag) otherPlayers[id].tag.remove(); delete otherPlayers[id];
-                    syncPlots();
+                    if(scene) scene.remove(otherPlayers[id].group); if(otherPlayers[id].tag) otherPlayers[id].tag.remove(); delete otherPlayers[id]; syncPlots();
                 }
             });
         }
@@ -496,7 +482,7 @@
             
             otherPlayers[info.id] = { 
                 group: obj.root, model: obj.model, lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg, animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username'),
-                plotId: info.plotId, realEstate: info.realEstate, vehicles: info.vehicles, permissions: info.permissions, username: info.username
+                plotId: info.plotId, realEstate: info.realEstate, selectedVehicle: info.selectedVehicle, permissions: info.permissions, username: info.username
             };
         }
 
@@ -507,7 +493,7 @@
             socket.emit('playerMovement', { 
                 x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, 
                 username: player.username, profile: player.profile,
-                plotId: player.assets.plotId, realEstate: player.assets.realEstate, vehicles: player.assets.vehicles, permissions: player.permissions
+                plotId: player.assets.plotId, realEstate: player.assets.realEstate, selectedVehicle: player.assets.selectedVehicle, permissions: player.permissions
             });
         }
 
@@ -516,7 +502,7 @@
             renderPermissions();
             setInterval(updateClock, 1000); updateClock(); setInterval(fluctuateMarkets, 1500); setInterval(processEconomy, 1000); 
             setInterval(() => { if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d); }, 2000); 
-            setInterval(syncPlots, 3000); // 3 sn'de bir haritayı tazele
+            setInterval(syncPlots, 3000); 
             
             loadProfileUI(); updateUI(); renderMarkets(); renderAssets(); renderAITech(); updatePlotUI();
             initProfile3D(); init3DWorld();   
@@ -536,16 +522,16 @@
         function buyPlot() {
             if(player.assets.plotId !== -1) return alert("Zaten bir arsanız var!");
             if(player.cash < 1000) return alert("Arsa almak için 1000 TL gerekiyor.");
-            
-            // Boş plot bul (0-99 arası)
             let usedPlots = Object.values(otherPlayers).map(op => op.plotId).filter(pid => pid !== undefined && pid !== -1);
-            let newPlotId = 0;
-            while(usedPlots.includes(newPlotId)) { newPlotId++; }
-            
-            player.cash -= 1000;
-            player.assets.plotId = newPlotId;
+            let newPlotId = 0; while(usedPlots.includes(newPlotId)) { newPlotId++; }
+            player.cash -= 1000; player.assets.plotId = newPlotId;
             logActivity(`<strong style="color:var(--accent-gold)">[EMLAK]</strong> Parsel #${newPlotId} başarıyla satın alındı.`);
             updatePlotUI(); updateUI(); saveGame(); syncPlots();
+        }
+
+        function selectVehicle(id) {
+            player.assets.selectedVehicle = id;
+            saveGame(); renderAssets(); syncPlots();
         }
 
         function updateUI() { 
@@ -592,13 +578,8 @@
                 });
             }
             
-            let finalNet = net - tax;
-            let netEl = document.getElementById('ui-net');
-            if(netEl) {
-                netEl.innerText = (finalNet > 0 ? "+" : "") + finalNet.toLocaleString('tr-TR', {maximumFractionDigits:1});
-                netEl.style.color = finalNet >= 0 ? "var(--accent-green)" : "var(--accent-red)";
-            }
-
+            let finalNet = net - tax; let netEl = document.getElementById('ui-net');
+            if(netEl) { netEl.innerText = (finalNet > 0 ? "+" : "") + finalNet.toLocaleString('tr-TR', {maximumFractionDigits:1}); netEl.style.color = finalNet >= 0 ? "var(--accent-green)" : "var(--accent-red)"; }
             saveGame(); 
         }
         
@@ -636,9 +617,7 @@
             let html = aiTechnologies.map(tech => {
                 let owned = player.assets.aiTech && player.assets.aiTech.includes(tech.id);
                 return `<div class="card" style="${owned ? 'border-color:var(--accent-purple); box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);' : 'border-color: rgba(168, 85, 247, 0.3);'}">
-                    <h3 style="color:var(--accent-purple); font-size:16px;">${tech.name}</h3>
-                    <p style="font-size: 13px; margin-bottom: 10px; line-height:1.4;">${tech.desc}</p>
-                    <p style="font-size: 16px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${tech.cost.toLocaleString()} TL</p>
+                    <h3 style="color:var(--accent-purple); font-size:16px;">${tech.name}</h3><p style="font-size: 13px; margin-bottom: 10px; line-height:1.4;">${tech.desc}</p><p style="font-size: 16px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${tech.cost.toLocaleString()} TL</p>
                     ${owned ? `<button disabled style="background:var(--accent-purple); color:white; width:100%;">Aktif Edildi</button>` : `<button class="btn-primary" style="background:linear-gradient(135deg, #a855f7, #7e22ce);" onclick="buyAITech(${tech.id})">Araştır</button>`}
                 </div>`;
             }).join('');
@@ -679,14 +658,28 @@
                         else btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--accent-red); padding:8px 10px; width:100%; border:1px solid rgba(239,68,68,0.3);"><i class="fa-solid fa-lock"></i> Kilitli</button>`;
 
                         return `<div class="card" style="${isHighest ? 'border-color:var(--accent-blue); box-shadow: 0 0 15px rgba(59,130,246,0.2);' : ''} ${!owned && !canBuy ? 'opacity:0.6;' : ''}">
-                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
+                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p><p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
+                    } else if (category === 'vehicles') {
+                        let finalInc = item.income * vehIncomeMult;
+                        let finalTax = item.tax * vehTaxMult;
+                        let info = `Kira: <span style="color:var(--accent-green)">+${finalInc.toFixed(1)} TL</span> | Vergi: <span style="color:var(--accent-red)">-${finalTax.toFixed(1)} TL</span> <br>Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
+                        
+                        // ARAÇ SEÇİM SİSTEMİ (GARAJ)
+                        let isSelected = player.assets.selectedVehicle === item.id;
+                        let btnHTML = '';
+                        if (isSelected) {
+                            btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Kullanımda</button>`;
+                        } else if (owned) {
+                            btnHTML = `<button class="btn-primary" style="background:transparent; color:var(--accent-blue); border:1px solid var(--accent-blue);" onclick="selectVehicle(${item.id})">Kullan (Otoparka Çek)</button>`;
+                        } else {
+                            btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`;
+                        }
+
+                        return `<div class="card" style="${isSelected ? 'border-color:var(--accent-blue)' : (owned ? 'border-color:var(--accent-green)' : '')}">
+                            <h3 style="font-size:16px;">${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">${info}</p>
                             <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
                     } else {
-                        let finalInc = category === 'vehicles' ? (item.income * vehIncomeMult) : item.income;
-                        let finalTax = category === 'vehicles' ? (item.tax * vehTaxMult) : item.tax;
-                        
-                        let info = `Kira: <span style="color:var(--accent-green)">+${finalInc.toFixed(1)} TL</span> | Vergi: <span style="color:var(--accent-red)">-${finalTax.toFixed(1)} TL</span>`;
-                        if(category === 'vehicles') info += ` <br>Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
+                        let info = `Kira: <span style="color:var(--accent-green)">+${item.income} TL</span> | Vergi: <span style="color:var(--accent-red)">-${item.tax} TL</span>`;
                         return `<div class="card" style="${owned ? 'border-color:var(--accent-green)' : ''}">
                             <h3 style="font-size:16px;">${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">${info}</p>
                             <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>
@@ -707,6 +700,12 @@
                 if(category !== 'jobs' && player.assets.plotId === -1) {
                     alert("Satın alındı! Eşyalarını 3D dünyada görmek için Gayrimenkul sekmesinden bir ARSA satın almalısın.");
                 }
+                
+                // Araç alındığında eğer başka aracı yoksa otomatik seç
+                if (category === 'vehicles' && player.assets.selectedVehicle === -1) {
+                    player.assets.selectedVehicle = id;
+                }
+
                 renderAssets(); updateUI(); syncPlots();
             } else alert("Nakit paranız yetersiz!");
         }
@@ -769,7 +768,7 @@
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
-        // --- BİNA VE ARAÇ OLUŞTURUCULARI ---
+        // BİNA ÇİZİMİ
         function createParametricBuilding(id) {
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
@@ -783,6 +782,7 @@
             return bGroup;
         }
 
+        // ARAÇ ÇİZİMİ
         function createParametricCar(colorHex, type) {
             const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
@@ -876,23 +876,45 @@
             return grp;
         }
 
-        // DEVASA SAKSI İÇİNDE PALMİYE ÜRETİCİ
+        // YENİ: SAKSI VE DETAYLI PALMİYE ÜRETİCİ
         function createPottedPalm() {
             const grp = new THREE.Group();
-            let pot = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1, 3, 16), new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.9}));
-            pot.position.y = 1.5; pot.castShadow = true; pot.receiveShadow = true; grp.add(pot);
             
-            let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 8, 8), new THREE.MeshStandardMaterial({color: '#5c4033', roughness: 0.9}));
-            trunk.position.y = 7; trunk.castShadow = true; grp.add(trunk);
+            // Modern Seramik Saksı
+            let potMaterial = new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.7});
+            let potBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 3, 24), potMaterial);
+            potBase.position.y = 1.5; potBase.castShadow = true; potBase.receiveShadow = true; grp.add(potBase);
+            let potRim = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.2, 8, 24), potMaterial);
+            potRim.position.y = 3; potRim.rotation.x = Math.PI/2; potRim.castShadow = true; grp.add(potRim);
+            let soil = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.1, 24), new THREE.MeshStandardMaterial({color:'#2b1d14'}));
+            soil.position.y = 2.9; grp.add(soil);
 
+            // Boğumlu kavisli gövde
+            let trunkGrp = new THREE.Group();
+            let segments = 6;
+            for(let i=0; i<segments; i++) {
+                let seg = new THREE.Mesh(new THREE.CylinderGeometry(0.45 - (i*0.04), 0.5 - (i*0.04), 1.6, 12), new THREE.MeshStandardMaterial({color: '#5c4033', roughness: 0.9}));
+                seg.position.y = 3.6 + (i * 1.4);
+                seg.rotation.z = Math.sin(i * 0.5) * 0.05; 
+                seg.castShadow = true; trunkGrp.add(seg);
+            }
+            grp.add(trunkGrp);
+
+            // 12 Adet Gür ve Kavisli Yaprak
             let leavesMat = new THREE.MeshStandardMaterial({color: '#166534', side: THREE.DoubleSide});
-            for(let i=0; i<6; i++) {
-                let leaf = new THREE.Mesh(new THREE.ConeGeometry(1.5, 6, 3), leavesMat);
-                leaf.position.y = 11;
-                leaf.rotation.x = Math.PI / 4;
-                leaf.rotation.y = (Math.PI / 3) * i;
-                leaf.castShadow = true;
-                grp.add(leaf);
+            let topY = 3.6 + (segments * 1.4) - 0.5;
+            for(let i=0; i<12; i++) {
+                let isLong = i % 2 === 0;
+                let leafLen = isLong ? 6.5 : 4.5;
+                let dropAngle = isLong ? Math.PI / 3.5 : Math.PI / 4.5;
+                
+                let leafGeo = new THREE.ConeGeometry(isLong? 1.2:0.8, leafLen, 5);
+                leafGeo.translate(0, leafLen/2, 0); // Dipten bükülmesi için ekseni kaydır
+                let leaf = new THREE.Mesh(leafGeo, leavesMat);
+                leaf.position.y = topY;
+                leaf.rotation.y = (Math.PI * 2 / 12) * i;
+                leaf.rotation.x = dropAngle; 
+                leaf.castShadow = true; grp.add(leaf);
             }
             return grp;
         }
@@ -947,11 +969,9 @@
         let isInWorld = false; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
-        // METAVERSE ARSA SİSTEMİ ALTYAPISI
         function getPlotCenter(plotId) {
-            // 10x10 Izgara (0-99 Parsel)
             let col = plotId % 10; let row = Math.floor(plotId / 10);
-            return { x: col * 80 - 360, z: row * 80 - 360 }; // 80 birim aralık (60 parsel, 20 yol)
+            return { x: col * 80 - 360, z: row * 80 - 360 }; 
         }
 
         function init3DWorld() {
@@ -969,33 +989,26 @@
             let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); sl.castShadow = true;
             sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
             scene.add(sl);
-            
             let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
             sunMesh.position.copy(sl.position); scene.add(sunMesh);
 
-            // DEVASA ASFALT ZEMİN (Her şey temizlendi)
             let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 }));
             floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
-            // BÜYÜK SAKSILAR VE PALMİYELER (Düzenli nizamda yol kenarlarına)
+            // DETAYLI PALMİYELER
             for(let row=0; row<=10; row++) {
                 for(let col=0; col<=10; col++) {
                     let px = col * 80 - 400; let pz = row * 80 - 400;
-                    let palm = createPottedPalm();
-                    palm.position.set(px, 0, pz);
-                    scene.add(palm);
+                    let palm = createPottedPalm(); palm.position.set(px, 0, pz); scene.add(palm);
                 }
             }
 
-            globalPlotsGroup = new THREE.Group();
-            scene.add(globalPlotsGroup);
+            globalPlotsGroup = new THREE.Group(); scene.add(globalPlotsGroup);
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
-            worldPlayerObj.model.scale.set(sc, sh, sc); 
-            worldPlayerObj.root.position.set(0, 2, 0); 
-            scene.add(worldPlayerObj.root);
+            worldPlayerObj.model.scale.set(sc, sh, sc); worldPlayerObj.root.position.set(0, 2, 0); scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement.tagName === 'INPUT') return;
@@ -1010,11 +1023,9 @@
             
             document.addEventListener('pointerlockchange', () => {
                 if(document.pointerLockElement === container) {
-                    document.getElementById('esc-menu').style.display = 'none';
-                    isInWorld = true; lastTime = performance.now();
+                    document.getElementById('esc-menu').style.display = 'none'; isInWorld = true; lastTime = performance.now();
                 } else {
-                    document.getElementById('esc-menu').style.display = 'flex'; 
-                    isInWorld = false; for(let k in keys) keys[k] = false; emitMovement(false); 
+                    document.getElementById('esc-menu').style.display = 'flex'; isInWorld = false; for(let k in keys) keys[k] = false; emitMovement(false); 
                 }
             });
 
@@ -1025,28 +1036,24 @@
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
-            container.addEventListener('click', () => {
-                if(document.pointerLockElement !== container) { try { container.requestPointerLock(); } catch(err) {} }
-            });
+            container.addEventListener('click', () => { if(document.pointerLockElement !== container) { try { container.requestPointerLock(); } catch(err) {} } });
 
-            syncPlots(); 
-            animateWorld();
+            syncPlots(); animateWorld();
         }
 
-        // TİPLERE GÖRE ARAÇ ÇİZİMİ VE ARSALARA YERLEŞTİRME (SİMETRİK)
         function syncPlots() {
             if(!globalPlotsGroup) return;
-            
-            // Tüm aktif kullanıcıları topla (Kendi hesabımız + Diğer online oyuncular)
             let activeUsers = [player, ...Object.values(otherPlayers)];
-
             activeUsers.forEach(u => {
-                let pid = u.assets ? u.assets.plotId : u.plotId; // Kendi player'ımız assets altında, others doğrudan root'ta.
+                let pid = u.assets ? u.assets.plotId : u.plotId; 
                 if(pid !== undefined && pid !== -1) {
-                    let cacheStr = JSON.stringify({ r: u.assets?u.assets.realEstate:u.realEstate, v: u.assets?u.assets.vehicles:u.vehicles });
+                    // Cache'i sadece seçili araç (selectedVehicle) ile kontrol et
+                    let cacheStr = JSON.stringify({ 
+                        r: u.assets ? u.assets.realEstate : u.realEstate, 
+                        v: u.assets ? u.assets.selectedVehicle : u.selectedVehicle 
+                    });
                     if(plotRenderCache[u.username] !== cacheStr) {
-                        drawPlot(u);
-                        plotRenderCache[u.username] = cacheStr;
+                        drawPlot(u); plotRenderCache[u.username] = cacheStr;
                     }
                 }
             });
@@ -1056,55 +1063,42 @@
             let pId = userData.assets ? userData.assets.plotId : userData.plotId;
             let pName = userData.profile ? userData.profile.name : userData.username;
             let rEst = userData.assets ? userData.assets.realEstate : userData.realEstate;
-            let vVeh = userData.assets ? userData.assets.vehicles : userData.vehicles;
+            let selVeh = userData.assets ? userData.assets.selectedVehicle : userData.selectedVehicle;
             if(pId === -1) return;
 
-            // Eski plot varsa temizle (İsim üzerinden bul)
             let oldPlot = globalPlotsGroup.getObjectByName('plot_' + userData.username);
             if(oldPlot) globalPlotsGroup.remove(oldPlot);
 
-            let plotGrp = new THREE.Group();
-            plotGrp.name = 'plot_' + userData.username;
-            
+            let plotGrp = new THREE.Group(); plotGrp.name = 'plot_' + userData.username;
             let center = getPlotCenter(pId);
             
-            // Arsa Zemini (Hafif gri)
             let ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: '#333333'}));
             ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; ground.receiveShadow = true; plotGrp.add(ground);
 
-            // Arsa Sahibi Tabelası
             let signGeom = new THREE.BoxGeometry(4, 2, 0.2); let signMat = new THREE.MeshStandardMaterial({color: '#f59e0b'});
             let sign = new THREE.Mesh(signGeom, signMat); sign.position.set(0, 1, 30); plotGrp.add(sign);
 
-            // Binaları Arka Tarafa Simetrik Diz
             if(rEst && rEst.length > 0) {
                 rEst.forEach((id, i) => {
                     let bMesh = createParametricBuilding(id);
                     let col = i % 4; let row = Math.floor(i / 4);
-                    bMesh.position.set(-20 + col*13, 0, -15 - row*10); // Arka plan
-                    plotGrp.add(bMesh);
+                    bMesh.position.set(-20 + col*13, 0, -15 - row*10); plotGrp.add(bMesh);
                 });
             }
 
-            // Taşıtları Ön Tarafa Simetrik Diz
-            if(vVeh && vVeh.length > 0) {
-                vVeh.forEach((id, i) => {
-                    let vData = vehicles.find(v => v.id === id);
-                    if(vData) {
-                        let vMesh;
-                        let type = vData.modelType;
-                        if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
-                        else vMesh = createParametricCar(vData.color, type);
-                        
-                        let col = i % 4; let row = Math.floor(i / 4);
-                        vMesh.position.set(-20 + col*13, 0, 10 + row*8); // Ön plan
-                        plotGrp.add(vMesh);
-                    }
-                });
+            // GARAJ SİSTEMİ: Sadece seçili olan aracı (selectedVehicle) parsele çizer
+            if(selVeh && selVeh !== -1) {
+                let vData = vehicles.find(v => v.id === selVeh);
+                if(vData) {
+                    let vMesh; let type = vData.modelType;
+                    if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
+                    else vMesh = createParametricCar(vData.color, type);
+                    vMesh.position.set(0, 0, 15); // Parselin en önünde şov yapsın
+                    plotGrp.add(vMesh);
+                }
             }
 
-            plotGrp.position.set(center.x, 0, center.z);
-            globalPlotsGroup.add(plotGrp);
+            plotGrp.position.set(center.x, 0, center.z); globalPlotsGroup.add(plotGrp);
         }
 
         function enterWorld() {
@@ -1113,12 +1107,7 @@
             fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
-            
-            // Eğer arsan varsa direkt arsanın ortasına ışınlan
-            if(player.assets.plotId !== -1) {
-                let c = getPlotCenter(player.assets.plotId);
-                worldPlayerObj.root.position.set(c.x, 2, c.z);
-            }
+            if(player.assets.plotId !== -1) { let c = getPlotCenter(player.assets.plotId); worldPlayerObj.root.position.set(c.x, 2, c.z); }
             lastTime = performance.now();
         }
         
@@ -1138,9 +1127,7 @@
             if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) { nameTag.style.display = 'none'; return; }
 
             if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
-            if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
-                worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
-            }
+            if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) { worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0; }
 
             velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
             if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
@@ -1156,22 +1143,14 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                // KALKAN (GÜVENLİK DUVARI) - İZİN SİSTEMİ
-                let collision = false;
-                let activeUsers = [player, ...Object.values(otherPlayers)];
-                
+                let collision = false; let activeUsers = [player, ...Object.values(otherPlayers)];
                 for(let u of activeUsers) {
                     let pid = u.assets ? u.assets.plotId : u.plotId;
                     if(pid !== undefined && pid !== -1) {
                         let c = getPlotCenter(pid);
-                        // Eğer nextPos arsanın sınırları içindeyse (30 birim yarıçap)
                         if(nextPos.x > c.x - 30 && nextPos.x < c.x + 30 && nextPos.z > c.z - 30 && nextPos.z < c.z + 30) {
-                            let uname = u.username;
-                            let perms = u.permissions || [];
-                            // Eğer ben sahibi değilsem VE izinli listesinde yoksam -> ÇARP!
-                            if(uname !== player.username && !perms.includes(player.username)) {
-                                collision = true; break;
-                            }
+                            let uname = u.username; let perms = u.permissions || [];
+                            if(uname !== player.username && !perms.includes(player.username)) { collision = true; break; }
                         }
                     }
                 }
@@ -1197,42 +1176,28 @@
             let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
             
             if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
-                camera.position.set(targetCamX, targetCamY, targetCamZ);
-                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+                camera.position.set(targetCamX, targetCamY, targetCamZ); camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
             }
 
-            let tagPos = new THREE.Vector3();
-            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
-            if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1) {
-                nameTag.style.display = 'none';
-            } else {
-                nameTag.style.display = 'block';
-                nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
-                document.getElementById('tag-username').innerText = player.profile.name || player.username;
-                document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
+            let tagPos = new THREE.Vector3(); worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
+            if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1) { nameTag.style.display = 'none'; } else {
+                nameTag.style.display = 'block'; nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
+                document.getElementById('tag-username').innerText = player.profile.name || player.username; document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
             }
 
             for(let id in otherPlayers) {
                 let op = otherPlayers[id];
                 if(op && op.group && op.model) {
                     let opPos = new THREE.Vector3(); op.group.getWorldPosition(opPos); opPos.y += 5.0 * (op.model.scale.y || 1); opPos.project(camera);
-                    if(isNaN(opPos.x) || isNaN(opPos.y) || opPos.z > 1) {
-                        op.tag.style.display = 'none';
-                    } else {
-                        op.tag.style.display = 'block';
-                        op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
+                    if(isNaN(opPos.x) || isNaN(opPos.y) || opPos.z > 1) { op.tag.style.display = 'none'; } else {
+                        op.tag.style.display = 'block'; op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
                     }
                 }
             }
-
             renderer.render(scene, camera);
         }
 
-        window.addEventListener('resize', () => {
-            if(isInWorld && camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
+        window.addEventListener('resize', () => { if(isInWorld && camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); } });
     </script>
 </body>
 </html>
