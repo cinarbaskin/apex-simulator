@@ -216,7 +216,7 @@
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
                 <div class="datetime" id="datetime">Yükleniyor...</div>
-                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-wifi"></i> Sunucuya Bağlı</div>
+                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Multiplayer Modu Aktif</div>
             </div>
             <div class="finance-summary">
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
@@ -355,7 +355,7 @@
                 </div>
 
                 <div id="tab-activity" class="tab-content">
-                    <h2><i class="fa-solid fa-list-check"></i> Son İşlemler Detayı</h2>
+                    <h2><i class="fa-solid fa-list-check"></i> Son İşlemler (Multiplayer Logları)</h2>
                     <div class="card" style="max-height: 70vh; overflow-y: auto;">
                         <ul id="activity-log" style="list-style:none; color:var(--text-light); font-size: 15px; display:flex; flex-direction:column; gap:12px; margin: 0; padding: 0;">
                         </ul>
@@ -387,9 +387,8 @@
     <!-- JAVASCRIPT KODLARI -->
     <script>
         let socket;
-        let otherPlayers = {}; // Diğer online oyuncuların 3D modelleri
+        let otherPlayers = {}; 
 
-        // TIKIR TIKIR ÇALIŞAN EKSİKSİZ OYUNCU OBJESİ (Hatayı Çözen Kısım)
         let player = {
             username: "", cash: 0, debt: 0, 
             inventory: { stocks: {}, metals: {} },
@@ -498,7 +497,7 @@
                 player = JSON.parse(saved);
                 document.getElementById('auth-screen').style.display = 'none';
                 startGameUI();
-                connectMultiplayer(); // Eski oyuncu direkt sunucuya bağlanır
+                connectMultiplayer(); 
             } else {
                 player.username = user;
                 document.getElementById('auth-screen').style.display = 'none';
@@ -511,11 +510,9 @@
         function startTypewriter() {
             isTyping = true;
             const current = dialogues[dialogueStep];
-            
             document.getElementById('speaker-title').innerText = current.title;
             const box = document.getElementById('dialogue-box');
             box.className = "comic-box"; 
-            
             document.getElementById('char-boss').classList.remove('active', 'internal');
             document.getElementById('char-player').classList.remove('active', 'internal');
 
@@ -570,11 +567,7 @@
             }
         }
 
-        function skipIntro() {
-            clearInterval(typeInterval);
-            dialogueStep = dialogues.length - 1; 
-            nextDialogue();
-        }
+        function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
 
         function claimCapital(e) {
             const anim = document.createElement('div');
@@ -591,13 +584,18 @@
                 anim.remove(); 
                 document.getElementById('intro-screen').style.display = 'none'; 
                 startGameUI(); 
-                connectMultiplayer(); // Yeni oyuncu intro bitince sunucuya bağlanır (BÜYÜK HATA BURADAYDI, EKLENDİ)
+                connectMultiplayer(); 
             }, 1200);
         }
 
-        // --- MULTIPLAYER (SOCKET.IO) BAĞLANTISI ---
+        // --- MULTIPLAYER (DEDEKTÖRLÜ YENİ SİSTEM) ---
         function connectMultiplayer() {
             socket = io();
+
+            // BAĞLANTI DEDEKTÖRÜ - Başarıyla bağlanırsa log düşer
+            socket.on('connect', () => {
+                logActivity(`<strong style="color:var(--accent-green)"><i class="fa-solid fa-wifi"></i> [ONLINE] Sunucuya başarıyla bağlanıldı!</strong>`);
+            });
 
             socket.on('currentPlayers', (serverPlayers) => {
                 for(let id in serverPlayers) {
@@ -607,6 +605,8 @@
 
             socket.on('newPlayer', (playerInfo) => {
                 addOtherPlayer(playerInfo);
+                // BİRİ GİRİNCE BİLDİRİM VERİR
+                logActivity(`<strong style="color:var(--accent-blue)"><i class="fa-solid fa-user-plus"></i> [SİSTEM]</strong> Yeni bir oyuncu kasabaya bağlandı.`);
             });
 
             socket.on('playerMoved', (playerInfo) => {
@@ -632,6 +632,8 @@
 
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
+                    // BİRİ ÇIKINCA BİLDİRİM VERİR
+                    logActivity(`<strong style="color:var(--accent-red)"><i class="fa-solid fa-user-minus"></i> [SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} kasabadan ayrıldı.`);
                     scene.remove(otherPlayers[id].group);
                     otherPlayers[id].tag.remove();
                     delete otherPlayers[id];
@@ -680,14 +682,17 @@
             setInterval(fluctuateMarkets, 1500);
             setInterval(processEconomy, 1000); 
 
+            // GARANTİ KONUM EŞİTLEYİCİ (Kimse kaybolmasın diye her 2 saniyede bir zorla konum atar)
+            setInterval(() => {
+                if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d);
+            }, 2000); 
+
             loadProfileUI(); 
             updateUI(); 
             renderMarkets();
             renderAssets();
             initProfile3D(); 
             init3DWorld();   
-            
-            logActivity("Apex Simulator online sistemlerine başarıyla giriş yapıldı.");
         }
 
         function updateClock() {
@@ -698,7 +703,6 @@
         }
 
         function updateUI() {
-            // HATA BURADAN KAYNAKLANIYORDU: Eski kodda inventory ve assets objeleri eksikti, JavaScript çöküyordu. Tamamen düzeltildi!
             let totalAssets = player.cash;
             if(player.inventory && player.inventory.stocks) {
                 for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price;
@@ -1029,7 +1033,7 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
-        // --- TAM EKRAN 3D AÇIK DÜNYA (GÜNEŞLİ VE ÇİMENLİ, AĞAÇLI NORMAL DÜNYA) ---
+        // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
         let isInWorld = false;
