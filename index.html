@@ -52,8 +52,6 @@
         #claim-btn { display: none; background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; padding: 18px 45px; font-size: 22px; border-radius: 50px; box-shadow: 0 0 35px rgba(245, 158, 11, 0.6); animation: pulseGold 1.5s infinite; border: 2px solid #fde68a; text-transform: uppercase; letter-spacing: 1px; }
         #claim-btn:hover { transform: scale(1.08); background: linear-gradient(135deg, #fbbf24, #d97706); }
         @keyframes pulseGold { 0% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } 50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.9); } 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } }
-        @keyframes moneyFly { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-180px) scale(2.2); opacity: 0; } }
-        .money-anim { position: absolute; color: var(--accent-green); font-size: 32px; font-weight: bold; animation: moneyFly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; pointer-events: none; z-index: 1000; text-shadow: 0 3px 8px rgba(0,0,0,0.8); }
 
         #app-screen { display: none; height: 100vh; flex-direction: column; background-color: var(--bg-dark); }
         header { background: var(--panel-bg); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--panel-hover); z-index: 10; }
@@ -117,7 +115,6 @@
         </div>
     </div>
 
-    <!-- İNTRO -->
     <div id="intro-screen">
         <div class="intro-bg-glow"></div>
         <div class="scene-container">
@@ -186,7 +183,7 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Taşıtlar sekmesinden satın aldığın araçlar anında açık dünyadaki otoparkında belirecek.<br><strong>3. Sınırsız Test Hesabı:</strong> Giriş ekranında Kullanıcı Adı: <b>Test</b> Şifre: <b>1234</b> yazarak doğrudan 999 Milyar TL ile giriş yapabilirsin.</p></div></div>
+                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Sadece senin satın aldığın araçlar anında açık dünyadaki otoparkında belirecek. Araç tasarımları kategorisine göre değiştirildi!<br><strong>3. Sınırsız Test Hesabı:</strong> Giriş ekranında Kullanıcı Adı: <b>Test</b> Şifre: <b>1234</b> yazarak doğrudan 999 Milyar TL ile giriş yapabilirsin.</p></div></div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
@@ -236,13 +233,11 @@
                 
                 <div id="tab-vehicles" class="tab-content">
                     <h2><i class="fa-solid fa-car"></i> Taşıtlar & Otomotiv Yapay Zeka (Ar-Ge)</h2>
-                    
                     <div style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
                         <h3 style="color: var(--accent-purple); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> Ar-Ge Merkezi: Taşıt Verimlilik Teknolojileri</h3>
                         <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Bu üst düzey algoritmalarla taşıt filonun gelirini katlayıp vergilerini silebilirsin.</p>
                         <div class="grid-container" id="ai-tech-list"></div>
                     </div>
-                    
                     <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Satın Aldıkların Açık Dünyaya Eklenir)</h3>
                     <div class="grid-container" id="vehicles-list"></div>
                 </div>
@@ -309,27 +304,28 @@
             { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
         ];
 
+        // ARAÇ LİSTESİ (TİPLERİ BELİRLENDİ)
         const vehicles = [
-            { id: 1, name: "Şehir Bisikleti", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet' },
-            { id: 2, name: "Elektrikli Scooter", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter' },
-            { id: 3, name: "Sarı Klasik Cruiser Motor", cost: 15000, income: 25, tax: 4, color: '#f59e0b', category: 'Motor' },
-            { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#3b82f6', category: 'Motor' },
-            { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Motor' },
-            { id: 6, name: "Yeşil Off-Road 4x4 Arazi Aracı", cost: 90000, income: 150, tax: 20, color: '#84cc16', category: 'Ticari' },
-            { id: 7, name: "Siyah Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor' },
-            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, income: 400, tax: 60, color: '#e879f9', category: 'Otomobil' },
-            { id: 9, name: "Mavi Aile Tipi Hatchback", cost: 450000, income: 650, tax: 90, color: '#3b82f6', category: 'Otomobil' },
-            { id: 10, name: "Yeşil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil' },
-            { id: 11, name: "Beyaz Ticari Panelvan", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari' },
-            { id: 12, name: "Turuncu Çift Kabin Pikap", cost: 1500000, income: 1900, tax: 250, color: '#f97316', category: 'Ticari' },
-            { id: 13, name: "Siyah VIP Minibüs", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari' },
-            { id: 14, name: "Gri Geniş Karavan", cost: 3500000, income: 4200, tax: 550, color: '#94a3b8', category: 'Özel' },
-            { id: 15, name: "Kırmızı Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks' },
-            { id: 16, name: "Siyah V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks' },
-            { id: 17, name: "Mavi Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor' },
-            { id: 18, name: "Zırhlı Siyah Lüks SUV", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks' },
-            { id: 19, name: "Sarı V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor' },
-            { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık' }
+            { id: 1, name: "Şehir Bisikleti", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet', modelType: 'bicycle' },
+            { id: 2, name: "Elektrikli Scooter", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter', modelType: 'scooter' },
+            { id: 3, name: "Sarı Klasik Cruiser Motor", cost: 15000, income: 25, tax: 4, color: '#f59e0b', category: 'Motor', modelType: 'chopper' },
+            { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#3b82f6', category: 'Motor', modelType: 'standard' },
+            { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Motor', modelType: 'sportbike' },
+            { id: 6, name: "Yeşil Off-Road 4x4", cost: 90000, income: 150, tax: 20, color: '#84cc16', category: 'Ticari', modelType: 'suv' },
+            { id: 7, name: "Siyah Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor', modelType: 'chopper' },
+            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, income: 400, tax: 60, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' },
+            { id: 9, name: "Mavi Aile Tipi Hatchback", cost: 450000, income: 650, tax: 90, color: '#3b82f6', category: 'Otomobil', modelType: 'hatchback' },
+            { id: 10, name: "Yeşil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil', modelType: 'hatchback' },
+            { id: 11, name: "Beyaz Ticari Panelvan", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari', modelType: 'van' },
+            { id: 12, name: "Turuncu Çift Kabin Pikap", cost: 1500000, income: 1900, tax: 250, color: '#f97316', category: 'Ticari', modelType: 'pickup' },
+            { id: 13, name: "Siyah VIP Minibüs", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari', modelType: 'van' },
+            { id: 14, name: "Gri Geniş Karavan", cost: 3500000, income: 4200, tax: 550, color: '#94a3b8', category: 'Özel', modelType: 'van' },
+            { id: 15, name: "Kırmızı Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks', modelType: 'sport' },
+            { id: 16, name: "Siyah V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks', modelType: 'sedan' },
+            { id: 17, name: "Mavi Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor', modelType: 'sport' },
+            { id: 18, name: "Zırhlı Siyah Lüks SUV", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks', modelType: 'suv' },
+            { id: 19, name: "Sarı V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor', modelType: 'super' },
+            { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
         const aiTechnologies = [
@@ -352,17 +348,9 @@
 
             if(!user) return alert("Kullanıcı adı giriniz!");
             
-            // 💰 GİZLİ GELİŞTİRİCİ (ADMİN) HESABI - SINIRSIZ PARA
             if(user === "Test" && pass === "1234") {
-                player.username = "Test";
-                player.cash = 999999999999; // 999 Milyar TL
-                player.profile.name = "Test Milyarderi";
-                saveGame();
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('intro-screen').style.display = 'none';
-                startGameUI();
-                connectMultiplayer();
-                return;
+                player.username = "Test"; player.cash = 999999999999; player.profile.name = "Test Milyarderi"; saveGame();
+                document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); return;
             }
 
             let saved = localStorage.getItem('apex_save_' + user);
@@ -404,11 +392,7 @@
         }
 
         function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
-
-        function claimCapital(e) {
-            player.cash = 10000; saveGame();
-            document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); 
-        }
+        function claimCapital(e) { player.cash = 10000; saveGame(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); }
 
         function connectMultiplayer() {
             if (typeof io === 'undefined') { logActivity(`<strong style="color:var(--accent-red)">[HATA] Offline Mod</strong>`); return; }
@@ -621,12 +605,7 @@
             if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
             if(player.cash >= item.cost) { 
                 player.cash -= item.cost; player.assets[category].push(id); 
-                
-                // ARAÇ SATIN ALINDIĞINDA DÜNYAYI ANINDA GÜNCELLE
-                if(category === 'vehicles' && typeof updateWorldVehicles === 'function') {
-                    updateWorldVehicles();
-                }
-
+                if(category === 'vehicles' && typeof updateWorldVehicles === 'function') updateWorldVehicles();
                 renderAssets(); updateUI(); 
             } else alert("Nakit paranız yetersiz!");
         }
@@ -689,67 +668,109 @@
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
-        // FOTOĞRAFTAKİ ARABA VE MOTORLARI OLUŞTURAN YENİ ÇİZİM KODLARI
-        function createLowPolyCar(colorHex, isPickup) {
-            const carGrp = new THREE.Group();
-            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.3, roughness: 0.4 });
+        // TİPE GÖRE ŞEKİL ALAN PARAMETRİK ARABA FABRİKASI
+        function createParametricCar(colorHex, type) {
+            const grp = new THREE.Group();
+            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
             const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
-            const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-            const redLightMat = new THREE.MeshBasicMaterial({ color: '#ff0000' });
 
-            // Alt Kasa
-            let base = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.2, 10), paint);
-            base.position.y = 1.2; carGrp.add(base);
-
-            // Üst Kabin
-            let cabinZ = isPickup ? -1.5 : -0.5;
-            let cabinLen = isPickup ? 3.5 : 4.5;
-            let cabin = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, cabinLen), glassMat);
-            cabin.position.set(0, 2.3, cabinZ); carGrp.add(cabin);
+            let bw=4.2, bh=1.2, bd=10; // Kasa (Base)
+            let cw=3.6, ch=1.4, cd=4.5, cz=-0.5; // Kabin (Cabin)
+            let wy=1, wr=0.8; // Tekerlek Yarıçapı (Wheel)
             
-            let roof = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.2, cabinLen + 0.1), paint);
-            roof.position.set(0, 3.0, cabinZ); carGrp.add(roof);
+            if(type === 'hatchback') { bd=8; cd=4.5; cz=1; }
+            else if(type === 'suv') { bh=1.8; bd=10.5; ch=1.5; cd=6; cz=0.5; wy=1.2; wr=1.0; }
+            else if(type === 'pickup') { bd=11; cd=3.5; cz=2; }
+            else if(type === 'van') { bh=2.5; bd=11; ch=1.5; cd=8; cz=0.5; }
+            else if(type === 'sport') { bh=0.9; bd=9.5; ch=1.0; cd=3.5; cz=-0.5; }
+            else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; ch=0.8; cd=3.0; cz=-1.0; }
+            else if(type === 'jet') { bw=3; bh=3; bd=16; ch=1.5; cd=4; cz=3; } 
+
+            // Uçak/Jet Gövdesi
+            if (type === 'jet') {
+                let body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 16, 16), paint);
+                body.rotation.x = Math.PI/2; body.position.y = 3; body.castShadow = true; grp.add(body);
+                let wing = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 4), paint);
+                wing.position.set(0, 3, 0); wing.castShadow = true; grp.add(wing);
+                let tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 3), paint);
+                tail.position.set(0, 5, -6); tail.castShadow = true; grp.add(tail);
+                return grp;
+            }
+
+            let base = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), paint);
+            base.position.y = bh/2 + (wr - 0.4); base.castShadow = true; grp.add(base);
+
+            let cabin = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, cd), glassMat);
+            cabin.position.set(0, bh + (wr-0.4) + ch/2, cz); cabin.castShadow = true; grp.add(cabin);
+
+            // Kamyonet Kasası
+            if(type === 'pickup') {
+                let bedL = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedL.position.set(bw/2 - 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedL);
+                let bedR = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedR.position.set(-bw/2 + 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedR);
+                let bedB = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 0.2), paint); bedB.position.set(0, bh/2 + (wr-0.4) + bh/2, -bd/2 + 0.1); grp.add(bedB);
+            }
+
+            // Spor Araba Rüzgarlığı (Spoiler)
+            if(type === 'sport' || type === 'super') {
+                let spoiler = new THREE.Mesh(new THREE.BoxGeometry(bw-0.2, 0.2, 1), blackMat); spoiler.position.set(0, bh + (wr-0.4) + 0.8, -bd/2 + 1); grp.add(spoiler);
+                let spL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spL.position.set(bw/2 - 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spL);
+                let spR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spR.position.set(-bw/2 + 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spR);
+            }
 
             // Tekerlekler
-            const wheelGeo = new THREE.CylinderGeometry(0.8, 0.8, 1, 16);
-            wheelGeo.rotateZ(Math.PI / 2);
-            [[-2.2, 1, 3], [2.2, 1, 3], [-2.2, 1, -3], [2.2, 1, -3]].forEach(pos => {
-                let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); carGrp.add(w);
-            });
-
+            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 1, 16); wheelGeo.rotateZ(Math.PI/2);
+            let wx = bw/2 + 0.2; let wz = bd/2 - 2;
+            [[-wx, wy, wz], [wx, wy, wz], [-wx, wy, -wz], [wx, wy, -wz]].forEach(pos => { let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); w.castShadow = true; grp.add(w); });
+            
             // Farlar
-            let hl1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl1.position.set(-1.2, 1.4, 5.01); carGrp.add(hl1);
-            let hl2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl2.position.set(1.2, 1.4, 5.01); carGrp.add(hl2);
-            let tl1 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl1.position.set(-1.2, 1.4, -5.01); carGrp.add(tl1);
-            let tl2 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl2.position.set(1.2, 1.4, -5.01); carGrp.add(tl2);
+            let lightMat = new THREE.MeshBasicMaterial({color:'#ffffff'}); let redMat = new THREE.MeshBasicMaterial({color:'#ff0000'});
+            let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl1);
+            let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl2);
+            let tl1=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl1);
+            let tl2=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl2);
 
-            return carGrp;
+            return grp;
         }
 
-        function createMotorcycle(colorHex) {
-            const bikeGrp = new THREE.Group();
+        // TİPE GÖRE ŞEKİL ALAN PARAMETRİK MOTOR FABRİKASI
+        function createParametricBike(colorHex, type) {
+            const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
             const chrome = new THREE.MeshStandardMaterial({ color: '#cccccc', metalness: 0.9, roughness: 0.1 });
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
             const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
 
-            const wheelGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
-            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, 1.2, 3); bikeGrp.add(wFront);
-            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, 1.2, -2.5); bikeGrp.add(wBack);
+            let wr = 1.2, frontZ = 3, backZ = -2.5, forkAngle = -Math.PI/8;
+            if(type === 'scooter' || type === 'bicycle') { wr=0.6; frontZ=2; backZ=-2; forkAngle=0; }
+            if(type === 'sportbike') { wr=1.0; frontZ=2.5; backZ=-2.5; forkAngle=-Math.PI/12; }
 
-            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, 1.8, 0); bikeGrp.add(engine);
-            let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); 
-            tank.scale.set(1, 0.8, 1.8); tank.position.set(0, 2.8, 0.5); bikeGrp.add(tank);
+            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
+            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, wr, frontZ); wFront.castShadow = true; grp.add(wFront);
+            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, wr, backZ); wBack.castShadow = true; grp.add(wBack);
 
-            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, 2.5, -1.2); bikeGrp.add(seat);
-            let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, 2.5, 2.8); fork1.rotation.x = -Math.PI/8; bikeGrp.add(fork1);
-            let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, 2.5, 2.8); fork2.rotation.x = -Math.PI/8; bikeGrp.add(fork2);
-            let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, 3.8, 2.2); bikeGrp.add(handle);
-            let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, 3, 3.2); bikeGrp.add(light);
-            let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, 1.2, -1); bikeGrp.add(exhaust);
+            if(type !== 'bicycle' && type !== 'scooter') {
+                let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, wr+0.6, 0); grp.add(engine);
+                let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); tank.scale.set(1, 0.8, 1.8); tank.position.set(0, wr+1.6, 0.5); grp.add(tank);
+                let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, wr, -1); grp.add(exhaust);
+            } else if (type === 'scooter') {
+                let board = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 4), blackMat); board.position.set(0, wr, 0); grp.add(board);
+                let stem = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4), chrome); stem.position.set(0, wr+2, frontZ); grp.add(stem);
+            }
 
-            return bikeGrp;
+            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, wr+1.3, -1.2); grp.add(seat);
+            
+            if (type !== 'scooter') {
+                let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, wr+1.3, frontZ-0.2); fork1.rotation.x = forkAngle; grp.add(fork1);
+                let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, wr+1.3, frontZ-0.2); fork2.rotation.x = forkAngle; grp.add(fork2);
+            }
+            
+            let handleHeight = type === 'scooter' ? wr+4 : wr+2.6;
+            let handleZ = type === 'scooter' ? frontZ : frontZ-0.6;
+            let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, handleHeight, handleZ); grp.add(handle);
+            let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, handleHeight-0.5, handleZ+0.5); grp.add(light);
+
+            return grp;
         }
 
         let profScene, profCamera, profRenderer, profilePlayerObj; let isProfileRotating = true;
@@ -849,6 +870,17 @@
             worldVehiclesGroup = new THREE.Group();
             scene.add(worldVehiclesGroup);
 
+            // AĞAÇLAR (Düzeltilmiş Doğma Alanı)
+            for(let i=0; i<200; i++) {
+                let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
+                if(Math.sqrt(tx*tx + tz*tz) > 30 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
+                    let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
+                    trunk.position.y = 1.5; treeGrp.add(trunk);
+                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; treeGrp.add(l); }
+                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
+                }
+            }
+
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
@@ -880,7 +912,8 @@
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== container) return; 
                 let mx = e.movementX || 0; let my = e.movementY || 0;
-                camYaw -= mx * 0.002; camPitch -= my * 0.002; 
+                camYaw -= mx * 0.002; 
+                camPitch += my * 0.002; // FARE TERSLİĞİ DÜZELTİLDİ (Eksi (-) yerine Artı (+))
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
@@ -888,31 +921,26 @@
                 if(document.pointerLockElement !== container) { try { container.requestPointerLock(); } catch(err) {} }
             });
 
-            updateWorldVehicles(); // Satın alınan araçları yükle
+            updateWorldVehicles(); 
             animateWorld();
         }
 
-        // SADECE SATIN ALINAN ARAÇLARI AÇIK DÜNYAYA ÇİZEN FONKSİYON
+        // TİPLERE GÖRE ARAÇ ÇİZİMİ
         function updateWorldVehicles() {
             if(!worldVehiclesGroup) return;
-            
-            // Eski araçları temizle
-            while(worldVehiclesGroup.children.length > 0) {
-                worldVehiclesGroup.remove(worldVehiclesGroup.children[0]);
-            }
+            while(worldVehiclesGroup.children.length > 0) worldVehiclesGroup.remove(worldVehiclesGroup.children[0]);
 
             if(player.assets && player.assets.vehicles) {
                 player.assets.vehicles.forEach((id, index) => {
                     let vData = vehicles.find(v => v.id === id);
                     if(vData) {
                         let vMesh;
-                        if(vData.category.includes('Motor') || vData.category.includes('Scooter') || vData.category.includes('Bisiklet')) {
-                            vMesh = createMotorcycle(vData.color);
+                        let type = vData.modelType;
+                        if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') {
+                            vMesh = createParametricBike(vData.color, type);
                         } else {
-                            vMesh = createLowPolyCar(vData.color, vData.category === 'Ticari');
+                            vMesh = createParametricCar(vData.color, type);
                         }
-                        
-                        // Araçları oyuncunun doğduğu yerin yanındaki otopark alanına dizer
                         let px = -25 - (index % 5) * 15;
                         let pz = -25 - Math.floor(index / 5) * 25;
                         vMesh.position.set(px, 0, pz);
@@ -928,10 +956,11 @@
             fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
+            lastTime = performance.now();
         }
         
         function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
-        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); }
+        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); lastTime = performance.now(); }
 
         function animateWorld() {
             requestAnimationFrame(animateWorld);
