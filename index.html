@@ -7,6 +7,14 @@
     
     <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <!-- Sunucu offline olsa bile oyunun çökmemesi için script yüklemesini güvenceye alıyoruz -->
+    <script>
+        window.addEventListener('error', function(e) {
+            if(e.target.src && e.target.src.includes('socket.io')) {
+                console.warn("Socket.io yüklenemedi. Offline mod.");
+            }
+        }, true);
+    </script>
     <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
@@ -389,15 +397,14 @@
         let socket;
         let otherPlayers = {}; 
 
+        // GÜVENLİ VARSAYILAN OYUNCU OBJESİ
+        const defaultProfile = { name: "", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
+        
         let player = {
             username: "", cash: 0, debt: 0, 
             inventory: { stocks: {}, metals: {} },
             assets: { jobs: [], realEstate: [], vehicles: [] },
-            profile: { 
-                name: "", city: "", height: "175", weight: "70", 
-                skin: "#ffdbac", hair: "#4a3000", eye: "#000000",
-                jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic"
-            }
+            profile: { ...defaultProfile }
         };
 
         const generateMarket = (names, basePrice) => names.map(name => ({ name, price: basePrice + Math.random() * basePrice, history: [] }));
@@ -488,13 +495,26 @@
             { speaker: "Sen (İç Ses)", title: "Geleceğin İmparatoru", type: "internal", text: "Bekleyin ve görün... Bu küçücük tazminatı sermaye yapıp kendi finans imparatorluğumu kuracağım. And olsun ki bir gün bu şirketi ve sizi tek kalemde satın alacağım!", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 36 L 56 44", playerBrowR: "M 76 36 L 64 44", playerMouth: "M 52 66 L 68 66" } }
         ];
 
+        // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ GİRİŞ SİSTEMİ
         function login() {
             const user = document.getElementById('username').value;
             if(!user) return alert("Kullanıcı adı giriniz!");
             
             let saved = localStorage.getItem('apex_save_' + user);
             if(saved) {
-                player = JSON.parse(saved);
+                try {
+                    let parsed = JSON.parse(saved);
+                    player.username = user;
+                    player.cash = parsed.cash || 0;
+                    player.debt = parsed.debt || 0;
+                    player.inventory = { ...player.inventory, ...(parsed.inventory || {}) };
+                    player.assets = { ...player.assets, ...(parsed.assets || {}) };
+                    player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
+                } catch(e) {
+                    console.error("Kayıt dosyası okunurken hata oluştu, varsayılan profil yükleniyor.", e);
+                    player.username = user;
+                }
+                
                 document.getElementById('auth-screen').style.display = 'none';
                 startGameUI();
                 connectMultiplayer(); 
@@ -590,9 +610,13 @@
 
         // --- MULTIPLAYER (DEDEKTÖRLÜ YENİ SİSTEM) ---
         function connectMultiplayer() {
+            if (typeof io === 'undefined') {
+                logActivity(`<strong style="color:var(--accent-red)"><i class="fa-solid fa-circle-exclamation"></i> [HATA] Sunucuyla bağlantı kurulamadı. (Offline Mod)</strong>`);
+                return;
+            }
+            
             socket = io();
 
-            // BAĞLANTI DEDEKTÖRÜ - Başarıyla bağlanırsa log düşer
             socket.on('connect', () => {
                 logActivity(`<strong style="color:var(--accent-green)"><i class="fa-solid fa-wifi"></i> [ONLINE] Sunucuya başarıyla bağlanıldı!</strong>`);
             });
@@ -605,7 +629,6 @@
 
             socket.on('newPlayer', (playerInfo) => {
                 addOtherPlayer(playerInfo);
-                // BİRİ GİRİNCE BİLDİRİM VERİR
                 logActivity(`<strong style="color:var(--accent-blue)"><i class="fa-solid fa-user-plus"></i> [SİSTEM]</strong> Yeni bir oyuncu kasabaya bağlandı.`);
             });
 
@@ -632,7 +655,6 @@
 
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
-                    // BİRİ ÇIKINCA BİLDİRİM VERİR
                     logActivity(`<strong style="color:var(--accent-red)"><i class="fa-solid fa-user-minus"></i> [SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} kasabadan ayrıldı.`);
                     scene.remove(otherPlayers[id].group);
                     otherPlayers[id].tag.remove();
@@ -641,13 +663,14 @@
             });
         }
 
+        // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ DİĞER OYUNCU BOYUTLANDIRMASI
         function addOtherPlayer(info) {
             let prof = info.profile || player.profile;
             let mats = createPlayerMaterials(prof);
             let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
             
-            let h = parseInt(prof.height || 175);
-            let w = parseInt(prof.weight || 70);
+            let h = parseInt(prof.height) || 175;
+            let w = parseInt(prof.weight) || 70;
             obj.model.scale.set(w/70, h/175, w/70);
 
             obj.root.position.set(info.x, info.y, info.z);
@@ -972,6 +995,7 @@
             btn.style.background = isProfileRotating ? "rgba(15, 23, 42, 0.8)" : "var(--accent-blue)";
         }
 
+        // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ KENDİ OYUNCU BOYUTLANDIRMASI
         function loadProfileUI() {
             ['height','weight','hairstyle','skin','hair','jacket','shirt','tie'].forEach(k => {
                 if(document.getElementById('prof-'+k)) document.getElementById('prof-'+k).value = player.profile[k];
@@ -994,7 +1018,8 @@
                 profScene.remove(profilePlayerObj.root);
                 profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
                 profilePlayerObj.root.position.y = -0.5;
-                let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+                let sc = (parseInt(player.profile.weight) || 70)/70;
+                let sh = (parseInt(player.profile.height) || 175)/175;
                 profilePlayerObj.model.scale.set(sc, sh, sc);
                 profScene.add(profilePlayerObj.root);
             }
@@ -1005,7 +1030,8 @@
                 worldPlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
                 worldPlayerObj.root.position.copy(oldPos);
                 worldPlayerObj.root.rotation.y = oldRot;
-                let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+                let sc = (parseInt(player.profile.weight) || 70)/70;
+                let sh = (parseInt(player.profile.height) || 175)/175;
                 worldPlayerObj.model.scale.set(sc, sh, sc);
                 scene.add(worldPlayerObj.root);
             }
@@ -1116,7 +1142,8 @@
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
-            let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+            let sc = (parseInt(player.profile.weight) || 70)/70;
+            let sh = (parseInt(player.profile.height) || 175)/175;
             worldPlayerObj.model.scale.set(sc, sh, sc);
             scene.add(worldPlayerObj.root);
 
@@ -1146,12 +1173,25 @@
         }
 
         function enterWorld() {
-            isInWorld = true; document.getElementById('fullscreen-world').style.display = 'block';
+            let fw = document.getElementById('fullscreen-world');
+            if(!fw.requestPointerLock) {
+                alert("HATA: Cihazınız bu 3D modu desteklemiyor. Lütfen klavyesi olan bir bilgisayardan (PC/Mac) giriş yapınız.");
+                return;
+            }
+            
+            isInWorld = true; 
+            fw.style.display = 'block';
             document.getElementById('esc-menu').style.display = 'none';
-            if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
-            document.getElementById('fullscreen-world').requestPointerLock();
+            if(camera && renderer) { 
+                camera.aspect = window.innerWidth / window.innerHeight; 
+                camera.updateProjectionMatrix(); 
+                renderer.setSize(window.innerWidth, window.innerHeight); 
+            }
+            
+            try { fw.requestPointerLock(); } catch(e) { console.error(e); }
             emitMovement(false);
         }
+        
         function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
         function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); }
 
@@ -1200,7 +1240,7 @@
                 worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
             }
 
-            const scY = worldPlayerObj.model.scale.y;
+            const scY = worldPlayerObj.model.scale.y || 1;
             camera.position.x = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
             camera.position.y = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
             camera.position.z = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
