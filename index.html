@@ -5,12 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Simulator - Online</title>
     
-    <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- YENİ: GERÇEKÇİ 3D MODELLERİ YÜKLEMEK İÇİN GLTF LOADER EKLENDİ -->
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    
     <script>
         window.addEventListener('error', function(e) {
             if(e.target.src && e.target.src.includes('socket.io')) console.warn("Socket.io yüklenemedi. Offline mod.");
@@ -191,7 +186,7 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Kariyer (Meslek):</strong> Sadece bulunduğun en yüksek seviyeli aktif mesleğin maaşını alırsın. Eski mesleklerin parası gelmez!<br><strong>2. Gayrimenkul & Araçlar:</strong> Satın aldığın tüm evler ve taşıtlar üst üste birikerek pasif kira getirir.<br><strong>3. Gerçek Zamanlı Ekonomi:</strong> Saniye başı elde ettiğin net kazancı (Net TL/sn) ekranın sağ üst köşesinden canlı olarak takip edebilirsin.<br><strong>4. Yapay Zeka Ar-Ge Merkezi:</strong> Taşıt sekmesinin en üstünde yer alan YZ teknolojilerine yatırım yaparak taşıt gelirlerini katlayabilir, vergilerini silebilirsin.</p></div></div>
+                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Taşıtlar sekmesinden satın aldığın araçlar anında açık dünyadaki otoparkında belirecek.</p></div></div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
@@ -248,7 +243,7 @@
                         <div class="grid-container" id="ai-tech-list"></div>
                     </div>
                     
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Pasif Kira Geliri)</h3>
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Satın Aldıkların Açık Dünyaya Eklenir)</h3>
                     <div class="grid-container" id="vehicles-list"></div>
                 </div>
 
@@ -276,6 +271,7 @@
         let socket;
         let otherPlayers = {}; 
         let colliders = [];
+        let worldVehiclesGroup; // Açık dünyadaki kendi araçlarımızın ekleneceği grup
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
@@ -314,26 +310,26 @@
         ];
 
         const vehicles = [
-            { id: 1, name: "Şehir Bisikleti (21 Vites)", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet' },
-            { id: 2, name: "Elektrikli Scooter (250W)", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter' },
-            { id: 3, name: "50cc Başlangıç Motoru", cost: 15000, income: 25, tax: 4, color: '#ef4444', category: 'Motor' },
-            { id: 4, name: "125cc Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#f8fafc', category: 'Motor' },
-            { id: 5, name: "250cc Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#3b82f6', category: 'Motor' },
-            { id: 6, name: "Off-Road 4x4 Arazi ATV'si", cost: 90000, income: 150, tax: 20, color: '#f59e0b', category: 'ATV' },
-            { id: 7, name: "600cc Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor' },
-            { id: 8, name: "2008 Model İkinci El Hatchback", cost: 280000, income: 400, tax: 60, color: '#94a3b8', category: 'Otomobil' },
-            { id: 9, name: "2015 Aile Tipi Sedan", cost: 450000, income: 650, tax: 90, color: '#111111', category: 'Otomobil' },
-            { id: 10, name: "Yeni Nesil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil' },
-            { id: 11, name: "Ticari Panelvan (Kargo Dağıtım)", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari' },
-            { id: 12, name: "Çift Kabin 4x4 Pikap", cost: 1500000, income: 1900, tax: 250, color: '#ef4444', category: 'Ticari' },
-            { id: 13, name: "VIP Turizm Minibüsü", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari' },
-            { id: 14, name: "Geniş Hacimli Tam Donanımlı Karavan", cost: 3500000, income: 4200, tax: 550, color: '#f8fafc', category: 'Özel' },
-            { id: 15, name: "Klasik Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks' },
-            { id: 16, name: "Premium V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks' },
-            { id: 17, name: "Tam Elektrikli Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor' },
-            { id: 18, name: "Zırhlı V8 Lüks Makam SUV'si", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks' },
-            { id: 19, name: "Sınırlı Üretim V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor' },
-            { id: 20, name: "Özel Tasarım Çift Motorlu İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık' }
+            { id: 1, name: "Şehir Bisikleti", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet' },
+            { id: 2, name: "Elektrikli Scooter", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter' },
+            { id: 3, name: "Sarı Klasik Cruiser Motor", cost: 15000, income: 25, tax: 4, color: '#f59e0b', category: 'Motor' },
+            { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, income: 55, tax: 8, color: '#3b82f6', category: 'Motor' },
+            { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Motor' },
+            { id: 6, name: "Yeşil Off-Road 4x4 Arazi Aracı", cost: 90000, income: 150, tax: 20, color: '#84cc16', category: 'Ticari' },
+            { id: 7, name: "Siyah Klasik Chopper", cost: 150000, income: 240, tax: 35, color: '#111111', category: 'Motor' },
+            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, income: 400, tax: 60, color: '#e879f9', category: 'Otomobil' },
+            { id: 9, name: "Mavi Aile Tipi Hatchback", cost: 450000, income: 650, tax: 90, color: '#3b82f6', category: 'Otomobil' },
+            { id: 10, name: "Yeşil Kompakt Hibrit", cost: 700000, income: 950, tax: 130, color: '#10b981', category: 'Otomobil' },
+            { id: 11, name: "Beyaz Ticari Panelvan", cost: 1000000, income: 1300, tax: 180, color: '#ffffff', category: 'Ticari' },
+            { id: 12, name: "Turuncu Çift Kabin Pikap", cost: 1500000, income: 1900, tax: 250, color: '#f97316', category: 'Ticari' },
+            { id: 13, name: "Siyah VIP Minibüs", cost: 2200000, income: 2700, tax: 350, color: '#111111', category: 'Ticari' },
+            { id: 14, name: "Gri Geniş Karavan", cost: 3500000, income: 4200, tax: 550, color: '#94a3b8', category: 'Özel' },
+            { id: 15, name: "Kırmızı Üstü Açık Cabriolet", cost: 5500000, income: 6500, tax: 800, color: '#ef4444', category: 'Lüks' },
+            { id: 16, name: "Siyah V6 Yönetici Sedanı", cost: 8500000, income: 9500, tax: 1200, color: '#111111', category: 'Lüks' },
+            { id: 17, name: "Mavi Çift Motorlu Spor Araba", cost: 14000000, income: 15000, tax: 1900, color: '#3b82f6', category: 'Spor' },
+            { id: 18, name: "Zırhlı Siyah Lüks SUV", cost: 25000000, income: 26000, tax: 3500, color: '#111111', category: 'Lüks' },
+            { id: 19, name: "Sarı V12 Süper Otomobil", cost: 60000000, income: 55000, tax: 7500, color: '#f59e0b', category: 'Süper Spor' },
+            { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık' }
         ];
 
         const aiTechnologies = [
@@ -610,6 +606,12 @@
             if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
             if(player.cash >= item.cost) { 
                 player.cash -= item.cost; player.assets[category].push(id); 
+                
+                // ARAÇ SATIN ALINDIĞINDA DÜNYAYI ANINDA GÜNCELLE
+                if(category === 'vehicles' && typeof updateWorldVehicles === 'function') {
+                    updateWorldVehicles();
+                }
+
                 renderAssets(); updateUI(); 
             } else alert("Nakit paranız yetersiz!");
         }
@@ -672,19 +674,90 @@
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
+        // FOTOĞRAFTAKİ ARABA VE MOTORLARI OLUŞTURAN YENİ ÇİZİM KODLARI (LOW POLY & CRUISER)
+        function createLowPolyCar(colorHex, isPickup) {
+            const carGrp = new THREE.Group();
+            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.3, roughness: 0.4 });
+            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
+            const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
+            const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+            const redLightMat = new THREE.MeshBasicMaterial({ color: '#ff0000' });
+
+            // Alt Kasa
+            let base = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.2, 10), paint);
+            base.position.y = 1.2; base.castShadow = true; carGrp.add(base);
+
+            // Üst Kabin
+            let cabinZ = isPickup ? -1.5 : -0.5;
+            let cabinLen = isPickup ? 3.5 : 4.5;
+            let cabin = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, cabinLen), glassMat);
+            cabin.position.set(0, 2.3, cabinZ); cabin.castShadow = true; carGrp.add(cabin);
+            
+            let roof = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.2, cabinLen + 0.1), paint);
+            roof.position.set(0, 3.0, cabinZ); roof.castShadow = true; carGrp.add(roof);
+
+            // Tekerlekler
+            const wheelGeo = new THREE.CylinderGeometry(0.8, 0.8, 1, 16);
+            wheelGeo.rotateZ(Math.PI / 2);
+            [[-2.2, 1, 3], [2.2, 1, 3], [-2.2, 1, -3], [2.2, 1, -3]].forEach(pos => {
+                let w = new THREE.Mesh(wheelGeo, blackMat);
+                w.position.set(...pos); w.castShadow = true; carGrp.add(w);
+            });
+
+            // Farlar
+            let hl1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl1.position.set(-1.2, 1.4, 5.01); carGrp.add(hl1);
+            let hl2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl2.position.set(1.2, 1.4, 5.01); carGrp.add(hl2);
+            
+            // Stop Lambaları
+            let tl1 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl1.position.set(-1.2, 1.4, -5.01); carGrp.add(tl1);
+            let tl2 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl2.position.set(1.2, 1.4, -5.01); carGrp.add(tl2);
+
+            return carGrp;
+        }
+
+        function createMotorcycle(colorHex) {
+            const bikeGrp = new THREE.Group();
+            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
+            const chrome = new THREE.MeshStandardMaterial({ color: '#cccccc', metalness: 0.9, roughness: 0.1 });
+            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
+            const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+
+            // Tekerlekler
+            const wheelGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
+            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, 1.2, 3); wFront.castShadow = true; bikeGrp.add(wFront);
+            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, 1.2, -2.5); wBack.castShadow = true; bikeGrp.add(wBack);
+
+            // Motor Bloğu (Gri)
+            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, 1.8, 0); engine.castShadow = true; bikeGrp.add(engine);
+
+            // Benzin Deposu (Sarı/Renkli Kızım)
+            let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); 
+            tank.scale.set(1, 0.8, 1.8); tank.position.set(0, 2.8, 0.5); tank.castShadow = true; bikeGrp.add(tank);
+
+            // Koltuk (Siyah)
+            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, 2.5, -1.2); seat.castShadow = true; bikeGrp.add(seat);
+
+            // Çatallar & Gidon
+            let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, 2.5, 2.8); fork1.rotation.x = -Math.PI/8; bikeGrp.add(fork1);
+            let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, 2.5, 2.8); fork2.rotation.x = -Math.PI/8; bikeGrp.add(fork2);
+            let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, 3.8, 2.2); bikeGrp.add(handle);
+
+            // Far
+            let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, 3, 3.2); bikeGrp.add(light);
+            
+            // Egzoz
+            let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, 1.2, -1); bikeGrp.add(exhaust);
+
+            return bikeGrp;
+        }
+
         let profScene, profCamera, profRenderer, profilePlayerObj; let isProfileRotating = true;
 
         function initProfile3D() {
             const container = document.getElementById('profile-3d-canvas'); profScene = new THREE.Scene();
             profCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100); profCamera.position.set(0, 2.5, 8); profCamera.lookAt(0, 2.2, 0);
-            profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); profRenderer.setSize(container.clientWidth, container.clientHeight);
-            
-            // GÖLGE VE IŞIK EKLENDİ
-            profRenderer.shadowMap.enabled = true; profRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            container.appendChild(profRenderer.domElement);
-            profScene.add(new THREE.AmbientLight(0xffffff, 0.7)); 
-            let dl = new THREE.DirectionalLight('#ffdfa0', 1.2); dl.position.set(5, 10, 5); dl.castShadow = true; profScene.add(dl);
-            
+            profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); profRenderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(profRenderer.domElement);
+            profScene.add(new THREE.AmbientLight(0xffffff, 0.7)); let dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(5, 10, 5); profScene.add(dl);
             profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); profilePlayerObj.root.position.y = -0.5; profScene.add(profilePlayerObj.root);
         }
 
@@ -723,54 +796,22 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
-        // --- TAM EKRAN 3D AÇIK DÜNYA VE GLTF ALTYAPISI ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
         let isInWorld = false; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
-        // HARİCİ 3D DOSYALARI YÜKLEMEK İÇİN GÜVENLİ FONKSİYON (Gelecek Güncellemeler İçin Hazır)
-        function loadRealisticAsset(path, group, fallbackMesh, scale = 1, yOffset = 0) {
-            if(typeof THREE.GLTFLoader === 'undefined') {
-                group.add(fallbackMesh); return;
-            }
-            const loader = new THREE.GLTFLoader();
-            loader.load(path, function(gltf) {
-                let model = gltf.scene;
-                model.scale.set(scale, scale, scale);
-                model.position.y = yOffset;
-                model.traverse(function(node) { if(node.isMesh) { node.castShadow = true; node.receiveShadow = true; }});
-                group.add(model);
-            }, undefined, function(error) {
-                // Eğer GLTF dosyası bulunamazsa oyun çökmez, yedek kutu objesi (fallback) yüklenir.
-                group.add(fallbackMesh);
-            });
-        }
-
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); 
-            // GÜN BATIMI (Golden Hour) EFEKTİ EKLENDİ
-            scene.background = new THREE.Color('#ffbe76'); 
-            scene.fog = new THREE.FogExp2('#ffbe76', 0.002, 300);
-
+            scene = new THREE.Scene(); scene.background = new THREE.Color('#ffbe76'); scene.fog = new THREE.FogExp2('#ffbe76', 0.002, 300);
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); 
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            
-            // GÖLGE MOTORU AKTİF EDİLDİ
-            renderer.shadowMap.enabled = true;
-            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
             container.insertBefore(renderer.domElement, container.firstChild);
 
             scene.add(new THREE.AmbientLight(0xffdfa0, 0.4));
-            
-            // SİNEMATİK IŞIK EKLENDİ
-            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); 
-            sl.position.set(150, 200, -150); 
-            sl.castShadow = true;
+            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); sl.castShadow = true;
             sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
             scene.add(sl);
             
@@ -804,41 +845,16 @@
                 bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true;
                 let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
                 roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; roof.castShadow = true; 
-                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
-                dr.position.set(0, 0, 7.5); 
-                
-                let fallbackHouse = new THREE.Group();
-                fallbackHouse.add(bBody); fallbackHouse.add(roof); fallbackHouse.add(dr);
-                
-                // NOT: Gelecekte bir 'modern_house.glb' indirirsen, 'models/house.glb' kısmını o dosyanın yoluyla değiştirmen yeterli.
-                loadRealisticAsset('models/house.glb', bGroup, fallbackHouse, 1, 0);
-
+                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); dr.position.set(0, 0, 7.5); 
+                bGroup.add(bBody); bGroup.add(roof); bGroup.add(dr);
                 bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
                 colliders.push(new THREE.Box3().setFromObject(bBody));
             }
 
-            for(let i = 0; i < vehicles.length; i++) {
-                let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50; let carGrp = new THREE.Group();
-                
-                // HİPER-GERÇEKÇİ MATERYAL (Parlak araba boyası)
-                let carPaint = new THREE.MeshStandardMaterial({ color: vehicles[i].color, metalness: 0.8, roughness: 0.15 });
-                
-                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), carPaint); b.position.set(0, 0.8, 0); b.castShadow = true;
-                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); ps.position.set(0, 0.08, 0); ps.receiveShadow = true;
-                
-                let fallbackCar = new THREE.Group();
-                fallbackCar.add(b); fallbackCar.add(ps);
-
-                // NOT: Gelecekte bir araba modeli indirirsen burayı değiştir (Örn: 'models/taycan.glb')
-                loadRealisticAsset('models/car.glb', carGrp, fallbackCar, 1, 0);
-
-                carGrp.position.set(vx, 0, vz); carGrp.updateMatrixWorld(true); scene.add(carGrp);
-                let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
-            }
-
             for(let i=0; i<200; i++) {
                 let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
-                if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
+                // Ağaçların oyuncunun doğduğu yerin (0,0) çok yakınına çıkmasını tamamen engelledim
+                if(Math.abs(tx) > 25 && Math.abs(tz) > 25 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
                     let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
                     trunk.position.y = 1.5; trunk.castShadow = true; treeGrp.add(trunk);
                     for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; l.castShadow = true; treeGrp.add(l); }
@@ -846,11 +862,17 @@
                 }
             }
 
+            // OYUNCUNUN SATIN ALDIĞI ARAÇLARI BARINDIRACAK GRUP
+            worldVehiclesGroup = new THREE.Group();
+            scene.add(worldVehiclesGroup);
+
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
             worldPlayerObj.model.scale.set(sc, sh, sc); 
             worldPlayerObj.root.traverse((node) => { if(node.isMesh) { node.castShadow = true; node.receiveShadow = true; }});
+            // OYUNCUYU YUKARIDAN BAŞLAT Kİ YERE GÖMÜLMESİN (HAREKET KİLİT ÇÖZÜMÜ)
+            worldPlayerObj.root.position.set(0, 2, 0); 
             scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
@@ -863,10 +885,21 @@
                 if(e.key.toLowerCase() === ' ') keys.space = false; if(e.key === 'Shift') keys.shift = false;
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
             });
+            
+            // HAREKET KİLİTLENMESİNE KARŞI SERBEST KAMERA İZNİ
             document.addEventListener('pointerlockchange', () => {
-                if(document.pointerLockElement === container) document.getElementById('esc-menu').style.display = 'none';
-                else if(isInWorld) { document.getElementById('esc-menu').style.display = 'flex'; for(let k in keys) keys[k] = false; emitMovement(false); }
+                if(document.pointerLockElement === container) {
+                    document.getElementById('esc-menu').style.display = 'none';
+                    isInWorld = true; 
+                    lastTime = performance.now();
+                } else {
+                    document.getElementById('esc-menu').style.display = 'flex'; 
+                    isInWorld = false;
+                    for(let k in keys) keys[k] = false; 
+                    emitMovement(false); 
+                }
             });
+
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== container) return; 
                 let mx = e.movementX || 0; let my = e.movementY || 0;
@@ -874,20 +907,57 @@
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
+            // GÜVENLİ TIKLAMA İLE OYUNA DÖNÜŞ EKLENDİ
+            container.addEventListener('click', () => {
+                if(document.pointerLockElement !== container) {
+                    try { container.requestPointerLock(); } catch(err) {}
+                }
+            });
+
+            updateWorldVehicles(); // Satın alınan araçları yükle
             animateWorld();
+        }
+
+        // SADECE SATIN ALINAN ARAÇLARI AÇIK DÜNYAYA ÇİZEN FONKSİYON
+        function updateWorldVehicles() {
+            if(!worldVehiclesGroup) return;
+            
+            // Eski araçları temizle
+            while(worldVehiclesGroup.children.length > 0) {
+                worldVehiclesGroup.remove(worldVehiclesGroup.children[0]);
+            }
+
+            if(player.assets && player.assets.vehicles) {
+                player.assets.vehicles.forEach((id, index) => {
+                    let vData = vehicles.find(v => v.id === id);
+                    if(vData) {
+                        let vMesh;
+                        if(vData.category.includes('Motor') || vData.category.includes('Scooter') || vData.category.includes('Bisiklet')) {
+                            vMesh = createMotorcycle(vData.color);
+                        } else {
+                            vMesh = createLowPolyCar(vData.color, vData.category === 'Ticari');
+                        }
+                        
+                        // Araçları oyuncunun doğduğu yerin yanındaki otopark alanına dizer
+                        let px = -25 - (index % 5) * 15;
+                        let pz = -25 - Math.floor(index / 5) * 25;
+                        vMesh.position.set(px, 0, pz);
+                        worldVehiclesGroup.add(vMesh);
+                    }
+                });
+            }
         }
 
         function enterWorld() {
             let fw = document.getElementById('fullscreen-world');
             if(!fw.requestPointerLock) { alert("HATA: Cihazınız bu 3D modu desteklemiyor."); return; }
-            isInWorld = true; fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
+            fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
-            lastTime = performance.now(); emitMovement(false);
         }
         
         function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
-        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); lastTime = performance.now(); }
+        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); }
 
         function animateWorld() {
             requestAnimationFrame(animateWorld);
@@ -903,7 +973,7 @@
 
             if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
             if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
-                worldPlayerObj.root.position.set(0, 0, 0); velocityY = 0;
+                worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
             }
 
             velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
@@ -920,7 +990,8 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
+                // GÜVENLİ ÇARPIŞMA (YERE GÖMÜLMEYİ ENGELLER)
+                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
                 let collision = false;
                 for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
                 
