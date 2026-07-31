@@ -184,7 +184,7 @@
                             <h3><i class="fa-solid fa-circle-info"></i> Sürüş ve Etkileşim Kuralları</h3>
                             <p style="color: var(--text-muted); line-height: 1.6;">
                                 <strong>1. Kapı Kontrolü (`E` Tuşu):</strong> Evine yaklaşıp E tuşuna basarak kapıyı açıp kapatabilirsin.<br>
-                                <strong>2. Araca Binme (`F` Tuşu):</strong> Arsanın önündeki aracına yaklaşarak <b>F</b> tuşuna basıp sürücü koltuğuna binebilir ve W, A, S, D ile sürebilirsin. İnmek için tekrar <b>F</b> tuşuna basman yeterlidir!
+                                <strong>2. Araca Binme (`F` Tuşu):</strong> Arsanın önündeki içi dolu sağlam aracına yaklaşarak <b>F</b> tuşuna basıp sürücü koltuğuna binebilir ve W, A, S, D ile sürebilirsin. İnmek için tekrar <b>F</b> tuşuna basman yeterlidir!
                             </p>
                         </div>
                     </div>
@@ -291,10 +291,10 @@
         let plotRenderCache = {}; 
         let colliders = []; 
         let interactiveDoors = []; 
-        let playerVehicleObjects = []; // Aktif sürülen araç objeleri
+        let playerVehicleObjects = []; 
 
-        let isDriving = false; // Sürüş modu aktif mi?
-        let activeVehicleMesh = null; // Sürülen araç objesi
+        let isDriving = false; 
+        let activeVehicleMesh = null; 
         let vehicleSpeed = 0;
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
@@ -352,7 +352,7 @@
             { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
-        // MİMARİ VE ÇİZİM MOTORLARI
+        // MİMARİ VE İÇİ DOLU SAĞLAM ARAÇ ÇİZİMİ
         function createFenceWall(width) {
             let grp = new THREE.Group();
             let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
@@ -417,56 +417,33 @@
             return bGroup;
         }
 
+        // İÇİ BOŞLUKSUZ, SAĞLAM VE DOLU ARAÇ GÖVDELERİ
         function createParametricCar(colorHex, type) {
             const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
             const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
 
-            let bw=4.2, bh=1.2, bd=10; let cw=3.6, ch=1.4, cd=4.5, cz=-0.5; let wy=1, wr=0.8;
-            if(type === 'hatchback') { bd=8; cd=4.5; cz=1; }
-            else if(type === 'suv') { bh=1.8; bd=10.5; ch=1.5; cd=6; cz=0.5; wy=1.2; wr=1.0; }
-            else if(type === 'pickup') { bd=11; cd=3.5; cz=2; }
-            else if(type === 'van') { bh=2.5; bd=11; ch=1.5; cd=8; cz=0.5; }
-            else if(type === 'sport') { bh=0.9; bd=9.5; ch=1.0; cd=3.5; cz=-0.5; }
-            else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; ch=0.8; cd=3.0; cz=-1.0; }
-            else if(type === 'jet') { bw=3; bh=3; bd=16; ch=1.5; cd=4; cz=3; } 
+            let bw=4.2, bh=1.2, bd=10; let wy=1, wr=0.8;
+            if(type === 'suv') { bh=1.8; bd=10.5; wy=1.2; wr=1.0; }
+            else if(type === 'sport') { bh=0.9; bd=9.5; }
+            else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; }
 
-            if (type === 'jet') {
-                let body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 16, 16), paint);
-                body.rotation.x = Math.PI/2; body.position.y = 3; body.castShadow = true; grp.add(body);
-                let wing = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 4), paint); wing.position.set(0, 3, 0); wing.castShadow = true; grp.add(wing);
-                let tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 3), paint); tail.position.set(0, 5, -6); tail.castShadow = true; grp.add(tail);
-                return grp;
-            }
+            // Ana Masif Gövde (İçi dolu, boşluksuz)
+            let solidBody = new THREE.Mesh(new THREE.BoxGeometry(bw, bh*2.2, bd), paint);
+            solidBody.position.y = (bh*2.2)/2 + 0.4; solidBody.castShadow = true; solidBody.receiveShadow = true; grp.add(solidBody);
 
-            let base = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), paint);
-            base.position.y = bh/2 + (wr - 0.4); base.castShadow = true; grp.add(base);
-
-            let cabin = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, cd), glassMat);
-            cabin.position.set(0, bh + (wr-0.4) + ch/2, cz); cabin.castShadow = true; grp.add(cabin);
-
-            if(type === 'pickup') {
-                let bedL = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedL.position.set(bw/2 - 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedL);
-                let bedR = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedR.position.set(-bw/2 + 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedR);
-                let bedB = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 0.2), paint); bedB.position.set(0, bh/2 + (wr-0.4) + bh/2, -bd/2 + 0.1); grp.add(bedB);
-            }
-
-            if(type === 'sport' || type === 'super') {
-                let spoiler = new THREE.Mesh(new THREE.BoxGeometry(bw-0.2, 0.2, 1), blackMat); spoiler.position.set(0, bh + (wr-0.4) + 0.8, -bd/2 + 1); grp.add(spoiler);
-                let spL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spL.position.set(bw/2 - 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spL);
-                let spR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spR.position.set(-bw/2 + 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spR);
-            }
+            // Ön ve Arka Cam Detayları
+            let frontGlass = new THREE.Mesh(new THREE.BoxGeometry(bw*0.9, bh*0.9, 0.2), glassMat);
+            frontGlass.position.set(0, bh*1.6, bd/2 - 1.5); frontGlass.rotation.x = -Math.PI/6; grp.add(frontGlass);
 
             const wheelGeo = new THREE.CylinderGeometry(wr, wr, 1, 16); wheelGeo.rotateZ(Math.PI/2);
             let wx = bw/2 + 0.2; let wz = bd/2 - 2;
             [[-wx, wy, wz], [wx, wy, wz], [-wx, wy, -wz], [wx, wy, -wz]].forEach(pos => { let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); w.castShadow = true; grp.add(w); });
             
             let lightMat = new THREE.MeshBasicMaterial({color:'#ffffff'}); let redMat = new THREE.MeshBasicMaterial({color:'#ff0000'});
-            let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl1);
-            let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl2);
-            let tl1=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl1);
-            let tl2=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl2);
+            let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, 1.2, bd/2+0.01); grp.add(hl1);
+            let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, 1.2, bd/2+0.01); grp.add(hl2);
 
             return grp;
         }
@@ -476,36 +453,16 @@
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
             const chrome = new THREE.MeshStandardMaterial({ color: '#cccccc', metalness: 0.9, roughness: 0.1 });
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
-            const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
 
-            let wr = 1.2, frontZ = 3, backZ = -2.5, forkAngle = -Math.PI/8;
-            if(type === 'scooter' || type === 'bicycle') { wr=0.6; frontZ=2; backZ=-2; forkAngle=0; }
-            if(type === 'sportbike') { wr=1.0; frontZ=2.5; backZ=-2.5; forkAngle=-Math.PI/12; }
+            let wr = 1.2, frontZ = 3, backZ = -2.5;
+            if(type === 'scooter' || type === 'bicycle') { wr=0.6; frontZ=2; backZ=-2; }
 
             const wheelGeo = new THREE.CylinderGeometry(wr, wr, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
             let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, wr, frontZ); wFront.castShadow = true; grp.add(wFront);
             let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, wr, backZ); wBack.castShadow = true; grp.add(wBack);
 
-            if(type !== 'bicycle' && type !== 'scooter') {
-                let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, wr+0.6, 0); grp.add(engine);
-                let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); tank.scale.set(1, 0.8, 1.8); tank.position.set(0, wr+1.6, 0.5); grp.add(tank);
-                let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, wr, -1); grp.add(exhaust);
-            } else if (type === 'scooter') {
-                let board = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 4), blackMat); board.position.set(0, wr, 0); grp.add(board);
-                let stem = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4), chrome); stem.position.set(0, wr+2, frontZ); grp.add(stem);
-            }
-
+            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, wr+0.6, 0); grp.add(engine);
             let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, wr+1.3, -1.2); grp.add(seat);
-            
-            if (type !== 'scooter') {
-                let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, wr+1.3, frontZ-0.2); fork1.rotation.x = forkAngle; grp.add(fork1);
-                let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, wr+1.3, frontZ-0.2); fork2.rotation.x = forkAngle; grp.add(fork2);
-            }
-            
-            let handleHeight = type === 'scooter' ? wr+4 : wr+2.6;
-            let handleZ = type === 'scooter' ? frontZ : frontZ-0.6;
-            let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, handleHeight, handleZ); grp.add(handle);
-            let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, handleHeight-0.5, handleZ+0.5); grp.add(light);
 
             return grp;
         }
@@ -948,9 +905,7 @@
                 if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
                 if(e.key === 'Shift') keys.shift = true;
                 
-                // E Tuşu (Kapı)
                 if(e.key.toLowerCase() === 'e' && isInWorld) { toggleNearestDoor(); }
-                // F Tuşu (Araca Bin / İn)
                 if(e.key.toLowerCase() === 'f' && isInWorld) { toggleVehicleDrive(); }
 
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
@@ -994,24 +949,21 @@
             });
         }
 
-        // F TUŞU İLE ARACA BİNME / İNME SİSTEMİ
         function toggleVehicleDrive() {
             if(!worldPlayerObj) return;
             if(isDriving) {
-                // Araçtan in
                 isDriving = false;
                 if(activeVehicleMesh) {
-                    worldPlayerObj.root.position.copy(activeVehicleMesh.position).add(new THREE.Vector3(4, 0, 0)); // Yanına bırak
+                    worldPlayerObj.root.position.copy(activeVehicleMesh.position).add(new THREE.Vector3(4, 0, 0));
                     activeVehicleMesh = null;
                 }
                 worldPlayerObj.root.visible = true;
                 logActivity("<strong>[SÜRÜŞ]</strong> Araçtan inildi.");
             } else {
-                // Yakındaki araca bin
                 let pPos = worldPlayerObj.root.position;
                 let foundVeh = null;
                 playerVehicleObjects.forEach(vObj => {
-                    if(pPos.distanceTo(vObj.position) < 8) {
+                    if(pPos.distanceTo(vObj.position) < 10) {
                         foundVeh = vObj;
                     }
                 });
@@ -1020,7 +972,7 @@
                     isDriving = true;
                     activeVehicleMesh = foundVeh;
                     vehicleSpeed = 0;
-                    worldPlayerObj.root.visible = false; // Karakteri gizle (aracın içine bindi)
+                    worldPlayerObj.root.visible = false;
                     logActivity("<strong>[SÜRÜŞ]</strong> Sürücü koltuğuna oturuldu.");
                 }
             }
@@ -1088,7 +1040,7 @@
                     vMesh.position.set(0, 0, 15); plotGrp.add(vMesh);
                     
                     if(userData.username === player.username) {
-                        playerVehicleObjects.push(vMesh); // Kendi aracımızı sürüş listesine ekle
+                        playerVehicleObjects.push(vMesh);
                     }
                 }
             }
@@ -1100,7 +1052,7 @@
             let plotBoxes = [];
             [bFence, lFence, rFence, fFenceL, fFenceR, pilL, pilR].forEach(m => plotBoxes.push(new THREE.Box3().setFromObject(m)));
             if(bMesh) plotBoxes.push(new THREE.Box3().setFromObject(bMesh));
-            if(vMesh && !isDriving) plotBoxes.push(new THREE.Box3().setFromObject(vMesh)); // Sürerken hitbox kalkar
+            if(vMesh && !isDriving) plotBoxes.push(new THREE.Box3().setFromObject(vMesh)); 
             plotGrp.userData.colliders = plotBoxes;
         }
 
@@ -1144,21 +1096,20 @@
 
             if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
 
-            // --- SÜRÜŞ MODU FİZİĞİ ---
+            // --- SÜRÜŞ FİZİĞİ ---
             if(isDriving && activeVehicleMesh) {
-                let acc = 15; let maxSpeed = 25;
+                let acc = 18; let maxSpeed = 30;
                 if(keys.w) vehicleSpeed = Math.min(maxSpeed, vehicleSpeed + acc * delta);
                 else if(keys.s) vehicleSpeed = Math.max(-maxSpeed/2, vehicleSpeed - acc * delta);
-                else vehicleSpeed *= 0.95; // Sürtünme
+                else vehicleSpeed *= 0.95;
 
-                if(keys.a) activeVehicleMesh.rotation.y += 2 * delta * (vehicleSpeed > 0 ? 1 : -1);
-                if(keys.d) activeVehicleMesh.rotation.y -= 2 * delta * (vehicleSpeed > 0 ? 1 : -1);
+                if(keys.a) activeVehicleMesh.rotation.y += 2.2 * delta * (vehicleSpeed > 0 ? 1 : -1);
+                if(keys.d) activeVehicleMesh.rotation.y -= 2.2 * delta * (vehicleSpeed > 0 ? 1 : -1);
 
                 let moveV = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), activeVehicleMesh.rotation.y);
                 activeVehicleMesh.position.addScaledVector(moveV, vehicleSpeed * delta);
                 worldPlayerObj.root.position.copy(activeVehicleMesh.position);
 
-                // Araç Kamera Takibi
                 let targetCamX = activeVehicleMesh.position.x + 10 * Math.sin(activeVehicleMesh.rotation.y);
                 let targetCamY = activeVehicleMesh.position.y + 4;
                 let targetCamZ = activeVehicleMesh.position.z + 10 * Math.cos(activeVehicleMesh.rotation.y);
@@ -1166,7 +1117,7 @@
                 camera.lookAt(activeVehicleMesh.position);
 
             } else {
-                // --- YÜRÜME MODU FİZİĞİ ---
+                // --- YÜRÜME FİZİĞİ ---
                 if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
                     worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
                 }
