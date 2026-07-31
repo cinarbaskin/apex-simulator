@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Simulator - Online</title>
+    <title>Apex Simulator - Metaverse</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -52,6 +52,8 @@
         #claim-btn { display: none; background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; padding: 18px 45px; font-size: 22px; border-radius: 50px; box-shadow: 0 0 35px rgba(245, 158, 11, 0.6); animation: pulseGold 1.5s infinite; border: 2px solid #fde68a; text-transform: uppercase; letter-spacing: 1px; }
         #claim-btn:hover { transform: scale(1.08); background: linear-gradient(135deg, #fbbf24, #d97706); }
         @keyframes pulseGold { 0% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } 50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.9); } 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } }
+        @keyframes moneyFly { 0% { transform: translateY(0) scale(1); opacity: 1; } 100% { transform: translateY(-180px) scale(2.2); opacity: 0; } }
+        .money-anim { position: absolute; color: var(--accent-green); font-size: 32px; font-weight: bold; animation: moneyFly 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards; pointer-events: none; z-index: 1000; text-shadow: 0 3px 8px rgba(0,0,0,0.8); }
 
         #app-screen { display: none; height: 100vh; flex-direction: column; background-color: var(--bg-dark); }
         header { background: var(--panel-bg); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--panel-hover); z-index: 10; }
@@ -115,6 +117,7 @@
         </div>
     </div>
 
+    <!-- İNTRO -->
     <div id="intro-screen">
         <div class="intro-bg-glow"></div>
         <div class="scene-container">
@@ -155,7 +158,7 @@
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
                 <div class="datetime" id="datetime">Yükleniyor...</div>
-                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Multiplayer Modu Aktif</div>
+                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Modu Aktif</div>
             </div>
             <div class="finance-summary">
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
@@ -169,12 +172,12 @@
             <aside id="sidebar">
                 <div style="padding-top: 10px;">
                     <div class="nav-item active" onclick="openTab('home')"><i class="fa-solid fa-house"></i> <span class="nav-text">Ana Sayfa</span></div>
-                    <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil</span></div>
+                    <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil & İzinler</span></div>
                     <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya (Online)</span></div>
                     <div class="nav-item" onclick="openTab('stocks')"><i class="fa-solid fa-arrow-trend-up"></i> <span class="nav-text">Hisse Senedi</span></div>
                     <div class="nav-item" onclick="openTab('metals')"><i class="fa-solid fa-coins"></i> <span class="nav-text">Değerli Madenler</span></div>
                     <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
-                    <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul</span></div>
+                    <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul & Arsa</span></div>
                     <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Taşıtlar & AI Ar-Ge</span></div>
                     <div class="nav-item" onclick="openTab('activity')"><i class="fa-solid fa-list-check"></i> <span class="nav-text">Son İşlemler</span></div>
                 </div>
@@ -183,12 +186,32 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Sadece senin satın aldığın araçlar anında açık dünyadaki otoparkında belirecek. Araç tasarımları kategorisine göre değiştirildi!<br><strong>3. Sınırsız Test Hesabı:</strong> Giriş ekranında Kullanıcı Adı: <b>Test</b> Şifre: <b>1234</b> yazarak doğrudan 999 Milyar TL ile giriş yapabilirsin.</p></div></div>
+                    <div class="grid-container">
+                        <div class="card" style="grid-column: 1 / -1;">
+                            <h3><i class="fa-solid fa-circle-info"></i> Metaverse Kuralları</h3>
+                            <p style="color: var(--text-muted); line-height: 1.6;">
+                                <strong>1. Kişisel Arsa (Parsel):</strong> Binalarınızın ve taşıtlarınızın açık dünyada gözükmesi için Gayrimenkul sekmesinden 1000 TL'ye Arsa satın almalısınız.<br>
+                                <strong>2. Otomatik Simetri:</strong> Satın aldığınız arabalar ve evler arsanıza düzgün ve simetrik bir şekilde milimetrik olarak yerleştirilir.<br>
+                                <strong>3. Güvenlik Kalkanı:</strong> Arsanıza sadece siz ve "Profil" sekmesinden ismini eklediğiniz izinli arkadaşlarınız girebilir. Diğerleri görünmez duvara çarpar!
+                            </p>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
                     <h2><i class="fa-solid fa-user"></i> Profil & Gardırop</h2>
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; margin-top: 20px;">
+                    
+                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
+                        <h3 style="color: var(--accent-blue); margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i> Arsa Erişim İzinleri</h3>
+                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:15px;">Sadece buraya ismini eklediğiniz oyuncular arsanızın görünmez kalkanından geçebilir.</p>
+                        <div style="display: flex; gap: 10px; max-width: 400px;">
+                            <input type="text" id="permission-input" placeholder="Oyuncu İsmi Girin" style="margin:0;">
+                            <button class="btn-primary" style="width:auto; padding: 0 20px;" onclick="addPermission()">İzin Ver</button>
+                        </div>
+                        <ul id="permission-list" style="margin-top: 15px; color: var(--accent-gold); font-weight: bold; padding-left: 20px;"></ul>
+                    </div>
+
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch;">
                         <div class="card" style="flex: 2; min-width: 450px;">
                             <h3 style="margin-bottom:15px;"><i class="fa-solid fa-id-card"></i> Kimlik Bilgileri</h3>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
@@ -219,30 +242,43 @@
                 </div>
 
                 <div id="tab-world" class="tab-content">
-                    <h2><i class="fa-solid fa-globe"></i> Kasaba Meydanı (Online)</h2>
+                    <h2><i class="fa-solid fa-globe"></i> Metaverse Meydanı</h2>
                     <div class="card" style="text-align: center; padding: 40px; margin-top: 20px;">
-                        <h3 style="border:none; margin-bottom:10px; color:white;">Kasabaya İnmeye Hazır Mısın?</h3>
-                        <button class="btn-primary" style="width: auto; padding: 15px 40px; font-size: 18px;" onclick="enterWorld()">Açık Dünyaya Gir</button>
+                        <h3 style="border:none; margin-bottom:10px; color:white;">Açık Dünyaya İn</h3>
+                        <button class="btn-primary" style="width: auto; padding: 15px 40px; font-size: 18px;" onclick="enterWorld()">Bağlan</button>
                     </div>
                 </div>
 
-                <div id="tab-stocks" class="tab-content"><h2>Hisse Senedi Piyasası</h2><div class="card"><div class="market-list" id="stocks-list"></div></div></div>
-                <div id="tab-metals" class="tab-content"><h2>Değerli Maden İşlemleri</h2><div class="card"><div class="market-list" id="metals-list"></div></div></div>
+                <div id="tab-stocks" class="tab-content"><h2>Hisse Senedi</h2><div class="card"><div class="market-list" id="stocks-list"></div></div></div>
+                <div id="tab-metals" class="tab-content"><h2>Değerli Madenler</h2><div class="card"><div class="market-list" id="metals-list"></div></div></div>
                 <div id="tab-jobs" class="tab-content"><h2>Kariyer Basamakları</h2><div class="grid-container" id="jobs-list"></div></div>
-                <div id="tab-realestate" class="tab-content"><h2>Gayrimenkul Piyasası</h2><div class="grid-container" id="realestate-list"></div></div>
+                
+                <div id="tab-realestate" class="tab-content">
+                    <h2><i class="fa-solid fa-building"></i> Gayrimenkul & Arsa Piyasası</h2>
+                    
+                    <div class="card" style="margin-bottom: 20px; border-color: var(--accent-gold);">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <div>
+                                <h3 style="border:none; margin:0; color:var(--accent-gold);">Kişisel Parsel (Arsa)</h3>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">Evlerin ve araçların ancak bir arsan varsa haritada simetrik olarak yerini alır.</p>
+                            </div>
+                            <div id="plot-ui"></div>
+                        </div>
+                    </div>
+
+                    <div class="grid-container" id="realestate-list"></div>
+                </div>
                 
                 <div id="tab-vehicles" class="tab-content">
-                    <h2><i class="fa-solid fa-car"></i> Taşıtlar & Otomotiv Yapay Zeka (Ar-Ge)</h2>
+                    <h2><i class="fa-solid fa-car"></i> Taşıtlar & AI Ar-Ge</h2>
                     <div style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
-                        <h3 style="color: var(--accent-purple); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> Ar-Ge Merkezi: Taşıt Verimlilik Teknolojileri</h3>
-                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Bu üst düzey algoritmalarla taşıt filonun gelirini katlayıp vergilerini silebilirsin.</p>
+                        <h3 style="color: var(--accent-purple); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> Ar-Ge Merkezi</h3>
                         <div class="grid-container" id="ai-tech-list"></div>
                     </div>
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Satın Aldıkların Açık Dünyaya Eklenir)</h3>
                     <div class="grid-container" id="vehicles-list"></div>
                 </div>
 
-                <div id="tab-activity" class="tab-content"><h2>Son İşlemler (Multiplayer Logları)</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
+                <div id="tab-activity" class="tab-content"><h2>Son İşlemler</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
             </main>
         </div>
     </div>
@@ -265,15 +301,16 @@
     <script>
         let socket;
         let otherPlayers = {}; 
-        let colliders = [];
-        let worldVehiclesGroup; 
+        let globalPlotsGroup; // Tüm arsaları ve eşyaları tutan ana 3D grup
+        let plotRenderCache = {}; // Performans için
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
         let player = { 
             username: "", cash: 0, debt: 0, 
             inventory: { stocks: {}, metals: {} }, 
-            assets: { jobs: [], realEstate: [], vehicles: [], aiTech: [] }, 
+            assets: { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1 }, 
+            permissions: [],
             profile: { ...defaultProfile } 
         };
 
@@ -304,7 +341,6 @@
             { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
         ];
 
-        // ARAÇ LİSTESİ (TİPLERİ BELİRLENDİ)
         const vehicles = [
             { id: 1, name: "Şehir Bisikleti", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet', modelType: 'bicycle' },
             { id: 2, name: "Elektrikli Scooter", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter', modelType: 'scooter' },
@@ -349,7 +385,9 @@
             if(!user) return alert("Kullanıcı adı giriniz!");
             
             if(user === "Test" && pass === "1234") {
-                player.username = "Test"; player.cash = 999999999999; player.profile.name = "Test Milyarderi"; saveGame();
+                player.username = "Test"; player.cash = 999999999999; player.profile.name = "Test Milyarderi"; 
+                if(player.assets.plotId === -1) player.assets.plotId = 0; // Test hesabı için otomatik arsa 0
+                saveGame();
                 document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); return;
             }
 
@@ -358,7 +396,8 @@
                 try {
                     let parsed = JSON.parse(saved); player.username = user; player.cash = parsed.cash || 0; player.debt = parsed.debt || 0;
                     player.inventory = { ...player.inventory, ...(parsed.inventory || {}) }; 
-                    player.assets = { jobs: [], realEstate: [], vehicles: [], aiTech: [], ...(parsed.assets || {}) };
+                    player.assets = { jobs: [], realEstate: [], vehicles: [], aiTech: [], plotId: -1, ...(parsed.assets || {}) };
+                    player.permissions = parsed.permissions || [];
                     if(!player.assets.aiTech) player.assets.aiTech = [];
                     player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
                 } catch(e) { player.username = user; }
@@ -394,28 +433,52 @@
         function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
         function claimCapital(e) { player.cash = 10000; saveGame(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); }
 
+        // PERMISSION SYSTEM
+        function addPermission() {
+            let input = document.getElementById('permission-input');
+            let val = input.value.trim();
+            if(val && !player.permissions.includes(val)) {
+                player.permissions.push(val);
+                input.value = "";
+                saveGame(); renderPermissions();
+            }
+        }
+        function renderPermissions() {
+            let list = document.getElementById('permission-list');
+            if(player.permissions.length === 0) { list.innerHTML = "<li style='color:var(--text-muted); font-weight:normal;'>Henüz kimseye izin vermedin.</li>"; return; }
+            list.innerHTML = player.permissions.map((p, i) => `<li>${p} <button onclick="removePerm(${i})" style="background:transparent; color:var(--accent-red); margin-left:10px;"><i class="fa-solid fa-xmark"></i></button></li>`).join('');
+        }
+        function removePerm(index) { player.permissions.splice(index, 1); saveGame(); renderPermissions(); }
+
         function connectMultiplayer() {
             if (typeof io === 'undefined') { logActivity(`<strong style="color:var(--accent-red)">[HATA] Offline Mod</strong>`); return; }
             socket = io();
             socket.on('connect', () => { logActivity(`<strong style="color:var(--accent-green)">[ONLINE] Sunucuya bağlanıldı!</strong>`); });
-            socket.on('currentPlayers', (serverPlayers) => { for(let id in serverPlayers) if(id !== socket.id) addOtherPlayer(serverPlayers[id]); });
-            socket.on('newPlayer', (playerInfo) => { addOtherPlayer(playerInfo); logActivity(`<strong style="color:var(--accent-blue)">[SİSTEM]</strong> Yeni oyuncu bağlandı.`); });
+            socket.on('currentPlayers', (serverPlayers) => { for(let id in serverPlayers) if(id !== socket.id) addOtherPlayer(serverPlayers[id]); syncPlots(); });
+            socket.on('newPlayer', (playerInfo) => { addOtherPlayer(playerInfo); logActivity(`<strong style="color:var(--accent-blue)">[SİSTEM]</strong> Yeni oyuncu bağlandı.`); syncPlots(); });
             socket.on('playerMoved', (playerInfo) => {
                 let px = Number(playerInfo.x); let py = Number(playerInfo.y); let pz = Number(playerInfo.z); let prot = Number(playerInfo.rotation) || 0;
                 if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
+                
                 if(otherPlayers[playerInfo.id]) {
                     let op = otherPlayers[playerInfo.id]; op.group.position.set(px, py, pz); op.group.rotation.y = prot;
                     if(playerInfo.isMoving) {
                         op.animTime += 0.15; let swing = Math.sin(op.animTime) * 0.8;
                         op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing; op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
                     } else { op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0; }
+                    
                     op.tagUser.innerText = (playerInfo.profile && playerInfo.profile.name) ? playerInfo.profile.name : (playerInfo.username || "Bilinmeyen");
+                    
+                    // Verileri Sync et
+                    op.plotId = playerInfo.plotId; op.realEstate = playerInfo.realEstate; op.vehicles = playerInfo.vehicles; 
+                    op.permissions = playerInfo.permissions; op.username = playerInfo.username;
                 } else { addOtherPlayer(playerInfo); }
             });
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
                     logActivity(`<strong style="color:var(--accent-red)">[SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} ayrıldı.`);
                     if(scene) scene.remove(otherPlayers[id].group); if(otherPlayers[id].tag) otherPlayers[id].tag.remove(); delete otherPlayers[id];
+                    syncPlots();
                 }
             });
         }
@@ -430,33 +493,69 @@
             if(scene) scene.add(obj.root);
             let tag = document.createElement('div'); tag.className = 'other-player-tag'; tag.innerHTML = `<div class="tag-username">${prof.name || info.username || "Bilinmeyen"}</div>`;
             document.getElementById('fullscreen-world').appendChild(tag);
-            otherPlayers[info.id] = { group: obj.root, model: obj.model, lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg, animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username') };
+            
+            otherPlayers[info.id] = { 
+                group: obj.root, model: obj.model, lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg, animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username'),
+                plotId: info.plotId, realEstate: info.realEstate, vehicles: info.vehicles, permissions: info.permissions, username: info.username
+            };
         }
 
         function emitMovement(isMovingState) {
             if(!socket || !worldPlayerObj) return;
             let px = worldPlayerObj.root.position.x; let py = worldPlayerObj.root.position.y; let pz = worldPlayerObj.root.position.z;
             if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-            socket.emit('playerMovement', { x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, username: player.username, profile: player.profile });
+            socket.emit('playerMovement', { 
+                x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, 
+                username: player.username, profile: player.profile,
+                plotId: player.assets.plotId, realEstate: player.assets.realEstate, vehicles: player.assets.vehicles, permissions: player.permissions
+            });
         }
 
         function startGameUI() {
             document.getElementById('app-screen').style.display = 'flex';
+            renderPermissions();
             setInterval(updateClock, 1000); updateClock(); setInterval(fluctuateMarkets, 1500); setInterval(processEconomy, 1000); 
             setInterval(() => { if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d); }, 2000); 
-            loadProfileUI(); updateUI(); renderMarkets(); renderAssets(); renderAITech();
+            setInterval(syncPlots, 3000); // 3 sn'de bir haritayı tazele
+            
+            loadProfileUI(); updateUI(); renderMarkets(); renderAssets(); renderAITech(); updatePlotUI();
             initProfile3D(); init3DWorld();   
         }
 
         function updateClock() { document.getElementById('datetime').innerHTML = `<i class="fa-regular fa-clock"></i> ${new Date().toLocaleTimeString('tr-TR')}`; }
         
+        function updatePlotUI() {
+            let pUI = document.getElementById('plot-ui');
+            if(player.assets.plotId === -1) {
+                pUI.innerHTML = `<button class="btn-primary" style="background:var(--accent-gold); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);" onclick="buyPlot()">Arsa Satın Al (1.000 TL)</button>`;
+            } else {
+                pUI.innerHTML = `<span style="background:var(--bg-dark); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:8px; color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-map-location-dot"></i> Parsel #${player.assets.plotId} Senin</span>`;
+            }
+        }
+
+        function buyPlot() {
+            if(player.assets.plotId !== -1) return alert("Zaten bir arsanız var!");
+            if(player.cash < 1000) return alert("Arsa almak için 1000 TL gerekiyor.");
+            
+            // Boş plot bul (0-99 arası)
+            let usedPlots = Object.values(otherPlayers).map(op => op.plotId).filter(pid => pid !== undefined && pid !== -1);
+            let newPlotId = 0;
+            while(usedPlots.includes(newPlotId)) { newPlotId++; }
+            
+            player.cash -= 1000;
+            player.assets.plotId = newPlotId;
+            logActivity(`<strong style="color:var(--accent-gold)">[EMLAK]</strong> Parsel #${newPlotId} başarıyla satın alındı.`);
+            updatePlotUI(); updateUI(); saveGame(); syncPlots();
+        }
+
         function updateUI() { 
             let totalAssets = player.cash;
             if(player.inventory && player.inventory.stocks) { for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price; }
             if(player.inventory && player.inventory.metals) { for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price; }
             if(player.assets && player.assets.jobs) { player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost); }
             if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost); }
-            
+            if(player.assets.plotId !== -1) totalAssets += 1000;
+
             let hasROMs = player.assets.aiTech && player.assets.aiTech.includes(4);
             if(player.assets && player.assets.vehicles) { 
                 player.assets.vehicles.forEach(id => { 
@@ -553,7 +652,7 @@
                 if(!player.assets.aiTech) player.assets.aiTech = [];
                 player.assets.aiTech.push(id);
                 logActivity(`<strong style="color:var(--accent-purple)">[Yapay Zeka Ar-Ge]</strong> ${tech.name} başarıyla açıldı!`);
-                renderAITech(); renderAssets(); updateUI();
+                renderAITech(); renderAssets(); updateUI(); syncPlots();
             } else alert("Nakit paranız yetersiz!");
         }
 
@@ -605,8 +704,10 @@
             if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
             if(player.cash >= item.cost) { 
                 player.cash -= item.cost; player.assets[category].push(id); 
-                if(category === 'vehicles' && typeof updateWorldVehicles === 'function') updateWorldVehicles();
-                renderAssets(); updateUI(); 
+                if(category !== 'jobs' && player.assets.plotId === -1) {
+                    alert("Satın alındı! Eşyalarını 3D dünyada görmek için Gayrimenkul sekmesinden bir ARSA satın almalısın.");
+                }
+                renderAssets(); updateUI(); syncPlots();
             } else alert("Nakit paranız yetersiz!");
         }
 
@@ -668,17 +769,27 @@
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
-        // TİPE GÖRE ŞEKİL ALAN PARAMETRİK ARABA FABRİKASI
+        // --- BİNA VE ARAÇ OLUŞTURUCULARI ---
+        function createParametricBuilding(id) {
+            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
+            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
+            let bHeight = 10 + (id * 1.2), bDepth = 14;
+            let bGroup = new THREE.Group();
+            let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[id % 2]);
+            bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true; bGroup.add(bBody);
+            let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[id % 2]);
+            roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; roof.castShadow = true; bGroup.add(roof);
+            let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); dr.position.set(0, 0, 7.5); bGroup.add(dr);
+            return bGroup;
+        }
+
         function createParametricCar(colorHex, type) {
             const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
             const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
 
-            let bw=4.2, bh=1.2, bd=10; // Kasa (Base)
-            let cw=3.6, ch=1.4, cd=4.5, cz=-0.5; // Kabin (Cabin)
-            let wy=1, wr=0.8; // Tekerlek Yarıçapı (Wheel)
-            
+            let bw=4.2, bh=1.2, bd=10; let cw=3.6, ch=1.4, cd=4.5, cz=-0.5; let wy=1, wr=0.8;
             if(type === 'hatchback') { bd=8; cd=4.5; cz=1; }
             else if(type === 'suv') { bh=1.8; bd=10.5; ch=1.5; cd=6; cz=0.5; wy=1.2; wr=1.0; }
             else if(type === 'pickup') { bd=11; cd=3.5; cz=2; }
@@ -687,14 +798,11 @@
             else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; ch=0.8; cd=3.0; cz=-1.0; }
             else if(type === 'jet') { bw=3; bh=3; bd=16; ch=1.5; cd=4; cz=3; } 
 
-            // Uçak/Jet Gövdesi
             if (type === 'jet') {
                 let body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 16, 16), paint);
                 body.rotation.x = Math.PI/2; body.position.y = 3; body.castShadow = true; grp.add(body);
-                let wing = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 4), paint);
-                wing.position.set(0, 3, 0); wing.castShadow = true; grp.add(wing);
-                let tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 3), paint);
-                tail.position.set(0, 5, -6); tail.castShadow = true; grp.add(tail);
+                let wing = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 4), paint); wing.position.set(0, 3, 0); wing.castShadow = true; grp.add(wing);
+                let tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 3), paint); tail.position.set(0, 5, -6); tail.castShadow = true; grp.add(tail);
                 return grp;
             }
 
@@ -704,26 +812,22 @@
             let cabin = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, cd), glassMat);
             cabin.position.set(0, bh + (wr-0.4) + ch/2, cz); cabin.castShadow = true; grp.add(cabin);
 
-            // Kamyonet Kasası
             if(type === 'pickup') {
                 let bedL = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedL.position.set(bw/2 - 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedL);
                 let bedR = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedR.position.set(-bw/2 + 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedR);
                 let bedB = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 0.2), paint); bedB.position.set(0, bh/2 + (wr-0.4) + bh/2, -bd/2 + 0.1); grp.add(bedB);
             }
 
-            // Spor Araba Rüzgarlığı (Spoiler)
             if(type === 'sport' || type === 'super') {
                 let spoiler = new THREE.Mesh(new THREE.BoxGeometry(bw-0.2, 0.2, 1), blackMat); spoiler.position.set(0, bh + (wr-0.4) + 0.8, -bd/2 + 1); grp.add(spoiler);
                 let spL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spL.position.set(bw/2 - 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spL);
                 let spR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spR.position.set(-bw/2 + 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spR);
             }
 
-            // Tekerlekler
             const wheelGeo = new THREE.CylinderGeometry(wr, wr, 1, 16); wheelGeo.rotateZ(Math.PI/2);
             let wx = bw/2 + 0.2; let wz = bd/2 - 2;
             [[-wx, wy, wz], [wx, wy, wz], [-wx, wy, -wz], [wx, wy, -wz]].forEach(pos => { let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); w.castShadow = true; grp.add(w); });
             
-            // Farlar
             let lightMat = new THREE.MeshBasicMaterial({color:'#ffffff'}); let redMat = new THREE.MeshBasicMaterial({color:'#ff0000'});
             let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl1);
             let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl2);
@@ -733,7 +837,6 @@
             return grp;
         }
 
-        // TİPE GÖRE ŞEKİL ALAN PARAMETRİK MOTOR FABRİKASI
         function createParametricBike(colorHex, type) {
             const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
@@ -770,6 +873,27 @@
             let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, handleHeight, handleZ); grp.add(handle);
             let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, handleHeight-0.5, handleZ+0.5); grp.add(light);
 
+            return grp;
+        }
+
+        // DEVASA SAKSI İÇİNDE PALMİYE ÜRETİCİ
+        function createPottedPalm() {
+            const grp = new THREE.Group();
+            let pot = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1, 3, 16), new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.9}));
+            pot.position.y = 1.5; pot.castShadow = true; pot.receiveShadow = true; grp.add(pot);
+            
+            let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 8, 8), new THREE.MeshStandardMaterial({color: '#5c4033', roughness: 0.9}));
+            trunk.position.y = 7; trunk.castShadow = true; grp.add(trunk);
+
+            let leavesMat = new THREE.MeshStandardMaterial({color: '#166534', side: THREE.DoubleSide});
+            for(let i=0; i<6; i++) {
+                let leaf = new THREE.Mesh(new THREE.ConeGeometry(1.5, 6, 3), leavesMat);
+                leaf.position.y = 11;
+                leaf.rotation.x = Math.PI / 4;
+                leaf.rotation.y = (Math.PI / 3) * i;
+                leaf.castShadow = true;
+                grp.add(leaf);
+            }
             return grp;
         }
 
@@ -823,69 +947,54 @@
         let isInWorld = false; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
+        // METAVERSE ARSA SİSTEMİ ALTYAPISI
+        function getPlotCenter(plotId) {
+            // 10x10 Izgara (0-99 Parsel)
+            let col = plotId % 10; let row = Math.floor(plotId / 10);
+            return { x: col * 80 - 360, z: row * 80 - 360 }; // 80 birim aralık (60 parsel, 20 yol)
+        }
+
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
+            scene = new THREE.Scene(); 
+            scene.background = new THREE.Color('#87CEEB'); 
+            
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
             container.insertBefore(renderer.domElement, container.firstChild);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let sl = new THREE.DirectionalLight(0xffffee, 1.2); sl.position.set(150, 200, -150); scene.add(sl);
+            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); sl.castShadow = true;
+            sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
+            scene.add(sl);
             
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
-            floor.rotation.x = -Math.PI / 2; scene.add(floor);
+            let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
+            sunMesh.position.copy(sl.position); scene.add(sunMesh);
 
-            const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
-            const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-            scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
-            scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
-            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); scene.add(cr);
+            // DEVASA ASFALT ZEMİN (Her şey temizlendi)
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 }));
+            floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
-            for(let i = -280; i <= 280; i += 12) {
-                if(Math.abs(i) > 15) {
-                    let lx = new THREE.Mesh(new THREE.BoxGeometry(5, 0.16, 0.5), lineMat); lx.position.set(i, 0, 0); scene.add(lx);
-                    let lz = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 5), lineMat); lz.position.set(0, 0, i); scene.add(lz);
+            // BÜYÜK SAKSILAR VE PALMİYELER (Düzenli nizamda yol kenarlarına)
+            for(let row=0; row<=10; row++) {
+                for(let col=0; col<=10; col++) {
+                    let px = col * 80 - 400; let pz = row * 80 - 400;
+                    let palm = createPottedPalm();
+                    palm.position.set(px, 0, pz);
+                    scene.add(palm);
                 }
             }
 
-            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
-            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
-
-            for(let i = 0; i < realEstate.length; i++) {
-                let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
-                let bGroup = new THREE.Group();
-                let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[i % wallMats.length]);
-                bBody.position.y = bHeight / 2; bGroup.add(bBody);
-                let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
-                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; bGroup.add(roof);
-                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
-                dr.position.set(0, 0, 7.5); bGroup.add(dr);
-                bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
-                colliders.push(new THREE.Box3().setFromObject(bBody));
-            }
-
-            // OYUNCUNUN SATIN ALDIĞI ARAÇLARI BARINDIRACAK GRUP
-            worldVehiclesGroup = new THREE.Group();
-            scene.add(worldVehiclesGroup);
-
-            // AĞAÇLAR (Düzeltilmiş Doğma Alanı)
-            for(let i=0; i<200; i++) {
-                let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
-                if(Math.sqrt(tx*tx + tz*tz) > 30 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
-                    let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
-                    trunk.position.y = 1.5; treeGrp.add(trunk);
-                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; treeGrp.add(l); }
-                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
-                }
-            }
+            globalPlotsGroup = new THREE.Group();
+            scene.add(globalPlotsGroup);
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
             worldPlayerObj.model.scale.set(sc, sh, sc); 
-            worldPlayerObj.root.position.set(0, 2, 0); // Yere gömülme fix
+            worldPlayerObj.root.position.set(0, 2, 0); 
             scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
@@ -912,8 +1021,7 @@
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== container) return; 
                 let mx = e.movementX || 0; let my = e.movementY || 0;
-                camYaw -= mx * 0.002; 
-                camPitch += my * 0.002; // FARE TERSLİĞİ DÜZELTİLDİ (Eksi (-) yerine Artı (+))
+                camYaw -= mx * 0.002; camPitch += my * 0.002; 
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
@@ -921,33 +1029,82 @@
                 if(document.pointerLockElement !== container) { try { container.requestPointerLock(); } catch(err) {} }
             });
 
-            updateWorldVehicles(); 
+            syncPlots(); 
             animateWorld();
         }
 
-        // TİPLERE GÖRE ARAÇ ÇİZİMİ
-        function updateWorldVehicles() {
-            if(!worldVehiclesGroup) return;
-            while(worldVehiclesGroup.children.length > 0) worldVehiclesGroup.remove(worldVehiclesGroup.children[0]);
+        // TİPLERE GÖRE ARAÇ ÇİZİMİ VE ARSALARA YERLEŞTİRME (SİMETRİK)
+        function syncPlots() {
+            if(!globalPlotsGroup) return;
+            
+            // Tüm aktif kullanıcıları topla (Kendi hesabımız + Diğer online oyuncular)
+            let activeUsers = [player, ...Object.values(otherPlayers)];
 
-            if(player.assets && player.assets.vehicles) {
-                player.assets.vehicles.forEach((id, index) => {
+            activeUsers.forEach(u => {
+                let pid = u.assets ? u.assets.plotId : u.plotId; // Kendi player'ımız assets altında, others doğrudan root'ta.
+                if(pid !== undefined && pid !== -1) {
+                    let cacheStr = JSON.stringify({ r: u.assets?u.assets.realEstate:u.realEstate, v: u.assets?u.assets.vehicles:u.vehicles });
+                    if(plotRenderCache[u.username] !== cacheStr) {
+                        drawPlot(u);
+                        plotRenderCache[u.username] = cacheStr;
+                    }
+                }
+            });
+        }
+
+        function drawPlot(userData) {
+            let pId = userData.assets ? userData.assets.plotId : userData.plotId;
+            let pName = userData.profile ? userData.profile.name : userData.username;
+            let rEst = userData.assets ? userData.assets.realEstate : userData.realEstate;
+            let vVeh = userData.assets ? userData.assets.vehicles : userData.vehicles;
+            if(pId === -1) return;
+
+            // Eski plot varsa temizle (İsim üzerinden bul)
+            let oldPlot = globalPlotsGroup.getObjectByName('plot_' + userData.username);
+            if(oldPlot) globalPlotsGroup.remove(oldPlot);
+
+            let plotGrp = new THREE.Group();
+            plotGrp.name = 'plot_' + userData.username;
+            
+            let center = getPlotCenter(pId);
+            
+            // Arsa Zemini (Hafif gri)
+            let ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: '#333333'}));
+            ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; ground.receiveShadow = true; plotGrp.add(ground);
+
+            // Arsa Sahibi Tabelası
+            let signGeom = new THREE.BoxGeometry(4, 2, 0.2); let signMat = new THREE.MeshStandardMaterial({color: '#f59e0b'});
+            let sign = new THREE.Mesh(signGeom, signMat); sign.position.set(0, 1, 30); plotGrp.add(sign);
+
+            // Binaları Arka Tarafa Simetrik Diz
+            if(rEst && rEst.length > 0) {
+                rEst.forEach((id, i) => {
+                    let bMesh = createParametricBuilding(id);
+                    let col = i % 4; let row = Math.floor(i / 4);
+                    bMesh.position.set(-20 + col*13, 0, -15 - row*10); // Arka plan
+                    plotGrp.add(bMesh);
+                });
+            }
+
+            // Taşıtları Ön Tarafa Simetrik Diz
+            if(vVeh && vVeh.length > 0) {
+                vVeh.forEach((id, i) => {
                     let vData = vehicles.find(v => v.id === id);
                     if(vData) {
                         let vMesh;
                         let type = vData.modelType;
-                        if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') {
-                            vMesh = createParametricBike(vData.color, type);
-                        } else {
-                            vMesh = createParametricCar(vData.color, type);
-                        }
-                        let px = -25 - (index % 5) * 15;
-                        let pz = -25 - Math.floor(index / 5) * 25;
-                        vMesh.position.set(px, 0, pz);
-                        worldVehiclesGroup.add(vMesh);
+                        if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
+                        else vMesh = createParametricCar(vData.color, type);
+                        
+                        let col = i % 4; let row = Math.floor(i / 4);
+                        vMesh.position.set(-20 + col*13, 0, 10 + row*8); // Ön plan
+                        plotGrp.add(vMesh);
                     }
                 });
             }
+
+            plotGrp.position.set(center.x, 0, center.z);
+            globalPlotsGroup.add(plotGrp);
         }
 
         function enterWorld() {
@@ -956,6 +1113,12 @@
             fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
+            
+            // Eğer arsan varsa direkt arsanın ortasına ışınlan
+            if(player.assets.plotId !== -1) {
+                let c = getPlotCenter(player.assets.plotId);
+                worldPlayerObj.root.position.set(c.x, 2, c.z);
+            }
             lastTime = performance.now();
         }
         
@@ -993,9 +1156,25 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
+                // KALKAN (GÜVENLİK DUVARI) - İZİN SİSTEMİ
                 let collision = false;
-                for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
+                let activeUsers = [player, ...Object.values(otherPlayers)];
+                
+                for(let u of activeUsers) {
+                    let pid = u.assets ? u.assets.plotId : u.plotId;
+                    if(pid !== undefined && pid !== -1) {
+                        let c = getPlotCenter(pid);
+                        // Eğer nextPos arsanın sınırları içindeyse (30 birim yarıçap)
+                        if(nextPos.x > c.x - 30 && nextPos.x < c.x + 30 && nextPos.z > c.z - 30 && nextPos.z < c.z + 30) {
+                            let uname = u.username;
+                            let perms = u.permissions || [];
+                            // Eğer ben sahibi değilsem VE izinli listesinde yoksam -> ÇARP!
+                            if(uname !== player.username && !perms.includes(player.username)) {
+                                collision = true; break;
+                            }
+                        }
+                    }
+                }
                 
                 if(!collision) worldPlayerObj.root.position.copy(nextPos);
                 worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
