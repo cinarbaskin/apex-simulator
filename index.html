@@ -3,15 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Simulator - Sürüş ve Yaşam</title>
+    <title>Apex Simulator - Metaverse Yaşam</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>
-        window.addEventListener('error', function(e) {
-            if(e.target.src && e.target.src.includes('socket.io')) console.warn("Socket.io yüklenemedi. Offline mod.");
-        }, true);
-    </script>
-    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -95,9 +89,6 @@
         #player-name-tag { position: absolute; transform: translate(-50%, -50%); color: white; text-align: center; pointer-events: none; z-index: 100; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: bold; display: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
         #tag-username { font-size: 16px; letter-spacing: 1px; }
         #tag-money { color: var(--accent-gold); font-size: 14px; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 12px; margin-top: 4px; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);}
-
-        .other-player-tag { position: absolute; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 99; display: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
-        .other-player-tag .tag-username { font-size: 14px; font-weight:bold; color: #f8fafc; background: rgba(59, 130, 246, 0.6); padding: 2px 8px; border-radius: 8px; border: 1px solid var(--accent-blue); }
     </style>
 </head>
 <body>
@@ -153,7 +144,7 @@
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
                 <div class="datetime" id="datetime">Yükleniyor...</div>
-                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Sürüş Modu</div>
+                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Sürüş Modu (Yerel)</div>
             </div>
             <div class="finance-summary">
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
@@ -167,8 +158,8 @@
             <aside id="sidebar">
                 <div style="padding-top: 10px;">
                     <div class="nav-item active" onclick="openTab('home')"><i class="fa-solid fa-house"></i> <span class="nav-text">Ana Sayfa</span></div>
-                    <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil & İzinler</span></div>
-                    <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya (Online)</span></div>
+                    <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil</span></div>
+                    <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya</span></div>
                     <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
                     <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul & Arsa</span></div>
                     <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Garaj & Taşıtlar</span></div>
@@ -192,17 +183,6 @@
 
                 <div id="tab-profile" class="tab-content">
                     <h2><i class="fa-solid fa-user"></i> Profil & Gardırop</h2>
-                    
-                    <div style="background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 20px;">
-                        <h3 style="color: var(--accent-blue); margin-bottom: 10px;"><i class="fa-solid fa-shield-halved"></i> Arsa Erişim İzinleri</h3>
-                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:15px;">Sadece buraya ismini eklediğiniz oyuncular arsanızın görünmez kalkanından geçebilir.</p>
-                        <div style="display: flex; gap: 10px; max-width: 400px;">
-                            <input type="text" id="permission-input" placeholder="Oyuncu İsmi Girin" style="margin:0;">
-                            <button class="btn-primary" style="width:auto; padding: 0 20px;" onclick="addPermission()">İzin Ver</button>
-                        </div>
-                        <ul id="permission-list" style="margin-top: 15px; color: var(--accent-gold); font-weight: bold; padding-left: 20px;"></ul>
-                    </div>
-
                     <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch;">
                         <div class="card" style="flex: 2; min-width: 450px;">
                             <h3 style="margin-bottom:15px;"><i class="fa-solid fa-id-card"></i> Kimlik Bilgileri</h3>
@@ -218,12 +198,6 @@
                                 <div><label>Ten</label><input type="color" id="color-skin" value="#ffdbac" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
                                 <div><label>Saç</label><input type="color" id="color-hair" value="#4a3000" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
                                 <div><label>Göz</label><input type="color" id="color-eye" value="#000000" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                            </div>
-                            <h3 style="margin-bottom:15px;"><i class="fa-solid fa-shirt"></i> Kıyafet Kombinleri</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px;">
-                                <div><label>Ceket</label><input type="color" id="color-jacket" value="#1e293b" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                                <div><label>Gömlek</label><input type="color" id="color-shirt" value="#f8fafc" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                                <div><label>Kravat</label><input type="color" id="color-tie" value="#3b82f6" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
                             </div>
                         </div>
                         <div class="card avatar-container" style="flex: 1; min-width: 300px;">
@@ -285,10 +259,7 @@
     </div>
 
     <script>
-        let socket;
-        let otherPlayers = {}; 
         let globalPlotsGroup; 
-        let plotRenderCache = {}; 
         let colliders = []; 
         let interactiveDoors = []; 
         let playerVehicleObjects = []; 
@@ -300,8 +271,8 @@
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
         let player = { 
-            username: "", cash: 0, debt: 0, 
-            assets: { jobs: [], realEstate: [], vehicles: [], plotId: -1, selectedVehicle: -1, selectedRealEstate: -1 }, 
+            username: "Test", cash: 1000000, debt: 0, 
+            assets: { jobs: [], realEstate: [], vehicles: [], plotId: 0, selectedVehicle: -1, selectedRealEstate: -1 }, 
             permissions: [],
             profile: { ...defaultProfile } 
         };
@@ -310,23 +281,13 @@
             { id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
             { id: 4, name: "Çiçekçi", cost: 7500, income: 22 }, { id: 5, name: "Büfe", cost: 12000, income: 30 }, { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
             { id: 7, name: "İnternet Kafe", cost: 25000, income: 50 }, { id: 8, name: "Oto Yıkama", cost: 35000, income: 65 }, { id: 9, name: "Kuru Temizleme", cost: 50000, income: 85 },
-            { id: 10, name: "Fırın", cost: 75000, income: 110 }, { id: 11, name: "Restoran", cost: 120000, income: 150 }, { id: 12, name: "Süpermarket", cost: 250000, income: 280 },
-            { id: 13, name: "Giyim Mağazası", cost: 400000, income: 400 }, { id: 14, name: "Spor Salonu", cost: 600000, income: 550 }, { id: 15, name: "Sinema Salonu", cost: 1000000, income: 850 },
-            { id: 16, name: "Otel", cost: 2500000, income: 1800 }, { id: 17, name: "AVM", cost: 8000000, income: 4500 }, { id: 18, name: "Fabrika", cost: 15000000, income: 7500 },
-            { id: 19, name: "Teknoloji Şirketi", cost: 50000000, income: 20000 }, { id: 20, name: "Uluslararası Holding", cost: 150000000, income: 50000 }
+            { id: 10, name: "Fırın", cost: 75000, income: 110 }, { id: 11, name: "Restoran", cost: 120000, income: 150 }, { id: 12, name: "Süpermarket", cost: 250000, income: 280 }
         ];
 
         const realEstate = [
             { id: 1, name: "Çadır Kamp Alanı", cost: 15000 }, { id: 2, name: "Konteyner Ev", cost: 40000 },
             { id: 3, name: "Köy Evi", cost: 80000 }, { id: 4, name: "Gecekondu", cost: 150000 },
-            { id: 5, name: "Prefabrik Ev", cost: 220000 }, { id: 6, name: "Stüdyo Daire", cost: 300000 },
-            { id: 7, name: "1+1 Daire", cost: 450000 }, { id: 8, name: "2+1 Daire", cost: 650000 },
-            { id: 9, name: "3+1 Apartman", cost: 800000 }, { id: 10, name: "Dubleks Ev", cost: 1200000 },
-            { id: 11, name: "Müstakil Ev", cost: 2000000 }, { id: 12, name: "Lüks Villa", cost: 5000000 },
-            { id: 13, name: "Çiftlik Evi", cost: 8000000 }, { id: 14, name: "Tarihi Köşk", cost: 12000000 },
-            { id: 15, name: "Sahil Yalısı", cost: 18000000 }, { id: 16, name: "Lüks Rezidans", cost: 25000000 },
-            { id: 17, name: "Plaza Katı", cost: 60000000 }, { id: 18, name: "AVM Arsası", cost: 150000000 },
-            { id: 19, name: "Tatil Köyü", cost: 350000000 }, { id: 20, name: "Özel Ada", cost: 1000000000 }
+            { id: 5, name: "Prefabrik Ev", cost: 220000 }, { id: 6, name: "Stüdyo Daire", cost: 300000 }
         ];
 
         const vehicles = [
@@ -336,306 +297,20 @@
             { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, color: '#3b82f6', category: 'Motor', modelType: 'standard' },
             { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, color: '#ef4444', category: 'Motor', modelType: 'sportbike' },
             { id: 6, name: "Yeşil Off-Road 4x4", cost: 90000, color: '#84cc16', category: 'Ticari', modelType: 'suv' },
-            { id: 7, name: "Siyah Klasik Chopper", cost: 150000, color: '#111111', category: 'Motor', modelType: 'chopper' },
-            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' },
-            { id: 9, name: "Mavi Aile Tipi Hatchback", cost: 450000, color: '#3b82f6', category: 'Otomobil', modelType: 'hatchback' },
-            { id: 10, name: "Yeşil Kompakt Hibrit", cost: 700000, color: '#10b981', category: 'Otomobil', modelType: 'hatchback' },
-            { id: 11, name: "Beyaz Ticari Panelvan", cost: 1000000, color: '#ffffff', category: 'Ticari', modelType: 'van' },
-            { id: 12, name: "Turuncu Çift Kabin Pikap", cost: 1500000, color: '#f97316', category: 'Ticari', modelType: 'pickup' },
-            { id: 13, name: "Siyah VIP Minibüs", cost: 2200000, color: '#111111', category: 'Ticari', modelType: 'van' },
-            { id: 14, name: "Gri Geniş Karavan", cost: 3500000, color: '#94a3b8', category: 'Özel', modelType: 'van' },
-            { id: 15, name: "Kırmızı Üstü Açık Cabriolet", cost: 5500000, color: '#ef4444', category: 'Lüks', modelType: 'sport' },
-            { id: 16, name: "Siyah V6 Yönetici Sedanı", cost: 8500000, color: '#111111', category: 'Lüks', modelType: 'sedan' },
-            { id: 17, name: "Mavi Çift Motorlu Spor Araba", cost: 14000000, color: '#3b82f6', category: 'Spor', modelType: 'sport' },
-            { id: 18, name: "Zırhlı Siyah Lüks SUV", cost: 25000000, color: '#111111', category: 'Lüks', modelType: 'suv' },
-            { id: 19, name: "Sarı V12 Süper Otomobil", cost: 60000000, color: '#f59e0b', category: 'Süper Spor', modelType: 'super' },
-            { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
-        ];
-
-        // MİMARİ VE ÇİZİM MOTORLARI
-        function createFenceWall(width) {
-            let grp = new THREE.Group();
-            let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
-            base.position.y = 0.25; base.castShadow = true; grp.add(base);
-            
-            let railMat = new THREE.MeshStandardMaterial({color:'#111', roughness:0.8});
-            let r1 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r1.position.y = 1.2; grp.add(r1);
-            let r2 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r2.position.y = 2.0; grp.add(r2);
-            
-            let postCount = Math.floor(width / 3);
-            let postGeo = new THREE.BoxGeometry(0.15, 2.2, 0.15);
-            for(let i=0; i<=postCount; i++) {
-                let post = new THREE.Mesh(postGeo, railMat);
-                post.position.set(-width/2 + (width/postCount)*i, 1.1, 0); post.castShadow = true; grp.add(post);
-            }
-            return grp;
-        }
-
-        function createParametricBuilding(id) {
-            let bGroup = new THREE.Group();
-            let scaleMult = 1 + (id * 0.15); 
-            
-            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#e2e8f0' })];
-            const roofMats = [new THREE.MeshStandardMaterial({ color: '#1e293b' }), new THREE.MeshStandardMaterial({ color: '#475569' })]; 
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#1e293b', metalness: 0.9, roughness: 0.1 }); 
-            const frameMat = new THREE.MeshStandardMaterial({ color: '#ffffff' }); 
-
-            let bHeight = 8 * scaleMult; let bWidth = 14 * scaleMult; let bDepth = 12 * scaleMult;
-            
-            let bBody = new THREE.Mesh(new THREE.BoxGeometry(bWidth, bHeight, bDepth), wallMats[id % 2]);
-            bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true; bGroup.add(bBody);
-            
-            if(id % 2 === 0) {
-                let roof = new THREE.Mesh(new THREE.ConeGeometry(bWidth * 0.8, bHeight * 0.4, 4), roofMats[id % 2]);
-                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + (bHeight*0.2); roof.castShadow = true; bGroup.add(roof);
-            } else {
-                let roof = new THREE.Mesh(new THREE.BoxGeometry(bWidth*1.1, bHeight*0.1, bDepth*1.1), roofMats[id % 2]);
-                roof.position.y = bHeight; roof.castShadow = true; bGroup.add(roof);
-            }
-            
-            let doorPivot = new THREE.Group();
-            doorPivot.position.set(-1.5 * scaleMult, 0, bDepth/2 + 0.05);
-            let doorMesh = new THREE.Mesh(new THREE.BoxGeometry(3 * scaleMult, 4 * scaleMult, 0.2), new THREE.MeshStandardMaterial({ color: '#78350f', roughness: 0.5 }));
-            doorMesh.position.set(1.5 * scaleMult, (4*scaleMult)/2, 0); doorMesh.castShadow = true;
-            doorPivot.add(doorMesh);
-            bGroup.add(doorPivot);
-
-            interactiveDoors.push({ pivot: doorPivot, isOpen: false, targetRot: 0 });
-
-            const createWindow = (x, y) => {
-                let wGrp = new THREE.Group();
-                let frame = new THREE.Mesh(new THREE.BoxGeometry(4.2 * scaleMult, 4.2 * scaleMult, 0.15), frameMat);
-                let glass = new THREE.Mesh(new THREE.BoxGeometry(3.8 * scaleMult, 3.8 * scaleMult, 0.2), glassMat);
-                wGrp.add(frame); wGrp.add(glass);
-                wGrp.position.set(x, y, bDepth/2 + 0.05);
-                bGroup.add(wGrp);
-            };
-
-            createWindow(-bWidth/3, (4*scaleMult)/2 + 2);
-            createWindow(bWidth/3, (4*scaleMult)/2 + 2);
-
-            return bGroup;
-        }
-
-        function createParametricCar(colorHex, type) {
-            const grp = new THREE.Group();
-            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
-
-            let bw=4.2, bh=1.2, bd=10; let wy=1, wr=0.8;
-            if(type === 'suv') { bh=1.8; bd=10.5; wy=1.2; wr=1.0; }
-            else if(type === 'sport') { bh=0.9; bd=9.5; }
-            else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; }
-
-            let solidBody = new THREE.Mesh(new THREE.BoxGeometry(bw, bh*2.2, bd), paint);
-            solidBody.position.y = (bh*2.2)/2 + 0.4; solidBody.castShadow = true; solidBody.receiveShadow = true; grp.add(solidBody);
-
-            let frontGlass = new THREE.Mesh(new THREE.BoxGeometry(bw*0.9, bh*0.9, 0.2), glassMat);
-            frontGlass.position.set(0, bh*1.6, bd/2 - 1.5); frontGlass.rotation.x = -Math.PI/6; grp.add(frontGlass);
-
-            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 1, 16); wheelGeo.rotateZ(Math.PI/2);
-            let wx = bw/2 + 0.2; let wz = bd/2 - 2;
-            [[-wx, wy, wz], [wx, wy, wz], [-wx, wy, -wz], [wx, wy, -wz]].forEach(pos => { let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); w.castShadow = true; grp.add(w); });
-            
-            let lightMat = new THREE.MeshBasicMaterial({color:'#ffffff'}); let redMat = new THREE.MeshBasicMaterial({color:'#ff0000'});
-            let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, 1.2, bd/2+0.01); grp.add(hl1);
-            let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, 1.2, bd/2+0.01); grp.add(hl2);
-
-            return grp;
-        }
-
-        function createParametricBike(colorHex, type) {
-            const grp = new THREE.Group();
-            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
-            const chrome = new THREE.MeshStandardMaterial({ color: '#cccccc', metalness: 0.9, roughness: 0.1 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
-
-            let wr = 1.2, frontZ = 3, backZ = -2.5;
-            if(type === 'scooter' || type === 'bicycle') { wr=0.6; frontZ=2; backZ=-2; }
-
-            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
-            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, wr, frontZ); wFront.castShadow = true; grp.add(wFront);
-            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, wr, backZ); wBack.castShadow = true; grp.add(wBack);
-
-            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, wr+0.6, 0); grp.add(engine);
-            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, wr+1.3, -1.2); grp.add(seat);
-
-            return grp;
-        }
-
-        function createPottedPalm() {
-            const grp = new THREE.Group();
-            let potMaterial = new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.7});
-            let potBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 3, 24), potMaterial);
-            potBase.position.y = 1.5; potBase.castShadow = true; potBase.receiveShadow = true; grp.add(potBase);
-            let potRim = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.2, 8, 24), potMaterial);
-            potRim.position.y = 3; potRim.rotation.x = Math.PI/2; potRim.castShadow = true; grp.add(potRim);
-            let soil = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.1, 24), new THREE.MeshStandardMaterial({color:'#2b1d14'}));
-            soil.position.y = 2.9; grp.add(soil);
-
-            let trunkGrp = new THREE.Group();
-            let segments = 7;
-            for(let i=0; i<segments; i++) {
-                let seg = new THREE.Mesh(new THREE.CylinderGeometry(0.45 - (i*0.03), 0.5 - (i*0.03), 1.6, 12), new THREE.MeshStandardMaterial({color: '#5c4033', roughness: 0.9}));
-                seg.position.y = 3.6 + (i * 1.3);
-                seg.rotation.z = Math.sin(i * 0.4) * 0.08; 
-                seg.castShadow = true; trunkGrp.add(seg);
-            }
-            grp.add(trunkGrp);
-
-            let leavesMat = new THREE.MeshStandardMaterial({color: '#15803d', roughness: 0.4, side: THREE.DoubleSide});
-            let topY = 3.6 + (segments * 1.3) - 0.8;
-            
-            for(let i=0; i<14; i++) {
-                let isLong = i % 2 === 0;
-                let leafLen = isLong ? 7 : 5;
-                let dropAngle = isLong ? Math.PI / 3.5 : Math.PI / 6;
-                
-                let leafGeo = new THREE.SphereGeometry(1, 16, 16);
-                leafGeo.scale(0.8, 0.05, leafLen / 2); 
-                leafGeo.translate(0, 0, leafLen / 2); 
-                
-                let leaf = new THREE.Mesh(leafGeo, leavesMat);
-                leaf.position.set(0, topY, 0);
-                leaf.rotation.y = (Math.PI * 2 / 14) * i;
-                leaf.rotation.x = dropAngle; 
-                leaf.castShadow = true; grp.add(leaf);
-            }
-            return grp;
-        }
-
-        let dialogueStep = 0; let isTyping = false; let typeInterval;
-        const dialogues = [
-            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "Şirkete katkıların büyüktü ama yolları ayırıyoruz." },
-            { speaker: "Sen", title: "Şoke Olmuş Çalışan", type: "player", text: "Ne?! Beni böylece kapı önüne mi koyuyorsunuz!" },
-            { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "İşte tazminatın. Güle güle." }
+            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' }
         ];
 
         function login() {
-            const user = document.getElementById('username').value;
-            const pass = document.getElementById('password').value;
-
-            if(!user) return alert("Kullanıcı adı giriniz!");
-            
-            if(user === "Test" && pass === "1234") {
-                player.username = "Test"; player.cash = 999999999999; player.profile.name = "Test Milyarderi"; 
-                if(player.assets.plotId === -1) player.assets.plotId = 0; 
-                saveGame(); document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); return;
-            }
-
-            let saved = localStorage.getItem('apex_save_' + user);
-            if(saved) {
-                try {
-                    let parsed = JSON.parse(saved); player.username = user; player.cash = parsed.cash || 0; player.debt = parsed.debt || 0;
-                    player.assets = { jobs: [], realEstate: [], vehicles: [], plotId: -1, selectedVehicle: -1, selectedRealEstate: -1, ...(parsed.assets || {}) };
-                    if(player.assets.selectedVehicle === undefined) player.assets.selectedVehicle = -1;
-                    if(player.assets.selectedRealEstate === undefined) player.assets.selectedRealEstate = -1;
-                    player.permissions = parsed.permissions || [];
-                    player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
-                } catch(e) { player.username = user; }
-                document.getElementById('auth-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); 
-            } else {
-                player.username = user; document.getElementById('auth-screen').style.display = 'none'; document.getElementById('intro-screen').style.display = 'flex'; startTypewriter();
-            }
-        }
-
-        function startTypewriter() {
-            isTyping = true; const current = dialogues[dialogueStep]; document.getElementById('speaker-title').innerText = current.title;
-            const box = document.getElementById('dialogue-box'); box.className = "comic-box"; 
-            document.getElementById('char-boss').classList.remove('active', 'internal'); document.getElementById('char-player').classList.remove('active', 'internal');
-            if(current.type === "boss") { box.classList.add('arrow-right'); document.getElementById('char-boss').classList.add('active'); } 
-            else { box.classList.add('arrow-left'); document.getElementById('char-player').classList.add('active'); }
-            const targetEl = document.getElementById('dialogue-text'); targetEl.innerHTML = ""; let i = 0; clearInterval(typeInterval);
-            typeInterval = setInterval(() => { if (i < current.text.length) { targetEl.innerHTML += current.text.charAt(i); i++; } else { clearInterval(typeInterval); isTyping = false; } }, 30); 
-        }
-
-        function nextDialogue() {
-            if (isTyping) { clearInterval(typeInterval); document.getElementById('dialogue-text').innerHTML = dialogues[dialogueStep].text; isTyping = false; return; }
-            dialogueStep++;
-            if(dialogueStep < dialogues.length) { startTypewriter(); } 
-            else { document.getElementById('dialogue-box').style.display = 'none'; document.getElementById('next-dialogue-btn').style.display = 'none'; document.getElementById('skip-btn').style.display = 'none'; document.querySelector('.scene-container').style.opacity = "0.2"; document.getElementById('claim-btn').style.display = 'inline-block'; }
-        }
-
-        function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
-        function claimCapital(e) { player.cash = 10000; saveGame(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); }
-
-        function addPermission() {
-            let input = document.getElementById('permission-input'); let val = input.value.trim();
-            if(val && !player.permissions.includes(val)) { player.permissions.push(val); input.value = ""; saveGame(); renderPermissions(); }
-        }
-        function renderPermissions() {
-            let list = document.getElementById('permission-list');
-            if(player.permissions.length === 0) { list.innerHTML = "<li style='color:var(--text-muted); font-weight:normal;'>Henüz kimseye izin vermedin.</li>"; return; }
-            list.innerHTML = player.permissions.map((p, i) => `<li>${p} <button onclick="removePerm(${i})" style="background:transparent; color:var(--accent-red); margin-left:10px;"><i class="fa-solid fa-xmark"></i></button></li>`).join('');
-        }
-        function removePerm(index) { player.permissions.splice(index, 1); saveGame(); renderPermissions(); }
-
-        function connectMultiplayer() {
-            if (typeof io === 'undefined') { logActivity(`<strong style="color:var(--accent-red)">[HATA] Offline Mod</strong>`); return; }
-            socket = io();
-            socket.on('connect', () => { logActivity(`<strong style="color:var(--accent-green)">[ONLINE] Sunucuya bağlanıldı!</strong>`); });
-            socket.on('currentPlayers', (serverPlayers) => { for(let id in serverPlayers) if(id !== socket.id) addOtherPlayer(serverPlayers[id]); syncPlots(); });
-            socket.on('newPlayer', (playerInfo) => { addOtherPlayer(playerInfo); logActivity(`<strong style="color:var(--accent-blue)">[SİSTEM]</strong> Yeni oyuncu bağlandı.`); syncPlots(); });
-            socket.on('playerMoved', (playerInfo) => {
-                let px = Number(playerInfo.x); let py = Number(playerInfo.y); let pz = Number(playerInfo.z); let prot = Number(playerInfo.rotation) || 0;
-                if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-                
-                if(otherPlayers[playerInfo.id]) {
-                    let op = otherPlayers[playerInfo.id]; op.group.position.set(px, py, pz); op.group.rotation.y = prot;
-                    if(playerInfo.isMoving) {
-                        op.animTime += 0.15; let swing = Math.sin(op.animTime) * 0.8;
-                        op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing; op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
-                    } else { op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0; }
-                    op.tagUser.innerText = (playerInfo.profile && playerInfo.profile.name) ? playerInfo.profile.name : (playerInfo.username || "Bilinmeyen");
-                    
-                    op.plotId = playerInfo.plotId; op.realEstate = playerInfo.realEstate; op.selectedVehicle = playerInfo.selectedVehicle; 
-                    op.selectedRealEstate = playerInfo.selectedRealEstate; op.permissions = playerInfo.permissions; op.username = playerInfo.username;
-                } else { addOtherPlayer(playerInfo); }
-            });
-            socket.on('playerDisconnected', (id) => {
-                if(otherPlayers[id]) {
-                    logActivity(`<strong style="color:var(--accent-red)">[SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} ayrıldı.`);
-                    if(scene) scene.remove(otherPlayers[id].group); if(otherPlayers[id].tag) otherPlayers[id].tag.remove(); delete otherPlayers[id]; syncPlots();
-                }
-            });
-        }
-
-        function addOtherPlayer(info) {
-            let px = Number(info.x); let py = Number(info.y); let pz = Number(info.z);
-            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-            if (otherPlayers[info.id]) { if(scene) scene.remove(otherPlayers[info.id].group); if(otherPlayers[info.id].tag) otherPlayers[info.id].tag.remove(); }
-            let prof = { ...defaultProfile, ...(info.profile || {}) }; let mats = createPlayerMaterials(prof); let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
-            let h = parseInt(prof.height); if(isNaN(h)) h = 175; let w = parseInt(prof.weight); if(isNaN(w)) w = 70;
-            obj.model.scale.set(w/70, h/175, w/70); obj.root.position.set(px, py, pz); obj.root.rotation.y = Number(info.rotation) || 0;
-            if(scene) scene.add(obj.root);
-            let tag = document.createElement('div'); tag.className = 'other-player-tag'; tag.innerHTML = `<div class="tag-username">${prof.name || info.username || "Bilinmeyen"}</div>`;
-            document.getElementById('fullscreen-world').appendChild(tag);
-            
-            otherPlayers[info.id] = { 
-                group: obj.root, model: obj.model, lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg, animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username'),
-                plotId: info.plotId, realEstate: info.realEstate, selectedVehicle: info.selectedVehicle, selectedRealEstate: info.selectedRealEstate, permissions: info.permissions, username: info.username
-            };
-        }
-
-        function emitMovement(isMovingState) {
-            if(!socket || !worldPlayerObj) return;
-            let px = worldPlayerObj.root.position.x; let py = worldPlayerObj.root.position.y; let pz = worldPlayerObj.root.position.z;
-            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-            socket.emit('playerMovement', { 
-                x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, 
-                username: player.username, profile: player.profile,
-                plotId: player.assets.plotId, realEstate: player.assets.realEstate, selectedVehicle: player.assets.selectedVehicle, selectedRealEstate: player.assets.selectedRealEstate, permissions: player.permissions
-            });
+            let u = document.getElementById('username').value;
+            if(!u) u = "Oyuncu";
+            player.username = u; player.profile.name = u;
+            document.getElementById('auth-screen').style.display = 'none';
+            startGameUI();
         }
 
         function startGameUI() {
             document.getElementById('app-screen').style.display = 'flex';
-            renderPermissions();
             setInterval(updateClock, 1000); updateClock(); setInterval(processEconomy, 1000); 
-            setInterval(() => { if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d); }, 2000); 
-            setInterval(syncPlots, 3000); 
-            
             loadProfileUI(); updateUI(); renderAssets(); updatePlotUI();
             initProfile3D(); init3DWorld();   
         }
@@ -645,99 +320,45 @@
         function updatePlotUI() {
             let pUI = document.getElementById('plot-ui');
             if(player.assets.plotId === -1) {
-                pUI.innerHTML = `<button class="btn-primary" style="background:var(--accent-gold); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4);" onclick="buyPlot()">Arsa Satın Al (1.000 TL)</button>`;
+                pUI.innerHTML = `<button class="btn-primary" style="background:var(--accent-gold);" onclick="buyPlot()">Arsa Satın Al (1.000 TL)</button>`;
             } else {
-                pUI.innerHTML = `<span style="background:var(--bg-dark); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:8px; color:var(--accent-gold); font-weight:bold;"><i class="fa-solid fa-map-location-dot"></i> Parsel #${player.assets.plotId} Senin</span>`;
+                pUI.innerHTML = `<span style="background:var(--bg-dark); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:8px; color:var(--accent-gold); font-weight:bold;">Parsel #${player.assets.plotId} Senin</span>`;
             }
         }
 
         function buyPlot() {
-            if(player.assets.plotId !== -1) return alert("Zaten bir arsanız var!");
-            if(player.cash < 1000) return alert("Arsa almak için 1000 TL gerekiyor.");
-            let usedPlots = Object.values(otherPlayers).map(op => op.plotId).filter(pid => pid !== undefined && pid !== -1);
-            let newPlotId = 0; while(usedPlots.includes(newPlotId)) { newPlotId++; }
-            player.cash -= 1000; player.assets.plotId = newPlotId;
-            logActivity(`<strong style="color:var(--accent-gold)">[EMLAK]</strong> Parsel #${newPlotId} başarıyla satın alındı.`);
-            updatePlotUI(); updateUI(); saveGame(); syncPlots();
+            if(player.cash < 1000) return alert("Nakit yetersiz!");
+            player.cash -= 1000; player.assets.plotId = 0;
+            updatePlotUI(); updateUI(); syncPlots();
         }
 
-        function selectVehicle(id) { player.assets.selectedVehicle = id; saveGame(); renderAssets(); syncPlots(); }
-        function selectRealEstate(id) { player.assets.selectedRealEstate = id; saveGame(); renderAssets(); syncPlots(); }
+        function selectVehicle(id) { player.assets.selectedVehicle = id; renderAssets(); syncPlots(); }
+        function selectRealEstate(id) { player.assets.selectedRealEstate = id; renderAssets(); syncPlots(); }
 
         function updateUI() { 
             let totalAssets = player.cash;
-            if(player.assets && player.assets.jobs) { player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost); }
-            if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost); }
-            if(player.assets.plotId !== -1) totalAssets += 1000;
-
-            if(player.assets && player.assets.vehicles) { 
-                player.assets.vehicles.forEach(id => { totalAssets += vehicles.find(v=>v.id===id).cost; }); 
-            }
-
             document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}); 
             document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
             document.getElementById('ui-debt').innerText = player.debt.toLocaleString('tr-TR', {maximumFractionDigits:2});
-
-            let net = 0;
-            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) {
-                net += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
-            }
-            
-            let netEl = document.getElementById('ui-net');
-            if(netEl) { netEl.innerText = (net > 0 ? "+" : "") + net.toLocaleString('tr-TR'); netEl.style.color = "var(--accent-green)"; }
-            saveGame(); 
         }
         
         function logActivity(text) { const log = document.getElementById('activity-log'); const li = document.createElement('li'); li.style.cssText = "padding: 10px; background: var(--bg-dark); border-radius: 8px;"; li.innerHTML = `<span>${text}</span>`; log.prepend(li); }
-        function saveGame() { localStorage.setItem('apex_save_' + player.username, JSON.stringify(player)); }
+        function saveGame() { /* Local storage bypass */ }
 
         function renderAssets() {
             const buildCards = (arr, invArr, category) => {
                 return arr.map(item => {
                     let owned = invArr && invArr.includes(item.id);
                     if (category === 'jobs') {
-                        let isHighest = owned && Math.max(...invArr) === item.id;
-                        let canBuy = !owned && (item.id === 1 || (invArr && invArr.includes(item.id - 1)));
-                        let info = `Maaş: <span style="color:var(--accent-green)">+${item.income} TL/sn</span>`;
-                        let btnHTML = '';
-                        if (isHighest) btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Aktif Meslek</button>`;
-                        else if (owned) btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--text-muted); padding:8px 10px; width:100%; border:1px solid var(--panel-hover);">Geçmiş Tecrübe</button>`;
-                        else if (canBuy) btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Terfi Et</button>`;
-                        else btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--accent-red); padding:8px 10px; width:100%; border:1px solid rgba(239,68,68,0.3);"><i class="fa-solid fa-lock"></i> Kilitli</button>`;
-
-                        return `<div class="card" style="${isHighest ? 'border-color:var(--accent-blue); box-shadow: 0 0 15px rgba(59,130,246,0.2);' : ''} ${!owned && !canBuy ? 'opacity:0.6;' : ''}">
-                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
-                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
-                    
+                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">Maaş: +${item.income} TL/sn</p><button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Seç</button></div>`;
                     } else if (category === 'realEstate') {
-                        let info = `Kullanım Amaçlı Mülk`;
                         let isSelected = player.assets.selectedRealEstate === item.id;
-                        let btnHTML = '';
-                        if (isSelected) {
-                            btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Arsada Kullanılıyor</button>`;
-                        } else if (owned) {
-                            btnHTML = `<button class="btn-primary" style="background:transparent; color:var(--accent-blue); border:1px solid var(--accent-blue);" onclick="selectRealEstate(${item.id})">Arsaya İnşa Et</button>`;
-                        } else {
-                            btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`;
-                        }
-                        return `<div class="card" style="${isSelected ? 'border-color:var(--accent-blue)' : (owned ? 'border-color:var(--accent-green)' : '')}">
-                            <h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px; color:var(--text-muted);">${info}</p>
-                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
-                    
+                        let btn = isSelected ? `<button disabled style="background:var(--accent-blue); color:white; width:100%;">Kullanımda</button>` : `<button class="btn-primary" onclick="selectRealEstate(${item.id})">Arsaya İnşa Et</button>`;
+                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">Gayrimenkul</p>${btn}</div>`;
                     } else if (category === 'vehicles') {
-                        let info = `Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
                         let isSelected = player.assets.selectedVehicle === item.id;
-                        let btnHTML = '';
-                        if (isSelected) {
-                            btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Garajda / Otoparkta</button>`;
-                        } else if (owned) {
-                            btnHTML = `<button class="btn-primary" style="background:transparent; color:var(--accent-blue); border:1px solid var(--accent-blue);" onclick="selectVehicle(${item.id})">Kullan (Otoparka Çek)</button>`;
-                        } else {
-                            btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`;
-                        }
-                        return `<div class="card" style="${isSelected ? 'border-color:var(--accent-blue)' : (owned ? 'border-color:var(--accent-green)' : '')}">
-                            <h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">${info}</p>
-                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
+                        let btn = isSelected ? `<button disabled style="background:var(--accent-blue); color:white; width:100%;">Garajda</button>` : `<button class="btn-primary" onclick="selectVehicle(${item.id})">Kullan</button>`;
+                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">Taşıt</p>${btn}</div>`;
                     }
                 }).join('');
             };
@@ -747,26 +368,16 @@
         }
 
         function buyAsset(category, id) {
-            let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles; let item = list.find(x => x.id === id);
-            if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
-            if(player.cash >= item.cost) { 
-                player.cash -= item.cost; player.assets[category].push(id); 
-                
-                if(category !== 'jobs' && player.assets.plotId === -1) {
-                    alert("Satın alındı! Eşyalarını 3D dünyada görmek için Gayrimenkul sekmesinden bir ARSA satın almalısın.");
-                }
-                
-                if (category === 'vehicles' && player.assets.selectedVehicle === -1) player.assets.selectedVehicle = id;
-                if (category === 'realEstate' && player.assets.selectedRealEstate === -1) player.assets.selectedRealEstate = id;
-
-                renderAssets(); updateUI(); syncPlots();
-            } else alert("Nakit paranız yetersiz!");
+            let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles; 
+            let item = list.find(x => x.id === id);
+            player.assets[category].push(id);
+            if(category === 'vehicles' && player.assets.selectedVehicle === -1) player.assets.selectedVehicle = id;
+            if(category === 'realEstate' && player.assets.selectedRealEstate === -1) player.assets.selectedRealEstate = id;
+            renderAssets(); syncPlots();
         }
 
         function processEconomy() {
-            let totalIncome = 0;
-            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) totalIncome += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
-            if(totalIncome > 0) { player.cash += totalIncome; updateUI(); }
+            player.cash += 5; updateUI();
         }
 
         function createPlayerMaterials(prof) {
@@ -781,27 +392,8 @@
         function buildCharacterModel(m, style) {
             const group = new THREE.Group(); const model = new THREE.Group(); group.add(model);
             let jacket = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), m.jacket); jacket.position.y = 2.25; model.add(jacket);
-            let shirt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.51, 0.05), m.shirt); shirt.position.set(0, 2.25, -0.32); model.add(shirt);
-            let tie = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.9, 0.08), m.tie); tie.position.set(0, 2.4, -0.34); model.add(tie);
             let head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), m.skin); head.position.y = 3.5; model.add(head);
-            let hairC = new THREE.Group(); model.add(hairC);
-            const addP = (geo, mat, x, y, z, rx=0, ry=0, rz=0) => { let mh=new THREE.Mesh(geo,mat); mh.position.set(x,y,z); mh.rotation.set(rx,ry,rz); hairC.add(mh); };
-            if (style === 'classic') { addP(new THREE.BoxGeometry(0.95,0.4,0.95), m.hair, 0,3.8,0); }
-            else if (style === 'buzz') { addP(new THREE.BoxGeometry(0.92,0.2,0.92), m.hair, 0,3.85,0); }
-            else if (style === 'messy') { addP(new THREE.BoxGeometry(0.95,0.3,0.95), m.hair, 0,3.9,0); addP(new THREE.ConeGeometry(0.15,0.4,4), m.hair, 0,4.1,0, -0.3,0,0.1); }
-            else if (style === 'wavy') { addP(new THREE.BoxGeometry(0.92,0.3,0.92), m.hair, 0,3.85,0); addP(new THREE.CylinderGeometry(0.15,0.15,0.6,8), m.hair, 0,4.15,-0.4, 0,0,Math.PI/2); }
-            let eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeL.position.set(-0.2,3.6,-0.46); model.add(eyeL);
-            let eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeR.position.set(0.2,3.6,-0.46); model.add(eyeR);
-            let pL = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pL.position.set(-0.2,3.6,-0.47); model.add(pL);
-            let pR = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pR.position.set(0.2,3.6,-0.47); model.add(pR);
-            const limb = (isLeg) => {
-                let grp = new THREE.Group(); let up = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), isLeg?m.pant:m.jacket); up.position.y = -0.6; grp.add(up);
-                let down = new THREE.Mesh(new THREE.BoxGeometry(isLeg?0.45:0.35, isLeg?0.3:0.4, isLeg?0.6:0.35), isLeg?m.shoe:m.skin); down.position.set(0, isLeg?-1.35:-1.4, isLeg?-0.1:0); grp.add(down);
-                return grp;
-            };
-            let lArm = limb(false); lArm.position.set(-0.85, 2.9, 0); model.add(lArm); let rArm = limb(false); rArm.position.set(0.85, 2.9, 0); model.add(rArm);
-            let lLeg = limb(true); lLeg.position.set(-0.35, 1.5, 0); model.add(lLeg); let rLeg = limb(true); rLeg.position.set(0.35, 1.5, 0); model.add(rLeg);
-            return { root: group, model: model, lArm, rArm, lLeg, rLeg };
+            return { root: group, model: model, lArm: new THREE.Group(), rArm: new THREE.Group(), lLeg: new THREE.Group(), rLeg: new THREE.Group() };
         }
 
         let profScene, profCamera, profRenderer, profilePlayerObj; let isProfileRotating = true;
@@ -814,37 +406,13 @@
             profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); profilePlayerObj.root.position.y = -0.5; profScene.add(profilePlayerObj.root);
         }
 
-        function toggleRotation() { isProfileRotating = !isProfileRotating; const btn = document.getElementById('btn-rotate-toggle'); btn.innerText = isProfileRotating ? "Döndürmeyi Durdur" : "Döndürmeyi Başlat"; btn.style.background = isProfileRotating ? "rgba(15, 23, 42, 0.8)" : "var(--accent-blue)"; }
-
-        function loadProfileUI() {
-            ['height','weight','hairstyle','skin','hair','jacket','shirt','tie'].forEach(k => {
-                if(document.getElementById('prof-'+k)) document.getElementById('prof-'+k).value = player.profile[k] || defaultProfile[k];
-                if(document.getElementById('color-'+k)) document.getElementById('color-'+k).value = player.profile[k] || defaultProfile[k];
-            }); updateAvatar(); 
-        }
-
-        function updateAvatar() {
-            player.profile.height = document.getElementById('prof-height').value || "175"; player.profile.weight = document.getElementById('prof-weight').value || "70";
-            player.profile.hairstyle = document.getElementById('prof-hairstyle').value || "classic";
-            player.profile.skin = document.getElementById('color-skin').value; player.profile.hair = document.getElementById('color-hair').value;
-            player.profile.jacket = document.getElementById('color-jacket').value; player.profile.shirt = document.getElementById('color-shirt').value; player.profile.tie = document.getElementById('color-tie').value;
-
-            if(profScene) {
-                profScene.remove(profilePlayerObj.root); profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); profilePlayerObj.root.position.y = -0.5;
-                let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175; profilePlayerObj.model.scale.set(sc, sh, sc); profScene.add(profilePlayerObj.root);
-            }
-            if(scene && worldPlayerObj) {
-                let oldPos = worldPlayerObj.root.position.clone(); let oldRot = worldPlayerObj.root.rotation.y; scene.remove(worldPlayerObj.root);
-                worldPlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); worldPlayerObj.root.position.copy(oldPos); worldPlayerObj.root.rotation.y = oldRot;
-                let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175; worldPlayerObj.model.scale.set(sc, sh, sc); scene.add(worldPlayerObj.root);
-            }
-            saveGame(); if(socket && isInWorld) emitMovement(false);
-        }
+        function toggleRotation() { isProfileRotating = !isProfileRotating; }
+        function loadProfileUI() {}
+        function updateAvatar() {}
 
         function openTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             document.getElementById('tab-' + tabName).classList.add('active'); event.currentTarget.classList.add('active');
-            if (tabName === 'profile') { setTimeout(() => { const container = document.getElementById('profile-3d-canvas'); if (container && profRenderer && profCamera) { profCamera.aspect = container.clientWidth / container.clientHeight; profCamera.updateProjectionMatrix(); profRenderer.setSize(container.clientWidth, container.clientHeight); } }, 50); }
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
@@ -852,7 +420,7 @@
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
         let isInWorld = false; 
-        let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
+        let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, lastTime = performance.now();
 
         function getPlotCenter(plotId) {
             let col = plotId % 10; let row = Math.floor(plotId / 10);
@@ -861,31 +429,23 @@
 
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); 
-            scene.background = new THREE.Color('#87CEEB'); 
-            
+            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-            renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
+            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
             container.insertBefore(renderer.domElement, container.firstChild);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); sl.castShadow = true;
-            sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
-            scene.add(sl);
-            let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
-            sunMesh.position.copy(sl.position); scene.add(sunMesh);
-
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 }));
-            floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); scene.add(sl);
+            
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222' }));
+            floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
             for(let row=0; row<=10; row++) {
                 for(let col=0; col<=10; col++) {
                     let px = col * 80 - 400; let pz = row * 80 - 400;
                     let palm = createPottedPalm(); palm.position.set(px, 0, pz); scene.add(palm);
-                    let palmBox = new THREE.Box3().setFromObject(palm);
-                    colliders.push(palmBox);
+                    colliders.push(new THREE.Box3().setFromObject(palm));
                 }
             }
 
@@ -893,10 +453,8 @@
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
-            let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
-            worldPlayerObj.model.scale.set(sc, sh, sc); worldPlayerObj.root.position.set(0, 2, 0); scene.add(worldPlayerObj.root);
+            worldPlayerObj.root.position.set(0, 2, 0); scene.add(worldPlayerObj.root);
 
-            // GLOBAL TUŞ DİNLEYİCİLERİ (Fokus Problemi Olmadan)
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement && document.activeElement.tagName === 'INPUT') return;
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
@@ -918,7 +476,7 @@
                 if(document.pointerLockElement === container) {
                     document.getElementById('esc-menu').style.display = 'none'; isInWorld = true; lastTime = performance.now();
                 } else {
-                    document.getElementById('esc-menu').style.display = 'flex'; isInWorld = false; for(let k in keys) keys[k] = false; emitMovement(false); 
+                    document.getElementById('esc-menu').style.display = 'flex'; isInWorld = false; for(let k in keys) keys[k] = false; 
                 }
             });
 
@@ -934,13 +492,56 @@
             syncPlots(); animateWorld();
         }
 
+        function createFenceWall(width) {
+            let grp = new THREE.Group();
+            let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
+            base.position.y = 0.25; grp.add(base);
+            return grp;
+        }
+
+        function createParametricBuilding(id) {
+            let bGroup = new THREE.Group();
+            let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, 8, 10), new THREE.MeshStandardMaterial({ color: '#f8fafc' }));
+            bBody.position.y = 4; bGroup.add(bBody);
+            
+            let doorPivot = new THREE.Group();
+            doorPivot.position.set(-1.5, 0, 5.1);
+            let doorMesh = new THREE.Mesh(new THREE.BoxGeometry(3, 4, 0.2), new THREE.MeshStandardMaterial({ color: '#78350f' }));
+            doorMesh.position.set(1.5, 2, 0); doorPivot.add(doorMesh);
+            bGroup.add(doorPivot);
+            interactiveDoors.push({ pivot: doorPivot, isOpen: false, targetRot: 0 });
+            return bGroup;
+        }
+
+        function createParametricCar(colorHex, type) {
+            const grp = new THREE.Group();
+            let solidBody = new THREE.Mesh(new THREE.BoxGeometry(4.2, 2.5, 10), new THREE.MeshStandardMaterial({ color: colorHex }));
+            solidBody.position.y = 1.5; grp.add(solidBody);
+            return grp;
+        }
+
+        function createParametricBike(colorHex, type) {
+            const grp = new THREE.Group();
+            let body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 4), new THREE.MeshStandardMaterial({ color: colorHex }));
+            body.position.y = 1; grp.add(body);
+            return grp;
+        }
+
+        function createPottedPalm() {
+            const grp = new THREE.Group();
+            let pot = new THREE.Mesh(new THREE.CylinderGeometry(1, 0.8, 2, 12), new THREE.MeshStandardMaterial({color: '#e6a15c'}));
+            pot.position.y = 1; grp.add(pot);
+            let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 6, 8), new THREE.MeshStandardMaterial({color: '#5c4033'}));
+            trunk.position.y = 4; grp.add(trunk);
+            return grp;
+        }
+
         function toggleNearestDoor() {
             if(!worldPlayerObj) return;
             let pPos = worldPlayerObj.root.position;
             interactiveDoors.forEach(door => {
-                let dWorldPos = new THREE.Vector3();
-                door.pivot.getWorldPosition(dWorldPos);
-                if(pPos.distanceTo(dWorldPos) < 12) {
+                let dWorldPos = new THREE.Vector3(); door.pivot.getWorldPosition(dWorldPos);
+                if(pPos.distanceTo(dWorldPos) < 15) {
                     door.isOpen = !door.isOpen;
                     door.targetRot = door.isOpen ? Math.PI / 2 : 0;
                 }
@@ -952,84 +553,53 @@
             if(isDriving) {
                 isDriving = false;
                 if(activeVehicleMesh) {
-                    let dropPos = new THREE.Vector3();
-                    activeVehicleMesh.getWorldPosition(dropPos);
+                    let dropPos = new THREE.Vector3(); activeVehicleMesh.getWorldPosition(dropPos);
                     worldPlayerObj.root.position.copy(dropPos).add(new THREE.Vector3(4, 0, 0));
                     activeVehicleMesh = null;
                 }
                 worldPlayerObj.root.visible = true;
-                logActivity("<strong>[SÜRÜŞ]</strong> Araçtan inildi.");
             } else {
                 let pPos = worldPlayerObj.root.position;
                 let foundVeh = null;
                 playerVehicleObjects.forEach(vObj => {
-                    let vWorldPos = new THREE.Vector3();
-                    vObj.getWorldPosition(vWorldPos);
-                    if(pPos.distanceTo(vWorldPos) < 12) {
-                        foundVeh = vObj;
-                    }
+                    let vWorldPos = new THREE.Vector3(); vObj.getWorldPosition(vWorldPos);
+                    if(pPos.distanceTo(vWorldPos) < 15) foundVeh = vObj;
                 });
-
                 if(foundVeh) {
-                    isDriving = true;
-                    activeVehicleMesh = foundVeh;
-                    vehicleSpeed = 0;
+                    isDriving = true; activeVehicleMesh = foundVeh; vehicleSpeed = 0;
                     worldPlayerObj.root.visible = false;
-                    logActivity("<strong>[SÜRÜŞ]</strong> Sürücü koltuğuna oturuldu.");
                 }
             }
         }
 
         function syncPlots() {
             if(!globalPlotsGroup) return;
-            interactiveDoors = []; 
-            playerVehicleObjects = [];
-            let activeUsers = [player, ...Object.values(otherPlayers)];
-            activeUsers.forEach(u => {
-                let pid = u.assets ? u.assets.plotId : u.plotId; 
-                if(pid !== undefined && pid !== -1) {
-                    let cacheStr = JSON.stringify({ 
-                        r: u.assets ? u.assets.selectedRealEstate : u.selectedRealEstate, 
-                        v: u.assets ? u.assets.selectedVehicle : u.selectedVehicle 
-                    });
-                    if(plotRenderCache[u.username] !== cacheStr) {
-                        drawPlot(u); plotRenderCache[u.username] = cacheStr;
-                    }
-                }
-            });
+            interactiveDoors = []; playerVehicleObjects = [];
+            if(player.assets.plotId !== -1) { drawPlot(player); }
         }
 
         function drawPlot(userData) {
-            let pId = userData.assets ? userData.assets.plotId : userData.plotId;
-            let selRE = userData.assets ? userData.assets.selectedRealEstate : userData.selectedRealEstate;
-            let selVeh = userData.assets ? userData.assets.selectedVehicle : userData.selectedVehicle;
+            let pId = userData.assets.plotId;
+            let selRE = userData.assets.selectedRealEstate;
+            let selVeh = userData.assets.selectedVehicle;
             if(pId === -1) return;
 
-            let oldPlot = globalPlotsGroup.getObjectByName('plot_' + userData.username);
+            let oldPlot = globalPlotsGroup.getObjectByName('plot_user');
             if(oldPlot) globalPlotsGroup.remove(oldPlot);
 
-            let plotGrp = new THREE.Group(); plotGrp.name = 'plot_' + userData.username;
+            let plotGrp = new THREE.Group(); plotGrp.name = 'plot_user';
             let center = getPlotCenter(pId);
             
             let ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: '#333333'}));
-            ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; ground.receiveShadow = true; plotGrp.add(ground);
-
-            let signGeom = new THREE.BoxGeometry(6, 2, 0.2); let signMat = new THREE.MeshStandardMaterial({color: '#f59e0b'});
-            let sign = new THREE.Mesh(signGeom, signMat); sign.position.set(0, 1.5, 30.5); plotGrp.add(sign);
+            ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; plotGrp.add(ground);
 
             let bFence = createFenceWall(60); bFence.position.set(0, 0, -30); plotGrp.add(bFence);
             let lFence = createFenceWall(60); lFence.rotation.y = Math.PI/2; lFence.position.set(-30, 0, 0); plotGrp.add(lFence);
             let rFence = createFenceWall(60); rFence.rotation.y = Math.PI/2; rFence.position.set(30, 0, 0); plotGrp.add(rFence);
-            
             let fFenceL = createFenceWall(25); fFenceL.position.set(-17.5, 0, 30); plotGrp.add(fFenceL);
             let fFenceR = createFenceWall(25); fFenceR.position.set(17.5, 0, 30); plotGrp.add(fFenceR);
 
-            let pillarMat = new THREE.MeshStandardMaterial({color: '#cbd5e1', roughness: 0.9});
-            let pilL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 1.5), pillarMat); pilL.position.set(-5.5, 2, 30); pilL.castShadow = true; plotGrp.add(pilL);
-            let pilR = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 1.5), pillarMat); pilR.position.set(5.5, 2, 30); pilR.castShadow = true; plotGrp.add(pilR);
-
             let bMesh, vMesh;
-            
             if(selRE && selRE !== -1) {
                 bMesh = createParametricBuilding(selRE); bMesh.position.set(0, 0, -10); plotGrp.add(bMesh);
             }
@@ -1040,32 +610,21 @@
                     if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
                     else vMesh = createParametricCar(vData.color, type);
                     vMesh.position.set(0, 0, 15); plotGrp.add(vMesh);
-                    
-                    if(userData.username === player.username) {
-                        playerVehicleObjects.push(vMesh);
-                    }
+                    playerVehicleObjects.push(vMesh);
                 }
             }
 
             plotGrp.position.set(center.x, 0, center.z); 
             globalPlotsGroup.add(plotGrp);
-            
             plotGrp.updateMatrixWorld(true);
-            let plotBoxes = [];
-            [bFence, lFence, rFence, fFenceL, fFenceR, pilL, pilR].forEach(m => plotBoxes.push(new THREE.Box3().setFromObject(m)));
-            if(bMesh) plotBoxes.push(new THREE.Box3().setFromObject(bMesh));
-            if(vMesh && !isDriving) plotBoxes.push(new THREE.Box3().setFromObject(vMesh)); 
-            plotGrp.userData.colliders = plotBoxes;
         }
 
         function enterWorld() {
             if(document.activeElement) document.activeElement.blur();
             let fw = document.getElementById('fullscreen-world');
-            if(!fw.requestPointerLock) { alert("HATA: Cihazınız bu 3D modu desteklemiyor."); return; }
             fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
-            
             if(player.assets.plotId !== -1) { let c = getPlotCenter(player.assets.plotId); worldPlayerObj.root.position.set(c.x, 2, c.z); }
             lastTime = performance.now();
         }
@@ -1096,10 +655,7 @@
             const nameTag = document.getElementById('player-name-tag');
             if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) { nameTag.style.display = 'none'; return; }
 
-            if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
-
-            // --- SÜRÜŞ FİZİĞİ ---
-            if(isDriving && activeVehicleMesh) {
+            if (isDriving && activeVehicleMesh) {
                 let acc = 20; let maxSpeed = 35;
                 if(keys.w) vehicleSpeed = Math.min(maxSpeed, vehicleSpeed + acc * delta);
                 else if(keys.s) vehicleSpeed = Math.max(-maxSpeed/2, vehicleSpeed - acc * delta);
@@ -1112,21 +668,10 @@
                 activeVehicleMesh.position.addScaledVector(moveV, vehicleSpeed * delta);
                 worldPlayerObj.root.position.copy(activeVehicleMesh.position);
 
-                let vWPos = new THREE.Vector3();
-                activeVehicleMesh.getWorldPosition(vWPos);
-
-                let targetCamX = vWPos.x + 12 * Math.sin(activeVehicleMesh.rotation.y);
-                let targetCamY = vWPos.y + 5;
-                let targetCamZ = vWPos.z + 12 * Math.cos(activeVehicleMesh.rotation.y);
-                camera.position.set(targetCamX, targetCamY, targetCamZ);
+                let vWPos = new THREE.Vector3(); activeVehicleMesh.getWorldPosition(vWPos);
+                camera.position.set(vWPos.x + 12 * Math.sin(activeVehicleMesh.rotation.y), vWPos.y + 5, vWPos.z + 12 * Math.cos(activeVehicleMesh.rotation.y));
                 camera.lookAt(vWPos);
-
             } else {
-                // --- YÜRÜME FİZİĞİ ---
-                if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
-                    worldPlayerObj.root.position.set(0, 2, 0); velocityY = 0;
-                }
-
                 velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
                 if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
 
@@ -1141,73 +686,27 @@
                     moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                     let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                     
-                    let collision = false;
                     let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
-                    
+                    let collision = false;
                     for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
-                    
-                    if(!collision) {
-                        let activeUsers = [player, ...Object.values(otherPlayers)];
-                        for(let u of activeUsers) {
-                            let pid = u.assets ? u.assets.plotId : u.plotId;
-                            if(pid !== undefined && pid !== -1) {
-                                let c = getPlotCenter(pid);
-                                if(nextPos.x > c.x - 30 && nextPos.x < c.x + 30 && nextPos.z > c.z - 30 && nextPos.z < c.z + 30) {
-                                    let uname = u.username;
-                                    let perms = u.permissions || [];
-                                    if(uname !== player.username && !perms.includes(player.username)) {
-                                        collision = true; break;
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if(!collision && globalPlotsGroup) {
-                        for(let plot of globalPlotsGroup.children) {
-                            if(plot.userData.colliders) {
-                                for(let box of plot.userData.colliders) {
-                                    if(box.intersectsBox(playerBox)) { collision = true; break; }
-                                }
-                            }
-                            if(collision) break;
-                        }
-                    }
                     
                     if(!collision) worldPlayerObj.root.position.copy(nextPos);
                     worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
                 }
 
-                if(isMoving || canJump === false) emitMovement(isMoving);
-
-                if(isMoving && canJump) {
-                    animTime += delta * (keys.shift ? 15 : 10);
-                    worldPlayerObj.lArm.rotation.x = -Math.sin(animTime) * 0.8; worldPlayerObj.rArm.rotation.x = Math.sin(animTime) * 0.8;
-                    worldPlayerObj.lLeg.rotation.x = Math.sin(animTime) * 0.8; worldPlayerObj.rLeg.rotation.x = -Math.sin(animTime) * 0.8;
-                } else {
-                    worldPlayerObj.lArm.rotation.x += (0 - worldPlayerObj.lArm.rotation.x) * 0.1; worldPlayerObj.rArm.rotation.x += (0 - worldPlayerObj.rArm.rotation.x) * 0.1;
-                    worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
-                }
-
-                const scY = worldPlayerObj.model.scale.y || 1;
                 let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
-                let targetCamY = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
+                let targetCamY = worldPlayerObj.root.position.y + 4.5 + 8 * Math.sin(camPitch);
                 let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
-                
-                if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
-                    camera.position.set(targetCamX, targetCamY, targetCamZ);
-                    camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
-                }
+                camera.position.set(targetCamX, targetCamY, targetCamZ);
+                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + 3.5, worldPlayerObj.root.position.z);
             }
 
             let tagPos = new THREE.Vector3();
-            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * (worldPlayerObj.model.scale.y || 1); tagPos.project(camera);
-            if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1 || isDriving) {
-                nameTag.style.display = 'none';
-            } else {
+            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0; tagPos.project(camera);
+            if(isDriving) { nameTag.style.display = 'none'; } else {
                 nameTag.style.display = 'block';
                 nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
-                document.getElementById('tag-username').innerText = player.profile.name || player.username;
+                document.getElementById('tag-username').innerText = player.profile.name;
                 document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
             }
 
