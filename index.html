@@ -186,7 +186,7 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Taşıtlar sekmesinden satın aldığın araçlar anında açık dünyadaki otoparkında belirecek.</p></div></div>
+                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Açık Dünya Özgürlüğü:</strong> Hareket kilitlenmeleri çözüldü! Artık dilediğin gibi gezebilirsin.<br><strong>2. Kişisel Taşıtlar:</strong> Taşıtlar sekmesinden satın aldığın araçlar anında açık dünyadaki otoparkında belirecek.<br><strong>3. Sınırsız Test Hesabı:</strong> Giriş ekranında Kullanıcı Adı: <b>Test</b> Şifre: <b>1234</b> yazarak doğrudan 999 Milyar TL ile giriş yapabilirsin.</p></div></div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
@@ -271,7 +271,7 @@
         let socket;
         let otherPlayers = {}; 
         let colliders = [];
-        let worldVehiclesGroup; // Açık dünyadaki kendi araçlarımızın ekleneceği grup
+        let worldVehiclesGroup; 
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
@@ -348,8 +348,23 @@
 
         function login() {
             const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+
             if(!user) return alert("Kullanıcı adı giriniz!");
             
+            // 💰 GİZLİ GELİŞTİRİCİ (ADMİN) HESABI - SINIRSIZ PARA
+            if(user === "Test" && pass === "1234") {
+                player.username = "Test";
+                player.cash = 999999999999; // 999 Milyar TL
+                player.profile.name = "Test Milyarderi";
+                saveGame();
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('intro-screen').style.display = 'none';
+                startGameUI();
+                connectMultiplayer();
+                return;
+            }
+
             let saved = localStorage.getItem('apex_save_' + user);
             if(saved) {
                 try {
@@ -674,7 +689,7 @@
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
-        // FOTOĞRAFTAKİ ARABA VE MOTORLARI OLUŞTURAN YENİ ÇİZİM KODLARI (LOW POLY & CRUISER)
+        // FOTOĞRAFTAKİ ARABA VE MOTORLARI OLUŞTURAN YENİ ÇİZİM KODLARI
         function createLowPolyCar(colorHex, isPickup) {
             const carGrp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.3, roughness: 0.4 });
@@ -685,30 +700,27 @@
 
             // Alt Kasa
             let base = new THREE.Mesh(new THREE.BoxGeometry(4.2, 1.2, 10), paint);
-            base.position.y = 1.2; base.castShadow = true; carGrp.add(base);
+            base.position.y = 1.2; carGrp.add(base);
 
             // Üst Kabin
             let cabinZ = isPickup ? -1.5 : -0.5;
             let cabinLen = isPickup ? 3.5 : 4.5;
             let cabin = new THREE.Mesh(new THREE.BoxGeometry(3.6, 1.4, cabinLen), glassMat);
-            cabin.position.set(0, 2.3, cabinZ); cabin.castShadow = true; carGrp.add(cabin);
+            cabin.position.set(0, 2.3, cabinZ); carGrp.add(cabin);
             
             let roof = new THREE.Mesh(new THREE.BoxGeometry(3.7, 0.2, cabinLen + 0.1), paint);
-            roof.position.set(0, 3.0, cabinZ); roof.castShadow = true; carGrp.add(roof);
+            roof.position.set(0, 3.0, cabinZ); carGrp.add(roof);
 
             // Tekerlekler
             const wheelGeo = new THREE.CylinderGeometry(0.8, 0.8, 1, 16);
             wheelGeo.rotateZ(Math.PI / 2);
             [[-2.2, 1, 3], [2.2, 1, 3], [-2.2, 1, -3], [2.2, 1, -3]].forEach(pos => {
-                let w = new THREE.Mesh(wheelGeo, blackMat);
-                w.position.set(...pos); w.castShadow = true; carGrp.add(w);
+                let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); carGrp.add(w);
             });
 
             // Farlar
             let hl1 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl1.position.set(-1.2, 1.4, 5.01); carGrp.add(hl1);
             let hl2 = new THREE.Mesh(new THREE.BoxGeometry(0.8, 0.4, 0.1), lightMat); hl2.position.set(1.2, 1.4, 5.01); carGrp.add(hl2);
-            
-            // Stop Lambaları
             let tl1 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl1.position.set(-1.2, 1.4, -5.01); carGrp.add(tl1);
             let tl2 = new THREE.Mesh(new THREE.BoxGeometry(1, 0.3, 0.1), redLightMat); tl2.position.set(1.2, 1.4, -5.01); carGrp.add(tl2);
 
@@ -722,30 +734,19 @@
             const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
             const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
 
-            // Tekerlekler
             const wheelGeo = new THREE.CylinderGeometry(1.2, 1.2, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
-            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, 1.2, 3); wFront.castShadow = true; bikeGrp.add(wFront);
-            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, 1.2, -2.5); wBack.castShadow = true; bikeGrp.add(wBack);
+            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, 1.2, 3); bikeGrp.add(wFront);
+            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, 1.2, -2.5); bikeGrp.add(wBack);
 
-            // Motor Bloğu (Gri)
-            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, 1.8, 0); engine.castShadow = true; bikeGrp.add(engine);
-
-            // Benzin Deposu (Sarı/Renkli Kızım)
+            let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, 1.8, 0); bikeGrp.add(engine);
             let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); 
-            tank.scale.set(1, 0.8, 1.8); tank.position.set(0, 2.8, 0.5); tank.castShadow = true; bikeGrp.add(tank);
+            tank.scale.set(1, 0.8, 1.8); tank.position.set(0, 2.8, 0.5); bikeGrp.add(tank);
 
-            // Koltuk (Siyah)
-            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, 2.5, -1.2); seat.castShadow = true; bikeGrp.add(seat);
-
-            // Çatallar & Gidon
+            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, 2.5, -1.2); bikeGrp.add(seat);
             let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, 2.5, 2.8); fork1.rotation.x = -Math.PI/8; bikeGrp.add(fork1);
             let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, 2.5, 2.8); fork2.rotation.x = -Math.PI/8; bikeGrp.add(fork2);
             let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, 3.8, 2.2); bikeGrp.add(handle);
-
-            // Far
             let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, 3, 3.2); bikeGrp.add(light);
-            
-            // Egzoz
             let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, 1.2, -1); bikeGrp.add(exhaust);
 
             return bikeGrp;
@@ -803,30 +804,23 @@
 
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); scene.background = new THREE.Color('#ffbe76'); scene.fog = new THREE.FogExp2('#ffbe76', 0.002, 300);
+            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
             container.insertBefore(renderer.domElement, container.firstChild);
 
-            scene.add(new THREE.AmbientLight(0xffdfa0, 0.4));
-            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); sl.castShadow = true;
-            sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
-            scene.add(sl);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+            let sl = new THREE.DirectionalLight(0xffffee, 1.2); sl.position.set(150, 200, -150); scene.add(sl);
             
-            let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
-            sunMesh.position.copy(sl.position); scene.add(sunMesh);
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
+            floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 0.8 }));
-            floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-
-            const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 });
+            const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
             const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-            
-            let road1 = new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat); road1.receiveShadow = true; scene.add(road1);
-            let road2 = new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat); road2.receiveShadow = true; scene.add(road2);
-            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); cr.receiveShadow = true; scene.add(cr);
+            scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
+            scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
+            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); scene.add(cr);
 
             for(let i = -280; i <= 280; i += 12) {
                 if(Math.abs(i) > 15) {
@@ -835,31 +829,20 @@
                 }
             }
 
-            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 1 }), new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 1 })];
-            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c', roughness: 0.8 }), new THREE.MeshStandardMaterial({ color: '#475569', roughness: 0.8 })];
+            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
+            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
 
             for(let i = 0; i < realEstate.length; i++) {
                 let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
                 let bGroup = new THREE.Group();
                 let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[i % wallMats.length]);
-                bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true;
+                bBody.position.y = bHeight / 2; bGroup.add(bBody);
                 let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
-                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; roof.castShadow = true; 
-                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); dr.position.set(0, 0, 7.5); 
-                bGroup.add(bBody); bGroup.add(roof); bGroup.add(dr);
+                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; bGroup.add(roof);
+                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
+                dr.position.set(0, 0, 7.5); bGroup.add(dr);
                 bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
                 colliders.push(new THREE.Box3().setFromObject(bBody));
-            }
-
-            for(let i=0; i<200; i++) {
-                let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
-                // Ağaçların oyuncunun doğduğu yerin (0,0) çok yakınına çıkmasını tamamen engelledim
-                if(Math.abs(tx) > 25 && Math.abs(tz) > 25 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
-                    let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
-                    trunk.position.y = 1.5; trunk.castShadow = true; treeGrp.add(trunk);
-                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; l.castShadow = true; treeGrp.add(l); }
-                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
-                }
             }
 
             // OYUNCUNUN SATIN ALDIĞI ARAÇLARI BARINDIRACAK GRUP
@@ -870,9 +853,7 @@
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
             worldPlayerObj.model.scale.set(sc, sh, sc); 
-            worldPlayerObj.root.traverse((node) => { if(node.isMesh) { node.castShadow = true; node.receiveShadow = true; }});
-            // OYUNCUYU YUKARIDAN BAŞLAT Kİ YERE GÖMÜLMESİN (HAREKET KİLİT ÇÖZÜMÜ)
-            worldPlayerObj.root.position.set(0, 2, 0); 
+            worldPlayerObj.root.position.set(0, 2, 0); // Yere gömülme fix
             scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
@@ -886,17 +867,13 @@
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
             });
             
-            // HAREKET KİLİTLENMESİNE KARŞI SERBEST KAMERA İZNİ
             document.addEventListener('pointerlockchange', () => {
                 if(document.pointerLockElement === container) {
                     document.getElementById('esc-menu').style.display = 'none';
-                    isInWorld = true; 
-                    lastTime = performance.now();
+                    isInWorld = true; lastTime = performance.now();
                 } else {
                     document.getElementById('esc-menu').style.display = 'flex'; 
-                    isInWorld = false;
-                    for(let k in keys) keys[k] = false; 
-                    emitMovement(false); 
+                    isInWorld = false; for(let k in keys) keys[k] = false; emitMovement(false); 
                 }
             });
 
@@ -907,11 +884,8 @@
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
-            // GÜVENLİ TIKLAMA İLE OYUNA DÖNÜŞ EKLENDİ
             container.addEventListener('click', () => {
-                if(document.pointerLockElement !== container) {
-                    try { container.requestPointerLock(); } catch(err) {}
-                }
+                if(document.pointerLockElement !== container) { try { container.requestPointerLock(); } catch(err) {} }
             });
 
             updateWorldVehicles(); // Satın alınan araçları yükle
@@ -990,7 +964,6 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                // GÜVENLİ ÇARPIŞMA (YERE GÖMÜLMEYİ ENGELLER)
                 let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
                 let collision = false;
                 for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
