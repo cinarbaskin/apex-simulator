@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Apex Simulator - Online</title>
     
+    <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
         window.addEventListener('error', function(e) {
@@ -256,18 +257,53 @@
     <script>
         let socket;
         let otherPlayers = {}; 
+        let colliders = []; // ÇARPIŞMA (COLLISION) KUTULARI GERİ EKLENDİ
 
-        // GÜVENLİ VARSAYILAN OYUNCU OBJESİ (Karşı taraf eksik veri gönderirse hayat kurtarır)
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         let player = { username: "", cash: 0, debt: 0, inventory: { stocks: {}, metals: {} }, assets: { jobs: [], realEstate: [], vehicles: [] }, profile: { ...defaultProfile } };
 
         const generateMarket = (names, basePrice) => names.map(name => ({ name, price: basePrice + Math.random() * basePrice, history: [] }));
-        let stocks = generateMarket(["TechCo", "BankCorp", "AutoX", "HealthInc", "AeroSpace", "FoodChain"], 100);
-        let metals = generateMarket(["Altın", "Gümüş", "Bor", "Kömür", "Platin", "Bakır"], 50);
+        let stocks = generateMarket(["TechCo", "BankCorp", "AutoX", "HealthInc", "AeroSpace", "FoodChain", "RetailMax", "EnergyG", "MediaNet", "BuildPro", "GigaByte", "BioGen"], 100);
+        let metals = generateMarket(["Altın", "Gümüş", "Bor", "Kömür", "Platin", "Paladyum", "Bakır", "Alüminyum"], 50);
         
-        const jobs = [{ id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Büfe", cost: 12000, income: 30 }, { id: 4, name: "Restoran", cost: 120000, income: 150 }];
-        const realEstate = [{ id: 1, name: "Konteyner Ev", cost: 40000, income: 90, tax: 10 }, { id: 2, name: "Stüdyo Daire", cost: 300000, income: 550, tax: 70 }, { id: 3, name: "Müstakil Ev", cost: 2000000, income: 3000, tax: 400 }, { id: 4, name: "Villa", cost: 5000000, income: 6500, tax: 800 }];
-        const vehicles = [{ id: 1, name: "Mavi Scooter", cost: 5000, income: 12, tax: 2, color: '#3b82f6', category: 'Motor' }, { id: 2, name: "Kırmızı ATV", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'ATV' }, { id: 3, name: "Siyah Sedan", cost: 350000, income: 500, tax: 70, color: '#111111', category: 'Araba' }, { id: 4, name: "Spor Araba", cost: 7500000, income: 7500, tax: 900, color: '#f59e0b', category: 'Spor' }];
+        // 20 ADET MESLEK GERİ EKLENDİ
+        const jobs = [
+            { id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
+            { id: 4, name: "Çiçekçi", cost: 7500, income: 22 }, { id: 5, name: "Büfe", cost: 12000, income: 30 }, { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
+            { id: 7, name: "İnternet Kafe", cost: 25000, income: 50 }, { id: 8, name: "Oto Yıkama", cost: 35000, income: 65 }, { id: 9, name: "Kuru Temizleme", cost: 50000, income: 85 },
+            { id: 10, name: "Fırın", cost: 75000, income: 110 }, { id: 11, name: "Restoran", cost: 120000, income: 150 }, { id: 12, name: "Süpermarket", cost: 250000, income: 280 },
+            { id: 13, name: "Giyim Mağazası", cost: 400000, income: 400 }, { id: 14, name: "Spor Salonu", cost: 600000, income: 550 }, { id: 15, name: "Sinema Salonu", cost: 1000000, income: 850 },
+            { id: 16, name: "Otel", cost: 2500000, income: 1800 }, { id: 17, name: "AVM", cost: 8000000, income: 4500 }, { id: 18, name: "Fabrika", cost: 15000000, income: 7500 },
+            { id: 19, name: "Teknoloji Şirketi", cost: 50000000, income: 20000 }, { id: 20, name: "Uluslararası Holding", cost: 150000000, income: 50000 }
+        ];
+
+        // 20 ADET GAYRİMENKUL GERİ EKLENDİ
+        const realEstate = [
+            { id: 1, name: "Çadır Kamp Alanı", cost: 15000, income: 40, tax: 5 }, { id: 2, name: "Konteyner Ev", cost: 40000, income: 90, tax: 10 },
+            { id: 3, name: "Köy Evi", cost: 80000, income: 160, tax: 20 }, { id: 4, name: "Gecekondu", cost: 150000, income: 280, tax: 30 },
+            { id: 5, name: "Prefabrik Ev", cost: 220000, income: 400, tax: 50 }, { id: 6, name: "Stüdyo Daire", cost: 300000, income: 550, tax: 70 },
+            { id: 7, name: "1+1 Daire", cost: 450000, income: 800, tax: 100 }, { id: 8, name: "2+1 Daire", cost: 650000, income: 1100, tax: 150 },
+            { id: 9, name: "3+1 Apartman", cost: 800000, income: 1400, tax: 200 }, { id: 10, name: "Dubleks Ev", cost: 1200000, income: 2000, tax: 300 },
+            { id: 11, name: "Müstakil Ev", cost: 2000000, income: 3000, tax: 400 }, { id: 12, name: "Lüks Villa", cost: 5000000, income: 6500, tax: 800 },
+            { id: 13, name: "Çiftlik Evi", cost: 8000000, income: 10000, tax: 1200 }, { id: 14, name: "Tarihi Köşk", cost: 12000000, income: 14000, tax: 1800 },
+            { id: 15, name: "Sahil Yalısı", cost: 18000000, income: 20000, tax: 2500 }, { id: 16, name: "Lüks Rezidans", cost: 25000000, income: 26000, tax: 3500 },
+            { id: 17, name: "Plaza Katı", cost: 60000000, income: 55000, tax: 7000 }, { id: 18, name: "AVM Arsası", cost: 150000000, income: 120000, tax: 15000 },
+            { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
+        ];
+
+        // 20 ADET TAŞIT GERİ EKLENDİ
+        const vehicles = [
+            { id: 1, name: "Mavi Bisiklet", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Mavi' }, { id: 2, name: "Mavi Scooter", cost: 5000, income: 12, tax: 2, color: '#3b82f6', category: 'Mavi' },
+            { id: 3, name: "Sarı Scooter", cost: 8000, income: 18, tax: 3, color: '#f59e0b', category: 'Sarı' }, { id: 4, name: "Sarı 50cc Motor", cost: 15000, income: 30, tax: 5, color: '#f59e0b', category: 'Sarı' },
+            { id: 5, name: "Kırmızı Motorsiklet", cost: 30000, income: 55, tax: 8, color: '#ef4444', category: 'Kırmızı' }, { id: 6, name: "Kırmızı ATV", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Kırmızı' },
+            { id: 7, name: "Siyah Klasik Motor", cost: 110000, income: 180, tax: 25, color: '#111111', category: 'Siyah' }, { id: 8, name: "Siyah Hatchback", cost: 180000, income: 280, tax: 40, color: '#111111', category: 'Siyah' },
+            { id: 9, name: "Mor Hatchback", cost: 240000, income: 360, tax: 50, color: '#8b5cf6', category: 'Mor' }, { id: 10, name: "Mor Sedan", cost: 350000, income: 500, tax: 70, color: '#8b5cf6', category: 'Mor' },
+            { id: 11, name: "Yeşil Aile Aracı", cost: 500000, income: 680, tax: 90, color: '#10b981', category: 'Yeşil' }, { id: 12, name: "Yeşil Minivan", cost: 750000, income: 950, tax: 120, color: '#10b981', category: 'Yeşil' },
+            { id: 13, name: "Turuncu Pikap", cost: 1100000, income: 1300, tax: 160, color: '#f97316', category: 'Turuncu' }, { id: 14, name: "Turuncu Panelvan", cost: 1600000, income: 1800, tax: 220, color: '#f97316', category: 'Turuncu' },
+            { id: 15, name: "Kahverengi Klasik", cost: 2300000, income: 2500, tax: 300, color: '#78350f', category: 'Kahverengi' }, { id: 16, name: "Kahverengi Karavan", cost: 4000000, income: 4200, tax: 500, color: '#78350f', category: 'Kahverengi' },
+            { id: 17, name: "Kırmızı Spor Araba", cost: 7500000, income: 7500, tax: 900, color: '#ef4444', category: 'Kırmızı' }, { id: 18, name: "Siyah Lüks SUV", cost: 15000000, income: 14000, tax: 1800, color: '#111111', category: 'Siyah' },
+            { id: 19, name: "Sarı Süper Araba", cost: 35000000, income: 30000, tax: 4000, color: '#f59e0b', category: 'Sarı' }, { id: 20, name: "Siyah Özel Jet", cost: 150000000, income: 110000, tax: 15000, color: '#111111', category: 'Siyah' }
+        ];
 
         let dialogueStep = 0; let isTyping = false; let typeInterval;
         const dialogues = [
@@ -323,7 +359,6 @@
             document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); 
         }
 
-        // --- MULTIPLAYER SİSTEMİ (Sıfır Toleranslı Güvenlik Duvarı) ---
         function connectMultiplayer() {
             if (typeof io === 'undefined') { logActivity(`<strong style="color:var(--accent-red)">[HATA] Offline Mod</strong>`); return; }
             socket = io();
@@ -337,7 +372,6 @@
             socket.on('newPlayer', (playerInfo) => { addOtherPlayer(playerInfo); logActivity(`<strong style="color:var(--accent-blue)">[SİSTEM]</strong> Yeni oyuncu bağlandı.`); });
 
             socket.on('playerMoved', (playerInfo) => {
-                // MATEMATİK KALKANI: Karşı taraf bozuk veri yollarsa motoru çökertmemek için görmezden gel
                 let px = Number(playerInfo.x); let py = Number(playerInfo.y); let pz = Number(playerInfo.z); let prot = Number(playerInfo.rotation) || 0;
                 if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
 
@@ -370,9 +404,8 @@
 
         function addOtherPlayer(info) {
             let px = Number(info.x); let py = Number(info.y); let pz = Number(info.z);
-            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; // Bozuk oyuncu yaratma
+            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
 
-            // Eski oyuncu modeli varsa temizle (Duplicate bug koruması)
             if (otherPlayers[info.id]) {
                 if(scene) scene.remove(otherPlayers[info.id].group);
                 if(otherPlayers[info.id].tag) otherPlayers[info.id].tag.remove();
@@ -401,7 +434,7 @@
         function emitMovement(isMovingState) {
             if(!socket || !worldPlayerObj) return;
             let px = worldPlayerObj.root.position.x; let py = worldPlayerObj.root.position.y; let pz = worldPlayerObj.root.position.z;
-            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; // Kendi bozuk verimizi başkasına bulaştırma
+            if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
             
             socket.emit('playerMovement', { x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, username: player.username, profile: player.profile });
         }
@@ -483,26 +516,20 @@
 
         function buildCharacterModel(m, style) {
             const group = new THREE.Group(); const model = new THREE.Group(); group.add(model);
-            
-            // HATA ÇÖZÜMÜ: Mesh zincirlemesi düzeltildi, model bütünüyle kaymayacak
             let jacket = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), m.jacket); jacket.position.y = 2.25; model.add(jacket);
             let shirt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.51, 0.05), m.shirt); shirt.position.set(0, 2.25, -0.32); model.add(shirt);
             let tie = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.9, 0.08), m.tie); tie.position.set(0, 2.4, -0.34); model.add(tie);
-            
             let head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), m.skin); head.position.y = 3.5; model.add(head);
-            
             let hairC = new THREE.Group(); model.add(hairC);
             const addP = (geo, mat, x, y, z, rx=0, ry=0, rz=0) => { let mh=new THREE.Mesh(geo,mat); mh.position.set(x,y,z); mh.rotation.set(rx,ry,rz); hairC.add(mh); };
             if (style === 'classic') { addP(new THREE.BoxGeometry(0.95,0.4,0.95), m.hair, 0,3.8,0); }
             else if (style === 'buzz') { addP(new THREE.BoxGeometry(0.92,0.2,0.92), m.hair, 0,3.85,0); }
             else if (style === 'messy') { addP(new THREE.BoxGeometry(0.95,0.3,0.95), m.hair, 0,3.9,0); addP(new THREE.ConeGeometry(0.15,0.4,4), m.hair, 0,4.1,0, -0.3,0,0.1); }
             else if (style === 'wavy') { addP(new THREE.BoxGeometry(0.92,0.3,0.92), m.hair, 0,3.85,0); addP(new THREE.CylinderGeometry(0.15,0.15,0.6,8), m.hair, 0,4.15,-0.4, 0,0,Math.PI/2); }
-
             let eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeL.position.set(-0.2,3.6,-0.46); model.add(eyeL);
             let eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeR.position.set(0.2,3.6,-0.46); model.add(eyeR);
             let pL = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pL.position.set(-0.2,3.6,-0.47); model.add(pL);
             let pR = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pR.position.set(0.2,3.6,-0.47); model.add(pR);
-
             const limb = (isLeg) => {
                 let grp = new THREE.Group(); let up = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), isLeg?m.pant:m.jacket); up.position.y = -0.6; grp.add(up);
                 let down = new THREE.Mesh(new THREE.BoxGeometry(isLeg?0.45:0.35, isLeg?0.3:0.4, isLeg?0.6:0.35), isLeg?m.shoe:m.skin); down.position.set(0, isLeg?-1.35:-1.4, isLeg?-0.1:0); grp.add(down);
@@ -510,7 +537,6 @@
             };
             let lArm = limb(false); lArm.position.set(-0.85, 2.9, 0); model.add(lArm); let rArm = limb(false); rArm.position.set(0.85, 2.9, 0); model.add(rArm);
             let lLeg = limb(true); lLeg.position.set(-0.35, 1.5, 0); model.add(lLeg); let rLeg = limb(true); rLeg.position.set(0.35, 1.5, 0); model.add(rLeg);
-
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
         }
 
@@ -559,10 +585,10 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
-        // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ ---
+        // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ VE EVLERİN/AĞAÇLARIN/YOLLARIN EKLENMESİ ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
-        let isInWorld = false; let colliders = []; 
+        let isInWorld = false; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
         function init3DWorld() {
@@ -575,16 +601,62 @@
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
             let sl = new THREE.DirectionalLight(0xffffee, 1.2); sl.position.set(150, 200, -150); scene.add(sl);
-            
-            // HATA ÇÖZÜMÜ: Işık topu ana evreni kaydırmasın
             let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
             sunMesh.position.copy(sl.position); scene.add(sunMesh);
 
             let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
             floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
+            // 1. YOLLAR VE ŞERİTLER GERİ EKLENDİ
             const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
-            scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat)); scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
+            const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+            scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
+            scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
+            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); scene.add(cr);
+
+            for(let i = -280; i <= 280; i += 12) {
+                if(Math.abs(i) > 15) {
+                    let lx = new THREE.Mesh(new THREE.BoxGeometry(5, 0.16, 0.5), lineMat); lx.position.set(i, 0, 0); scene.add(lx);
+                    let lz = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 5), lineMat); lz.position.set(0, 0, i); scene.add(lz);
+                }
+            }
+
+            // 2. GAYRİMENKULLER (BİNALAR) VE ÇARPIŞMA KUTULARI GERİ EKLENDİ
+            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
+            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
+
+            for(let i = 0; i < realEstate.length; i++) {
+                let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
+                let bGroup = new THREE.Group();
+                let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[i % wallMats.length]);
+                bBody.position.y = bHeight / 2; bGroup.add(bBody);
+                let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
+                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; bGroup.add(roof);
+                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
+                dr.position.set(0, 0, 7.5); bGroup.add(dr);
+                bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
+                colliders.push(new THREE.Box3().setFromObject(bBody));
+            }
+
+            // 3. TAŞITLAR (ARABALAR) GERİ EKLENDİ
+            for(let i = 0; i < vehicles.length; i++) {
+                let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50; let carGrp = new THREE.Group();
+                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 })); b.position.set(0, 0.8, 0); carGrp.add(b);
+                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); ps.position.set(0, 0.08, 0); carGrp.add(ps);
+                carGrp.position.set(vx, 0, vz); carGrp.updateMatrixWorld(true); scene.add(carGrp);
+                let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
+            }
+
+            // 4. AĞAÇLAR GERİ EKLENDİ
+            for(let i=0; i<200; i++) {
+                let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
+                if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
+                    let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
+                    trunk.position.y = 1.5; treeGrp.add(trunk);
+                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; treeGrp.add(l); }
+                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
+                }
+            }
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
@@ -607,7 +679,6 @@
             });
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== container) return; 
-                // HATA ÇÖZÜMÜ: Touchpad veya tarayıcı bugından gelen boş mouse verisi NaN yapmasın!
                 let mx = e.movementX || 0; let my = e.movementY || 0;
                 camYaw -= mx * 0.002; camPitch -= my * 0.002; 
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
@@ -622,9 +693,7 @@
             isInWorld = true; fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
             if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             try { fw.requestPointerLock(); } catch(e) {}
-            // Oyuna girince zamanı sıfırla ki devasa bir atlama yaşanmasın
-            lastTime = performance.now();
-            emitMovement(false);
+            lastTime = performance.now(); emitMovement(false);
         }
         
         function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
@@ -632,7 +701,6 @@
 
         function animateWorld() {
             requestAnimationFrame(animateWorld);
-            // HATA ÇÖZÜMÜ: Arka planda bekleyen sekmelerin fizik patlamasını (Infinity) engelle!
             const delta = Math.min((performance.now() - lastTime) / 1000, 0.1); 
             lastTime = performance.now();
 
@@ -643,7 +711,6 @@
             const nameTag = document.getElementById('player-name-tag');
             if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) { nameTag.style.display = 'none'; return; }
 
-            // MATEMATİK KALKANI: Karakterin kendi pozisyonu veya kamerası NaN olmuşsa sıfırla kurtar.
             if (isNaN(camYaw) || isNaN(camPitch)) { camYaw = 0; camPitch = 0; }
             if (isNaN(worldPlayerObj.root.position.x) || isNaN(worldPlayerObj.root.position.y) || isNaN(worldPlayerObj.root.position.z)) {
                 worldPlayerObj.root.position.set(0, 0, 0); velocityY = 0;
@@ -662,7 +729,13 @@
             if(isMoving) {
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
-                worldPlayerObj.root.position.copy(nextPos);
+                
+                // GÜVENLİ ÇARPIŞMA (COLLISION) KONTROLÜ GERİ EKLENDİ
+                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
+                let collision = false;
+                for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
+                
+                if(!collision) worldPlayerObj.root.position.copy(nextPos);
                 worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
             }
 
@@ -678,12 +751,15 @@
             }
 
             const scY = worldPlayerObj.model.scale.y || 1;
-            camera.position.x = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
-            camera.position.y = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
-            camera.position.z = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
-            camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+            let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
+            let targetCamY = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
+            let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
+            
+            if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
+                camera.position.set(targetCamX, targetCamY, targetCamZ);
+                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+            }
 
-            // ETİKET (NAMETAG) GÜVENLİK DUVARI
             let tagPos = new THREE.Vector3();
             worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
             if(isNaN(tagPos.x) || isNaN(tagPos.y) || tagPos.z > 1) {
@@ -712,7 +788,9 @@
         }
 
         window.addEventListener('resize', () => {
-            if(isInWorld && camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
+            if(isInWorld && camera && renderer) {
+                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
+            }
         });
     </script>
 </body>
