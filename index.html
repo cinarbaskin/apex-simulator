@@ -713,6 +713,7 @@
                 if(category !== 'jobs' && player.assets.plotId === -1) {
                     alert("Satın alındı! Eşyalarını 3D dünyada görmek için Gayrimenkul sekmesinden bir ARSA satın almalısın.");
                 }
+                
                 if (category === 'vehicles' && player.assets.selectedVehicle === -1) player.assets.selectedVehicle = id;
                 if (category === 'realEstate' && player.assets.selectedRealEstate === -1) player.assets.selectedRealEstate = id;
 
@@ -776,198 +777,6 @@
             let lArm = limb(false); lArm.position.set(-0.85, 2.9, 0); model.add(lArm); let rArm = limb(false); rArm.position.set(0.85, 2.9, 0); model.add(rArm);
             let lLeg = limb(true); lLeg.position.set(-0.35, 1.5, 0); model.add(lLeg); let rLeg = limb(true); rLeg.position.set(0.35, 1.5, 0); model.add(rLeg);
             return { root: group, model: model, lArm, rArm, lLeg, rLeg };
-        }
-
-        // --- MODERN ÇİT SİSTEMİ ---
-        function createFenceWall(width) {
-            let grp = new THREE.Group();
-            let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
-            base.position.y = 0.25; base.castShadow = true; grp.add(base);
-            
-            let railMat = new THREE.MeshStandardMaterial({color:'#111', roughness:0.8});
-            let r1 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r1.position.y = 1.2; grp.add(r1);
-            let r2 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r2.position.y = 2.0; grp.add(r2);
-            
-            let postCount = Math.floor(width / 3);
-            let postGeo = new THREE.BoxGeometry(0.15, 2.2, 0.15);
-            for(let i=0; i<=postCount; i++) {
-                let post = new THREE.Mesh(postGeo, railMat);
-                post.position.set(-width/2 + (width/postCount)*i, 1.1, 0); post.castShadow = true; grp.add(post);
-            }
-            return grp;
-        }
-
-        // --- BÜYÜYEN MODERN BİNA TASARIMI ---
-        function createParametricBuilding(id) {
-            let bGroup = new THREE.Group();
-            let scaleMult = 1 + (id * 0.15); // Fiyat arttıkça devasa hale gelir
-            
-            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#e2e8f0' })];
-            const roofMats = [new THREE.MeshStandardMaterial({ color: '#1e293b' }), new THREE.MeshStandardMaterial({ color: '#475569' })]; 
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#38bdf8', metalness: 0.9, roughness: 0.1 });
-
-            let bHeight = 8 * scaleMult; let bWidth = 14 * scaleMult; let bDepth = 12 * scaleMult;
-            
-            let bBody = new THREE.Mesh(new THREE.BoxGeometry(bWidth, bHeight, bDepth), wallMats[id % 2]);
-            bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true; bGroup.add(bBody);
-            
-            if(id % 2 === 0) {
-                let roof = new THREE.Mesh(new THREE.ConeGeometry(bWidth * 0.8, bHeight * 0.4, 4), roofMats[id % 2]);
-                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + (bHeight*0.2); roof.castShadow = true; bGroup.add(roof);
-            } else {
-                let roof = new THREE.Mesh(new THREE.BoxGeometry(bWidth*1.1, bHeight*0.1, bDepth*1.1), roofMats[id % 2]);
-                roof.position.y = bHeight; roof.castShadow = true; bGroup.add(roof);
-            }
-            
-            // Dev Camlar (Modern Villa Hissi)
-            let dr = new THREE.Mesh(new THREE.BoxGeometry(3 * scaleMult, 4 * scaleMult, 0.2), new THREE.MeshStandardMaterial({ color: '#333' })); 
-            dr.position.set(0, (4*scaleMult)/2, bDepth/2 + 0.05); bGroup.add(dr);
-
-            let win1 = new THREE.Mesh(new THREE.BoxGeometry(4 * scaleMult, 5 * scaleMult, 0.2), glassMat); 
-            win1.position.set(-bWidth/3, (5*scaleMult)/2 + 2, bDepth/2 + 0.05); bGroup.add(win1);
-            
-            let win2 = new THREE.Mesh(new THREE.BoxGeometry(4 * scaleMult, 5 * scaleMult, 0.2), glassMat); 
-            win2.position.set(bWidth/3, (5*scaleMult)/2 + 2, bDepth/2 + 0.05); bGroup.add(win2);
-
-            return bGroup;
-        }
-
-        // --- ARAÇ ÇİZİMİ ---
-        function createParametricCar(colorHex, type) {
-            const grp = new THREE.Group();
-            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#222222', metalness: 0.9, roughness: 0.1 });
-
-            let bw=4.2, bh=1.2, bd=10; let cw=3.6, ch=1.4, cd=4.5, cz=-0.5; let wy=1, wr=0.8;
-            if(type === 'hatchback') { bd=8; cd=4.5; cz=1; }
-            else if(type === 'suv') { bh=1.8; bd=10.5; ch=1.5; cd=6; cz=0.5; wy=1.2; wr=1.0; }
-            else if(type === 'pickup') { bd=11; cd=3.5; cz=2; }
-            else if(type === 'van') { bh=2.5; bd=11; ch=1.5; cd=8; cz=0.5; }
-            else if(type === 'sport') { bh=0.9; bd=9.5; ch=1.0; cd=3.5; cz=-0.5; }
-            else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; ch=0.8; cd=3.0; cz=-1.0; }
-            else if(type === 'jet') { bw=3; bh=3; bd=16; ch=1.5; cd=4; cz=3; } 
-
-            if (type === 'jet') {
-                let body = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 16, 16), paint);
-                body.rotation.x = Math.PI/2; body.position.y = 3; body.castShadow = true; grp.add(body);
-                let wing = new THREE.Mesh(new THREE.BoxGeometry(16, 0.2, 4), paint); wing.position.set(0, 3, 0); wing.castShadow = true; grp.add(wing);
-                let tail = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3, 3), paint); tail.position.set(0, 5, -6); tail.castShadow = true; grp.add(tail);
-                return grp;
-            }
-
-            let base = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, bd), paint);
-            base.position.y = bh/2 + (wr - 0.4); base.castShadow = true; grp.add(base);
-
-            let cabin = new THREE.Mesh(new THREE.BoxGeometry(cw, ch, cd), glassMat);
-            cabin.position.set(0, bh + (wr-0.4) + ch/2, cz); cabin.castShadow = true; grp.add(cabin);
-
-            if(type === 'pickup') {
-                let bedL = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedL.position.set(bw/2 - 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedL);
-                let bedR = new THREE.Mesh(new THREE.BoxGeometry(0.2, bh, bd - cd - 1), paint); bedR.position.set(-bw/2 + 0.1, bh/2 + (wr-0.4) + bh/2, cz - cd/2 - (bd-cd-1)/2); grp.add(bedR);
-                let bedB = new THREE.Mesh(new THREE.BoxGeometry(bw, bh, 0.2), paint); bedB.position.set(0, bh/2 + (wr-0.4) + bh/2, -bd/2 + 0.1); grp.add(bedB);
-            }
-
-            if(type === 'sport' || type === 'super') {
-                let spoiler = new THREE.Mesh(new THREE.BoxGeometry(bw-0.2, 0.2, 1), blackMat); spoiler.position.set(0, bh + (wr-0.4) + 0.8, -bd/2 + 1); grp.add(spoiler);
-                let spL = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spL.position.set(bw/2 - 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spL);
-                let spR = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.8, 0.8), blackMat); spR.position.set(-bw/2 + 0.5, bh + (wr-0.4) + 0.4, -bd/2 + 1); grp.add(spR);
-            }
-
-            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 1, 16); wheelGeo.rotateZ(Math.PI/2);
-            let wx = bw/2 + 0.2; let wz = bd/2 - 2;
-            [[-wx, wy, wz], [wx, wy, wz], [-wx, wy, -wz], [wx, wy, -wz]].forEach(pos => { let w = new THREE.Mesh(wheelGeo, blackMat); w.position.set(...pos); w.castShadow = true; grp.add(w); });
-            
-            let lightMat = new THREE.MeshBasicMaterial({color:'#ffffff'}); let redMat = new THREE.MeshBasicMaterial({color:'#ff0000'});
-            let hl1=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl1);
-            let hl2=new THREE.Mesh(new THREE.BoxGeometry(0.8,0.4,0.1),lightMat); hl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, bd/2+0.01); grp.add(hl2);
-            let tl1=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl1.position.set(-bw/2+0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl1);
-            let tl2=new THREE.Mesh(new THREE.BoxGeometry(1,0.3,0.1),redMat); tl2.position.set(bw/2-0.8, bh+(wr-0.4)-0.2, -bd/2-0.01); grp.add(tl2);
-
-            return grp;
-        }
-
-        function createParametricBike(colorHex, type) {
-            const grp = new THREE.Group();
-            const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: 0.6, roughness: 0.2 });
-            const chrome = new THREE.MeshStandardMaterial({ color: '#cccccc', metalness: 0.9, roughness: 0.1 });
-            const blackMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.9 });
-            const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-
-            let wr = 1.2, frontZ = 3, backZ = -2.5, forkAngle = -Math.PI/8;
-            if(type === 'scooter' || type === 'bicycle') { wr=0.6; frontZ=2; backZ=-2; forkAngle=0; }
-            if(type === 'sportbike') { wr=1.0; frontZ=2.5; backZ=-2.5; forkAngle=-Math.PI/12; }
-
-            const wheelGeo = new THREE.CylinderGeometry(wr, wr, 0.4, 24); wheelGeo.rotateZ(Math.PI / 2);
-            let wFront = new THREE.Mesh(wheelGeo, blackMat); wFront.position.set(0, wr, frontZ); wFront.castShadow = true; grp.add(wFront);
-            let wBack = new THREE.Mesh(wheelGeo, blackMat); wBack.position.set(0, wr, backZ); wBack.castShadow = true; grp.add(wBack);
-
-            if(type !== 'bicycle' && type !== 'scooter') {
-                let engine = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 2.5), chrome); engine.position.set(0, wr+0.6, 0); grp.add(engine);
-                let tank = new THREE.Mesh(new THREE.SphereGeometry(0.9, 16, 16), paint); tank.scale.set(1, 0.8, 1.8); tank.position.set(0, wr+1.6, 0.5); grp.add(tank);
-                let exhaust = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.15, 3), chrome); exhaust.rotation.x = Math.PI/2; exhaust.position.set(0.7, wr, -1); grp.add(exhaust);
-            } else if (type === 'scooter') {
-                let board = new THREE.Mesh(new THREE.BoxGeometry(1, 0.2, 4), blackMat); board.position.set(0, wr, 0); grp.add(board);
-                let stem = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 4), chrome); stem.position.set(0, wr+2, frontZ); grp.add(stem);
-            }
-
-            let seat = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.4, 2), blackMat); seat.position.set(0, wr+1.3, -1.2); grp.add(seat);
-            
-            if (type !== 'scooter') {
-                let fork1 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork1.position.set(-0.3, wr+1.3, frontZ-0.2); fork1.rotation.x = forkAngle; grp.add(fork1);
-                let fork2 = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 3), chrome); fork2.position.set(0.3, wr+1.3, frontZ-0.2); fork2.rotation.x = forkAngle; grp.add(fork2);
-            }
-            
-            let handleHeight = type === 'scooter' ? wr+4 : wr+2.6;
-            let handleZ = type === 'scooter' ? frontZ : frontZ-0.6;
-            let handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 2.5), blackMat); handle.rotation.z = Math.PI/2; handle.position.set(0, handleHeight, handleZ); grp.add(handle);
-            let light = new THREE.Mesh(new THREE.SphereGeometry(0.4), lightMat); light.position.set(0, handleHeight-0.5, handleZ+0.5); grp.add(light);
-
-            return grp;
-        }
-
-        // --- YENİ EFSANEVİ PALMİYE TASARIMI ---
-        function createPottedPalm() {
-            const grp = new THREE.Group();
-            
-            let potMaterial = new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.7});
-            let potBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 3, 24), potMaterial);
-            potBase.position.y = 1.5; potBase.castShadow = true; potBase.receiveShadow = true; grp.add(potBase);
-            let potRim = new THREE.Mesh(new THREE.TorusGeometry(1.3, 0.2, 8, 24), potMaterial);
-            potRim.position.y = 3; potRim.rotation.x = Math.PI/2; potRim.castShadow = true; grp.add(potRim);
-            let soil = new THREE.Mesh(new THREE.CylinderGeometry(1.15, 1.15, 0.1, 24), new THREE.MeshStandardMaterial({color:'#2b1d14'}));
-            soil.position.y = 2.9; grp.add(soil);
-
-            let trunkGrp = new THREE.Group();
-            let segments = 7;
-            for(let i=0; i<segments; i++) {
-                let seg = new THREE.Mesh(new THREE.CylinderGeometry(0.45 - (i*0.03), 0.5 - (i*0.03), 1.6, 12), new THREE.MeshStandardMaterial({color: '#5c4033', roughness: 0.9}));
-                seg.position.y = 3.6 + (i * 1.3);
-                seg.rotation.z = Math.sin(i * 0.4) * 0.08; 
-                seg.castShadow = true; trunkGrp.add(seg);
-            }
-            grp.add(trunkGrp);
-
-            // Gür ve kavisli (baskılanmış kürelerden) yapraklar
-            let leavesMat = new THREE.MeshStandardMaterial({color: '#15803d', roughness: 0.4, side: THREE.DoubleSide});
-            let topY = 3.6 + (segments * 1.3) - 0.8;
-            
-            for(let i=0; i<14; i++) {
-                let isLong = i % 2 === 0;
-                let leafLen = isLong ? 7 : 5;
-                let dropAngle = isLong ? Math.PI / 3.5 : Math.PI / 6;
-                
-                let leafGeo = new THREE.SphereGeometry(1, 16, 16);
-                leafGeo.scale(0.8, 0.05, leafLen / 2); 
-                leafGeo.translate(0, 0, leafLen / 2); 
-                
-                let leaf = new THREE.Mesh(leafGeo, leavesMat);
-                leaf.position.set(0, topY, 0);
-                leaf.rotation.y = (Math.PI * 2 / 14) * i;
-                leaf.rotation.x = dropAngle; 
-                leaf.castShadow = true; grp.add(leaf);
-            }
-            return grp;
         }
 
         let profScene, profCamera, profRenderer, profilePlayerObj; let isProfileRotating = true;
@@ -1046,13 +855,6 @@
             let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 }));
             floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
-            for(let row=0; row<=10; row++) {
-                for(let col=0; col<=10; col++) {
-                    let px = col * 80 - 400; let pz = row * 80 - 400;
-                    let palm = createPottedPalm(); palm.position.set(px, 0, pz); scene.add(palm);
-                }
-            }
-
             globalPlotsGroup = new THREE.Group(); scene.add(globalPlotsGroup);
 
             let mats = createPlayerMaterials(player.profile);
@@ -1063,7 +865,8 @@
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement.tagName === 'INPUT') return;
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
-                if(e.key.toLowerCase() === ' ') keys.space = true; if(e.key === 'Shift') keys.shift = true;
+                if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
+                if(e.key === 'Shift') keys.shift = true;
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
             });
             window.addEventListener('keyup', (e) => {
@@ -1091,7 +894,6 @@
             syncPlots(); animateWorld();
         }
 
-        // --- ARSA ÇİZİM MOTORU (ÇİT, KAPI, EV VE ARAÇ SEÇİMİ) ---
         function syncPlots() {
             if(!globalPlotsGroup) return;
             let activeUsers = [player, ...Object.values(otherPlayers)];
@@ -1109,6 +911,25 @@
             });
         }
 
+        // --- MODERN ÇİT VE KAPI SİSTEMİ ÇİZİMİ ---
+        function createFenceWall(width) {
+            let grp = new THREE.Group();
+            let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
+            base.position.y = 0.25; base.castShadow = true; grp.add(base);
+            
+            let railMat = new THREE.MeshStandardMaterial({color:'#111', roughness:0.8});
+            let r1 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r1.position.y = 1.2; grp.add(r1);
+            let r2 = new THREE.Mesh(new THREE.BoxGeometry(width, 0.1, 0.1), railMat); r2.position.y = 2.0; grp.add(r2);
+            
+            let postCount = Math.floor(width / 3);
+            let postGeo = new THREE.BoxGeometry(0.15, 2.2, 0.15);
+            for(let i=0; i<=postCount; i++) {
+                let post = new THREE.Mesh(postGeo, railMat);
+                post.position.set(-width/2 + (width/postCount)*i, 1.1, 0); post.castShadow = true; grp.add(post);
+            }
+            return grp;
+        }
+
         function drawPlot(userData) {
             let pId = userData.assets ? userData.assets.plotId : userData.plotId;
             let pName = userData.profile ? userData.profile.name : userData.username;
@@ -1122,47 +943,41 @@
             let plotGrp = new THREE.Group(); plotGrp.name = 'plot_' + userData.username;
             let center = getPlotCenter(pId);
             
-            // Arsa Zemini
             let ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: '#333333'}));
             ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; ground.receiveShadow = true; plotGrp.add(ground);
 
-            // Arsa Sahibi Tabelası
             let signGeom = new THREE.BoxGeometry(6, 2, 0.2); let signMat = new THREE.MeshStandardMaterial({color: '#f59e0b'});
             let sign = new THREE.Mesh(signGeom, signMat); sign.position.set(0, 1.5, 30.5); plotGrp.add(sign);
 
-            // --- MODERN ÇİT VE GİRİŞ KAPISI ---
-            let fenceMat = new THREE.MeshStandardMaterial({color: '#222', roughness: 0.8});
-            let pillarMat = new THREE.MeshStandardMaterial({color: '#cbd5e1', roughness: 0.9});
-
-            // Arka ve Yan Çitler
+            // ÇİTLER (Arka, Sol, Sağ)
             let bFence = createFenceWall(60); bFence.position.set(0, 0, -30); plotGrp.add(bFence);
             let lFence = createFenceWall(60); lFence.rotation.y = Math.PI/2; lFence.position.set(-30, 0, 0); plotGrp.add(lFence);
             let rFence = createFenceWall(60); rFence.rotation.y = Math.PI/2; rFence.position.set(30, 0, 0); plotGrp.add(rFence);
             
-            // Ön Çitler (Ortada 10 birim Kapı Boşluğu var)
+            // ÇİTLER (Ön) - Ortada 10 birimlik boşluk (kapı)
             let fFenceL = createFenceWall(25); fFenceL.position.set(-17.5, 0, 30); plotGrp.add(fFenceL);
             let fFenceR = createFenceWall(25); fFenceR.position.set(17.5, 0, 30); plotGrp.add(fFenceR);
 
-            // Giriş Sütunları
+            // KAPI SÜTUNLARI
+            let pillarMat = new THREE.MeshStandardMaterial({color: '#cbd5e1', roughness: 0.9});
             let pilL = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 1.5), pillarMat); pilL.position.set(-5.5, 2, 30); pilL.castShadow = true; plotGrp.add(pilL);
             let pilR = new THREE.Mesh(new THREE.BoxGeometry(1.5, 4, 1.5), pillarMat); pilR.position.set(5.5, 2, 30); pilR.castShadow = true; plotGrp.add(pilR);
 
-            // Seçilen Evi İnşa Et (Arkaya)
+            // Evi İnşa Et
             if(selRE && selRE !== -1) {
                 let bMesh = createParametricBuilding(selRE);
-                bMesh.position.set(0, 0, -10); // Arsanın arka merkezi
+                bMesh.position.set(0, 0, -10); 
                 plotGrp.add(bMesh);
             }
 
-            // Seçilen Aracı İnşa Et (Öne)
+            // Aracı Çiz
             if(selVeh && selVeh !== -1) {
                 let vData = vehicles.find(v => v.id === selVeh);
                 if(vData) {
                     let vMesh; let type = vData.modelType;
                     if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
                     else vMesh = createParametricCar(vData.color, type);
-                    
-                    vMesh.position.set(0, 0, 15); // Arsanın ön kapı girişi arkası
+                    vMesh.position.set(0, 0, 15); 
                     plotGrp.add(vMesh);
                 }
             }
@@ -1170,7 +985,9 @@
             plotGrp.position.set(center.x, 0, center.z); globalPlotsGroup.add(plotGrp);
         }
 
+        // FOUCS BUG'I ÇÖZÜLDÜ (blur eklendi)
         function enterWorld() {
+            if(document.activeElement) document.activeElement.blur();
             let fw = document.getElementById('fullscreen-world');
             if(!fw.requestPointerLock) { alert("HATA: Cihazınız bu 3D modu desteklemiyor."); return; }
             fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
@@ -1181,8 +998,15 @@
             lastTime = performance.now();
         }
         
-        function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
-        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); lastTime = performance.now(); }
+        function exitWorld() { 
+            if(document.activeElement) document.activeElement.blur();
+            isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; 
+        }
+        
+        function resumeWorld() { 
+            if(document.activeElement) document.activeElement.blur();
+            document.getElementById('fullscreen-world').requestPointerLock(); lastTime = performance.now(); 
+        }
 
         function animateWorld() {
             requestAnimationFrame(animateWorld);
@@ -1215,7 +1039,6 @@
                 moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
                 
-                // GÜVENLİK KALKANI: Çitlerin içindeki 60x60 (yarıçap 30) alan kalkanla korunur.
                 let collision = false;
                 let activeUsers = [player, ...Object.values(otherPlayers)];
                 
