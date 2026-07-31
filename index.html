@@ -7,6 +7,10 @@
     
     <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- YENİ: GERÇEKÇİ 3D MODELLERİ YÜKLEMEK İÇİN GLTF LOADER EKLENDİ -->
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    
     <script>
         window.addEventListener('error', function(e) {
             if(e.target.src && e.target.src.includes('socket.io')) console.warn("Socket.io yüklenemedi. Offline mod.");
@@ -16,7 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root { --bg-dark: #090d16; --panel-bg: rgba(30, 41, 59, 0.92); --panel-hover: #334155; --text-light: #f8fafc; --text-muted: #94a3b8; --accent-blue: #3b82f6; --accent-green: #10b981; --accent-red: #ef4444; --accent-gold: #f59e0b; }
+        :root { --bg-dark: #090d16; --panel-bg: rgba(30, 41, 59, 0.92); --panel-hover: #334155; --text-light: #f8fafc; --text-muted: #94a3b8; --accent-blue: #3b82f6; --accent-green: #10b981; --accent-red: #ef4444; --accent-gold: #f59e0b; --accent-purple: #a855f7; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; user-select: none; }
         button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: all 0.2s; }
@@ -165,7 +169,6 @@
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
                 <div class="stat-box stat-assets">Varlıklar: <span id="ui-assets">0</span> TL</div>
                 <div class="stat-box stat-debt">Borç: <span id="ui-debt">0</span> TL</div>
-                <!-- BİLANÇO GÖSTERGESİ EKLENDİ -->
                 <div class="stat-box" style="border: 1px solid var(--accent-gold);">Net: <span id="ui-net" style="color: var(--accent-gold); font-weight:bold;">0</span> TL/sn</div>
             </div>
         </header>
@@ -180,7 +183,7 @@
                     <div class="nav-item" onclick="openTab('metals')"><i class="fa-solid fa-coins"></i> <span class="nav-text">Değerli Madenler</span></div>
                     <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
                     <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul</span></div>
-                    <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Taşıtlar</span></div>
+                    <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Taşıtlar & AI Ar-Ge</span></div>
                     <div class="nav-item" onclick="openTab('activity')"><i class="fa-solid fa-list-check"></i> <span class="nav-text">Son İşlemler</span></div>
                 </div>
             </aside>
@@ -188,7 +191,7 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Kariyer (Meslek):</strong> Sadece bulunduğun en yüksek seviyeli aktif mesleğin maaşını alırsın. Eski mesleklerin parası gelmez!<br><strong>2. Gayrimenkul & Araçlar:</strong> Satın aldığın tüm evler ve taşıtlar üst üste birikerek pasif kira getirir.<br><strong>3. Gerçek Zamanlı Ekonomi:</strong> Saniye başı elde ettiğin net kazancı (Net TL/sn) ekranın sağ üst köşesinden canlı olarak takip edebilirsin.</p></div></div>
+                    <div class="grid-container"><div class="card" style="grid-column: 1 / -1;"><h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3><p style="color: var(--text-muted); line-height: 1.6;"><strong>1. Kariyer (Meslek):</strong> Sadece bulunduğun en yüksek seviyeli aktif mesleğin maaşını alırsın. Eski mesleklerin parası gelmez!<br><strong>2. Gayrimenkul & Araçlar:</strong> Satın aldığın tüm evler ve taşıtlar üst üste birikerek pasif kira getirir.<br><strong>3. Gerçek Zamanlı Ekonomi:</strong> Saniye başı elde ettiğin net kazancı (Net TL/sn) ekranın sağ üst köşesinden canlı olarak takip edebilirsin.<br><strong>4. Yapay Zeka Ar-Ge Merkezi:</strong> Taşıt sekmesinin en üstünde yer alan YZ teknolojilerine yatırım yaparak taşıt gelirlerini katlayabilir, vergilerini silebilirsin.</p></div></div>
                 </div>
 
                 <div id="tab-profile" class="tab-content">
@@ -231,12 +234,25 @@
                     </div>
                 </div>
 
-                <div id="tab-stocks" class="tab-content"><h2>Hisse Senedi</h2><div class="card"><div class="market-list" id="stocks-list"></div></div></div>
-                <div id="tab-metals" class="tab-content"><h2>Madenler</h2><div class="card"><div class="market-list" id="metals-list"></div></div></div>
-                <div id="tab-jobs" class="tab-content"><h2>Kariyer</h2><div class="grid-container" id="jobs-list"></div></div>
-                <div id="tab-realestate" class="tab-content"><h2>Gayrimenkul</h2><div class="grid-container" id="realestate-list"></div></div>
-                <div id="tab-vehicles" class="tab-content"><h2>Taşıtlar Galerisi</h2><div class="grid-container" id="vehicles-list"></div></div>
-                <div id="tab-activity" class="tab-content"><h2>Son İşlemler (Multiplayer)</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
+                <div id="tab-stocks" class="tab-content"><h2>Hisse Senedi Piyasası</h2><div class="card"><div class="market-list" id="stocks-list"></div></div></div>
+                <div id="tab-metals" class="tab-content"><h2>Değerli Maden İşlemleri</h2><div class="card"><div class="market-list" id="metals-list"></div></div></div>
+                <div id="tab-jobs" class="tab-content"><h2>Kariyer Basamakları</h2><div class="grid-container" id="jobs-list"></div></div>
+                <div id="tab-realestate" class="tab-content"><h2>Gayrimenkul Piyasası</h2><div class="grid-container" id="realestate-list"></div></div>
+                
+                <div id="tab-vehicles" class="tab-content">
+                    <h2><i class="fa-solid fa-car"></i> Taşıtlar & Otomotiv Yapay Zeka (Ar-Ge)</h2>
+                    
+                    <div style="background: rgba(168, 85, 247, 0.05); border: 1px solid rgba(168, 85, 247, 0.3); border-radius: 12px; padding: 20px; margin-bottom: 30px;">
+                        <h3 style="color: var(--accent-purple); margin-bottom: 15px;"><i class="fa-solid fa-microchip"></i> Ar-Ge Merkezi: Taşıt Verimlilik Teknolojileri</h3>
+                        <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Bu üst düzey algoritmalarla taşıt filonun gelirini katlayıp vergilerini silebilirsin.</p>
+                        <div class="grid-container" id="ai-tech-list"></div>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi (Pasif Kira Geliri)</h3>
+                    <div class="grid-container" id="vehicles-list"></div>
+                </div>
+
+                <div id="tab-activity" class="tab-content"><h2>Son İşlemler (Multiplayer Logları)</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
             </main>
         </div>
     </div>
@@ -262,7 +278,13 @@
         let colliders = [];
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
-        let player = { username: "", cash: 0, debt: 0, inventory: { stocks: {}, metals: {} }, assets: { jobs: [], realEstate: [], vehicles: [] }, profile: { ...defaultProfile } };
+        
+        let player = { 
+            username: "", cash: 0, debt: 0, 
+            inventory: { stocks: {}, metals: {} }, 
+            assets: { jobs: [], realEstate: [], vehicles: [], aiTech: [] }, 
+            profile: { ...defaultProfile } 
+        };
 
         const generateMarket = (names, basePrice) => names.map(name => ({ name, price: basePrice + Math.random() * basePrice, history: [] }));
         let stocks = generateMarket(["TechCo", "BankCorp", "AutoX", "HealthInc", "AeroSpace", "FoodChain", "RetailMax", "EnergyG", "MediaNet", "BuildPro", "GigaByte", "BioGen"], 100);
@@ -291,7 +313,6 @@
             { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
         ];
 
-        // 20 ADET DETAYLANDIRILMIŞ YENİ TAŞIT LİSTESİ
         const vehicles = [
             { id: 1, name: "Şehir Bisikleti (21 Vites)", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Bisiklet' },
             { id: 2, name: "Elektrikli Scooter (250W)", cost: 5000, income: 12, tax: 2, color: '#10b981', category: 'Scooter' },
@@ -315,6 +336,13 @@
             { id: 20, name: "Özel Tasarım Çift Motorlu İş Jeti", cost: 250000000, income: 200000, tax: 25000, color: '#ffffff', category: 'Havacılık' }
         ];
 
+        const aiTechnologies = [
+            { id: 1, name: "PINNs Motor Optimizasyonu", cost: 5000000, desc: "Fizik Bilgili Sinir Ağları ile yakıt tasarrufu. Taşıt vergilerini <b>%50 azaltır</b>." },
+            { id: 2, name: "GNNs Aerodinamik Tasarım", cost: 15000000, desc: "Graf Sinir Ağları ile daha çekici gövdeler. Taşıt kira gelirlerini <b>%50 artırır</b>." },
+            { id: 3, name: "DRL Otonom Sürüş (Robo-Taksi)", cost: 50000000, desc: "Derin Takviyeli Öğrenme ile 7/24 otonom taksi. Araç gelirleri <b>%150 (2.5 kat) artar</b>." },
+            { id: 4, name: "ROMs Dijital İkiz (Digital Twin)", cost: 100000000, desc: "Arızaları saniyeler önceden çözen vekil modeller. <b>Tüm taşıt vergilerini sıfırlar (0 TL)</b> ve taşıtların net varlık değerini <b>%50 artırır</b>." }
+        ];
+
         let dialogueStep = 0; let isTyping = false; let typeInterval;
         const dialogues = [
             { speaker: "Patron", title: "Genel Müdür", type: "boss", text: "Şirkete katkıların büyüktü ama yolları ayırıyoruz.", expression: { bossBrow: "M 43 41 Q 50 38 57 41", bossMouth: "M 50 70 Q 60 62 70 70", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" } },
@@ -330,7 +358,9 @@
             if(saved) {
                 try {
                     let parsed = JSON.parse(saved); player.username = user; player.cash = parsed.cash || 0; player.debt = parsed.debt || 0;
-                    player.inventory = { ...player.inventory, ...(parsed.inventory || {}) }; player.assets = { ...player.assets, ...(parsed.assets || {}) };
+                    player.inventory = { ...player.inventory, ...(parsed.inventory || {}) }; 
+                    player.assets = { jobs: [], realEstate: [], vehicles: [], aiTech: [], ...(parsed.assets || {}) };
+                    if(!player.assets.aiTech) player.assets.aiTech = [];
                     player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
                 } catch(e) { player.username = user; }
                 document.getElementById('auth-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); 
@@ -372,42 +402,25 @@
         function connectMultiplayer() {
             if (typeof io === 'undefined') { logActivity(`<strong style="color:var(--accent-red)">[HATA] Offline Mod</strong>`); return; }
             socket = io();
-
             socket.on('connect', () => { logActivity(`<strong style="color:var(--accent-green)">[ONLINE] Sunucuya bağlanıldı!</strong>`); });
-
-            socket.on('currentPlayers', (serverPlayers) => {
-                for(let id in serverPlayers) if(id !== socket.id) addOtherPlayer(serverPlayers[id]);
-            });
-
+            socket.on('currentPlayers', (serverPlayers) => { for(let id in serverPlayers) if(id !== socket.id) addOtherPlayer(serverPlayers[id]); });
             socket.on('newPlayer', (playerInfo) => { addOtherPlayer(playerInfo); logActivity(`<strong style="color:var(--accent-blue)">[SİSTEM]</strong> Yeni oyuncu bağlandı.`); });
-
             socket.on('playerMoved', (playerInfo) => {
                 let px = Number(playerInfo.x); let py = Number(playerInfo.y); let pz = Number(playerInfo.z); let prot = Number(playerInfo.rotation) || 0;
                 if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-
                 if(otherPlayers[playerInfo.id]) {
-                    let op = otherPlayers[playerInfo.id];
-                    op.group.position.set(px, py, pz);
-                    op.group.rotation.y = prot;
-                    
+                    let op = otherPlayers[playerInfo.id]; op.group.position.set(px, py, pz); op.group.rotation.y = prot;
                     if(playerInfo.isMoving) {
                         op.animTime += 0.15; let swing = Math.sin(op.animTime) * 0.8;
                         op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing; op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
-                    } else {
-                        op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0;
-                    }
+                    } else { op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0; }
                     op.tagUser.innerText = (playerInfo.profile && playerInfo.profile.name) ? playerInfo.profile.name : (playerInfo.username || "Bilinmeyen");
-                } else {
-                    addOtherPlayer(playerInfo);
-                }
+                } else { addOtherPlayer(playerInfo); }
             });
-
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
                     logActivity(`<strong style="color:var(--accent-red)">[SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} ayrıldı.`);
-                    if(scene) scene.remove(otherPlayers[id].group);
-                    if(otherPlayers[id].tag) otherPlayers[id].tag.remove();
-                    delete otherPlayers[id];
+                    if(scene) scene.remove(otherPlayers[id].group); if(otherPlayers[id].tag) otherPlayers[id].tag.remove(); delete otherPlayers[id];
                 }
             });
         }
@@ -415,29 +428,13 @@
         function addOtherPlayer(info) {
             let px = Number(info.x); let py = Number(info.y); let pz = Number(info.z);
             if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-
-            if (otherPlayers[info.id]) {
-                if(scene) scene.remove(otherPlayers[info.id].group);
-                if(otherPlayers[info.id].tag) otherPlayers[info.id].tag.remove();
-            }
-
-            let prof = { ...defaultProfile, ...(info.profile || {}) };
-            let mats = createPlayerMaterials(prof);
-            let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
-            
-            let h = parseInt(prof.height); if(isNaN(h)) h = 175;
-            let w = parseInt(prof.weight); if(isNaN(w)) w = 70;
-            obj.model.scale.set(w/70, h/175, w/70);
-
-            obj.root.position.set(px, py, pz);
-            obj.root.rotation.y = Number(info.rotation) || 0;
+            if (otherPlayers[info.id]) { if(scene) scene.remove(otherPlayers[info.id].group); if(otherPlayers[info.id].tag) otherPlayers[info.id].tag.remove(); }
+            let prof = { ...defaultProfile, ...(info.profile || {}) }; let mats = createPlayerMaterials(prof); let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
+            let h = parseInt(prof.height); if(isNaN(h)) h = 175; let w = parseInt(prof.weight); if(isNaN(w)) w = 70;
+            obj.model.scale.set(w/70, h/175, w/70); obj.root.position.set(px, py, pz); obj.root.rotation.y = Number(info.rotation) || 0;
             if(scene) scene.add(obj.root);
-
-            let tag = document.createElement('div');
-            tag.className = 'other-player-tag';
-            tag.innerHTML = `<div class="tag-username">${prof.name || info.username || "Bilinmeyen"}</div>`;
+            let tag = document.createElement('div'); tag.className = 'other-player-tag'; tag.innerHTML = `<div class="tag-username">${prof.name || info.username || "Bilinmeyen"}</div>`;
             document.getElementById('fullscreen-world').appendChild(tag);
-
             otherPlayers[info.id] = { group: obj.root, model: obj.model, lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg, animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username') };
         }
 
@@ -445,7 +442,6 @@
             if(!socket || !worldPlayerObj) return;
             let px = worldPlayerObj.root.position.x; let py = worldPlayerObj.root.position.y; let pz = worldPlayerObj.root.position.z;
             if (isNaN(px) || isNaN(py) || isNaN(pz)) return; 
-            
             socket.emit('playerMovement', { x: px, y: py, z: pz, rotation: worldPlayerObj.root.rotation.y, isMoving: isMovingState, username: player.username, profile: player.profile });
         }
 
@@ -453,8 +449,7 @@
             document.getElementById('app-screen').style.display = 'flex';
             setInterval(updateClock, 1000); updateClock(); setInterval(fluctuateMarkets, 1500); setInterval(processEconomy, 1000); 
             setInterval(() => { if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d); }, 2000); 
-
-            loadProfileUI(); updateUI(); renderMarkets(); renderAssets();
+            loadProfileUI(); updateUI(); renderMarkets(); renderAssets(); renderAITech();
             initProfile3D(); init3DWorld();   
         }
 
@@ -466,13 +461,20 @@
             if(player.inventory && player.inventory.metals) { for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price; }
             if(player.assets && player.assets.jobs) { player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost); }
             if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost); }
-            if(player.assets && player.assets.vehicles) { player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost); }
+            
+            let hasROMs = player.assets.aiTech && player.assets.aiTech.includes(4);
+            if(player.assets && player.assets.vehicles) { 
+                player.assets.vehicles.forEach(id => { 
+                    let cost = vehicles.find(v=>v.id===id).cost;
+                    if(hasROMs) cost *= 1.5; 
+                    totalAssets += cost;
+                }); 
+            }
 
             document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}); 
             document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
             document.getElementById('ui-debt').innerText = player.debt.toLocaleString('tr-TR', {maximumFractionDigits:2});
 
-            // NET BİLANÇO HESAPLAMA (Mesleğin sadece sonuncusunun geliri eklendiğini gösterir)
             let net = 0; let tax = 0;
             if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) {
                 net += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
@@ -480,14 +482,26 @@
             if(player.assets && player.assets.realEstate) {
                 player.assets.realEstate.forEach(id => { net += realEstate.find(x=>x.id===id).income; tax += realEstate.find(x=>x.id===id).tax; });
             }
+            
+            let vehIncomeMult = 1; let vehTaxMult = 1;
+            if(player.assets.aiTech) {
+                if(player.assets.aiTech.includes(1)) vehTaxMult *= 0.5; 
+                if(player.assets.aiTech.includes(2)) vehIncomeMult += 0.5; 
+                if(player.assets.aiTech.includes(3)) vehIncomeMult += 1.5; 
+                if(player.assets.aiTech.includes(4)) vehTaxMult = 0; 
+            }
+
             if(player.assets && player.assets.vehicles) {
-                player.assets.vehicles.forEach(id => { net += vehicles.find(x=>x.id===id).income; tax += vehicles.find(x=>x.id===id).tax; });
+                player.assets.vehicles.forEach(id => { 
+                    net += (vehicles.find(x=>x.id===id).income * vehIncomeMult); 
+                    tax += (vehicles.find(x=>x.id===id).tax * vehTaxMult); 
+                });
             }
             
             let finalNet = net - tax;
             let netEl = document.getElementById('ui-net');
             if(netEl) {
-                netEl.innerText = (finalNet > 0 ? "+" : "") + finalNet.toLocaleString('tr-TR');
+                netEl.innerText = (finalNet > 0 ? "+" : "") + finalNet.toLocaleString('tr-TR', {maximumFractionDigits:1});
                 netEl.style.color = finalNet >= 0 ? "var(--accent-green)" : "var(--accent-red)";
             }
 
@@ -524,7 +538,39 @@
             renderMarkets(type); updateUI();
         }
 
+        function renderAITech() {
+            let html = aiTechnologies.map(tech => {
+                let owned = player.assets.aiTech && player.assets.aiTech.includes(tech.id);
+                return `<div class="card" style="${owned ? 'border-color:var(--accent-purple); box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);' : 'border-color: rgba(168, 85, 247, 0.3);'}">
+                    <h3 style="color:var(--accent-purple); font-size:16px;">${tech.name}</h3>
+                    <p style="font-size: 13px; margin-bottom: 10px; line-height:1.4;">${tech.desc}</p>
+                    <p style="font-size: 16px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${tech.cost.toLocaleString()} TL</p>
+                    ${owned ? `<button disabled style="background:var(--accent-purple); color:white; width:100%;">Aktif Edildi</button>` : `<button class="btn-primary" style="background:linear-gradient(135deg, #a855f7, #7e22ce);" onclick="buyAITech(${tech.id})">Araştır</button>`}
+                </div>`;
+            }).join('');
+            document.getElementById('ai-tech-list').innerHTML = html;
+        }
+
+        function buyAITech(id) {
+            let tech = aiTechnologies.find(x => x.id === id);
+            if(player.cash >= tech.cost) {
+                player.cash -= tech.cost;
+                if(!player.assets.aiTech) player.assets.aiTech = [];
+                player.assets.aiTech.push(id);
+                logActivity(`<strong style="color:var(--accent-purple)">[Yapay Zeka Ar-Ge]</strong> ${tech.name} başarıyla açıldı!`);
+                renderAITech(); renderAssets(); updateUI();
+            } else alert("Nakit paranız yetersiz!");
+        }
+
         function renderAssets() {
+            let vehIncomeMult = 1; let vehTaxMult = 1;
+            if(player.assets.aiTech) {
+                if(player.assets.aiTech.includes(1)) vehTaxMult *= 0.5;
+                if(player.assets.aiTech.includes(2)) vehIncomeMult += 0.5;
+                if(player.assets.aiTech.includes(3)) vehIncomeMult += 1.5;
+                if(player.assets.aiTech.includes(4)) vehTaxMult = 0;
+            }
+
             const buildCards = (arr, invArr, category) => {
                 return arr.map(item => {
                     let owned = invArr && invArr.includes(item.id);
@@ -542,7 +588,10 @@
                             <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
                             <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
                     } else {
-                        let info = `Kira: <span style="color:var(--accent-green)">+${item.income} TL</span> | Vergi: <span style="color:var(--accent-red)">-${item.tax} TL</span>`;
+                        let finalInc = category === 'vehicles' ? (item.income * vehIncomeMult) : item.income;
+                        let finalTax = category === 'vehicles' ? (item.tax * vehTaxMult) : item.tax;
+                        
+                        let info = `Kira: <span style="color:var(--accent-green)">+${finalInc.toFixed(1)} TL</span> | Vergi: <span style="color:var(--accent-red)">-${finalTax.toFixed(1)} TL</span>`;
                         if(category === 'vehicles') info += ` <br>Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
                         return `<div class="card" style="${owned ? 'border-color:var(--accent-green)' : ''}">
                             <h3 style="font-size:16px;">${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">${info}</p>
@@ -567,11 +616,23 @@
 
         function processEconomy() {
             let totalIncome = 0; let totalTax = 0;
-            // SADECE EN YÜKSEK MESLEĞİN MAAŞI HESAPLANIR
             if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) totalIncome += jobs.find(j => j.id === Math.max(...player.assets.jobs)).income;
-            
             if(player.assets && player.assets.realEstate) player.assets.realEstate.forEach(id => { totalIncome += realEstate.find(x=>x.id===id).income; totalTax += realEstate.find(x=>x.id===id).tax; });
-            if(player.assets && player.assets.vehicles) player.assets.vehicles.forEach(id => { totalIncome += vehicles.find(x=>x.id===id).income; totalTax += vehicles.find(x=>x.id===id).tax; });
+            
+            let vehIncomeMult = 1; let vehTaxMult = 1;
+            if(player.assets.aiTech) {
+                if(player.assets.aiTech.includes(1)) vehTaxMult *= 0.5;
+                if(player.assets.aiTech.includes(2)) vehIncomeMult += 0.5;
+                if(player.assets.aiTech.includes(3)) vehIncomeMult += 1.5;
+                if(player.assets.aiTech.includes(4)) vehTaxMult = 0;
+            }
+
+            if(player.assets && player.assets.vehicles) {
+                player.assets.vehicles.forEach(id => { 
+                    totalIncome += (vehicles.find(x=>x.id===id).income * vehIncomeMult); 
+                    totalTax += (vehicles.find(x=>x.id===id).tax * vehTaxMult); 
+                });
+            }
             
             if(totalIncome > 0 || totalTax > 0) { player.cash += totalIncome; player.cash -= totalTax; if(player.cash < 0) { player.debt += Math.abs(player.cash); player.cash = 0; } updateUI(); }
         }
@@ -616,8 +677,14 @@
         function initProfile3D() {
             const container = document.getElementById('profile-3d-canvas'); profScene = new THREE.Scene();
             profCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100); profCamera.position.set(0, 2.5, 8); profCamera.lookAt(0, 2.2, 0);
-            profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); profRenderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(profRenderer.domElement);
-            profScene.add(new THREE.AmbientLight(0xffffff, 0.7)); let dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(5, 10, 5); profScene.add(dl);
+            profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); profRenderer.setSize(container.clientWidth, container.clientHeight);
+            
+            // GÖLGE VE IŞIK EKLENDİ
+            profRenderer.shadowMap.enabled = true; profRenderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(profRenderer.domElement);
+            profScene.add(new THREE.AmbientLight(0xffffff, 0.7)); 
+            let dl = new THREE.DirectionalLight('#ffdfa0', 1.2); dl.position.set(5, 10, 5); dl.castShadow = true; profScene.add(dl);
+            
             profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); profilePlayerObj.root.position.y = -0.5; profScene.add(profilePlayerObj.root);
         }
 
@@ -656,34 +723,69 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
-        // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ VE EVLERİN/AĞAÇLARIN/YOLLARIN EKLENMESİ ---
+        // --- TAM EKRAN 3D AÇIK DÜNYA VE GLTF ALTYAPISI ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
         let isInWorld = false; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
+        // HARİCİ 3D DOSYALARI YÜKLEMEK İÇİN GÜVENLİ FONKSİYON (Gelecek Güncellemeler İçin Hazır)
+        function loadRealisticAsset(path, group, fallbackMesh, scale = 1, yOffset = 0) {
+            if(typeof THREE.GLTFLoader === 'undefined') {
+                group.add(fallbackMesh); return;
+            }
+            const loader = new THREE.GLTFLoader();
+            loader.load(path, function(gltf) {
+                let model = gltf.scene;
+                model.scale.set(scale, scale, scale);
+                model.position.y = yOffset;
+                model.traverse(function(node) { if(node.isMesh) { node.castShadow = true; node.receiveShadow = true; }});
+                group.add(model);
+            }, undefined, function(error) {
+                // Eğer GLTF dosyası bulunamazsa oyun çökmez, yedek kutu objesi (fallback) yüklenir.
+                group.add(fallbackMesh);
+            });
+        }
+
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
+            scene = new THREE.Scene(); 
+            // GÜN BATIMI (Golden Hour) EFEKTİ EKLENDİ
+            scene.background = new THREE.Color('#ffbe76'); 
+            scene.fog = new THREE.FogExp2('#ffbe76', 0.002, 300);
+
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" }); 
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // GÖLGE MOTORU AKTİF EDİLDİ
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
             renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
             container.insertBefore(renderer.domElement, container.firstChild);
 
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let sl = new THREE.DirectionalLight(0xffffee, 1.2); sl.position.set(150, 200, -150); scene.add(sl);
+            scene.add(new THREE.AmbientLight(0xffdfa0, 0.4));
+            
+            // SİNEMATİK IŞIK EKLENDİ
+            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); 
+            sl.position.set(150, 200, -150); 
+            sl.castShadow = true;
+            sl.shadow.camera.top = 200; sl.shadow.camera.bottom = -200; sl.shadow.camera.left = -200; sl.shadow.camera.right = 200;
+            scene.add(sl);
+            
             let sunMesh = new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }));
             sunMesh.position.copy(sl.position); scene.add(sunMesh);
 
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
-            floor.rotation.x = -Math.PI / 2; scene.add(floor);
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 0.8 }));
+            floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
 
-            // YOLLAR VE ŞERİTLER GERİ EKLENDİ
-            const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
+            const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222', roughness: 0.9 });
             const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-            scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
-            scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
-            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); scene.add(cr);
+            
+            let road1 = new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat); road1.receiveShadow = true; scene.add(road1);
+            let road2 = new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat); road2.receiveShadow = true; scene.add(road2);
+            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); cr.receiveShadow = true; scene.add(cr);
 
             for(let i = -280; i <= 280; i += 12) {
                 if(Math.abs(i) > 15) {
@@ -692,39 +794,54 @@
                 }
             }
 
-            // GAYRİMENKULLER (BİNALAR) VE ÇARPIŞMA KUTULARI GERİ EKLENDİ
-            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
-            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
+            const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc', roughness: 1 }), new THREE.MeshStandardMaterial({ color: '#cbd5e1', roughness: 1 })];
+            const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c', roughness: 0.8 }), new THREE.MeshStandardMaterial({ color: '#475569', roughness: 0.8 })];
 
             for(let i = 0; i < realEstate.length; i++) {
                 let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
                 let bGroup = new THREE.Group();
                 let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[i % wallMats.length]);
-                bBody.position.y = bHeight / 2; bGroup.add(bBody);
+                bBody.position.y = bHeight / 2; bBody.castShadow = true; bBody.receiveShadow = true;
                 let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
-                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; bGroup.add(roof);
+                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; roof.castShadow = true; 
                 let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
-                dr.position.set(0, 0, 7.5); bGroup.add(dr);
+                dr.position.set(0, 0, 7.5); 
+                
+                let fallbackHouse = new THREE.Group();
+                fallbackHouse.add(bBody); fallbackHouse.add(roof); fallbackHouse.add(dr);
+                
+                // NOT: Gelecekte bir 'modern_house.glb' indirirsen, 'models/house.glb' kısmını o dosyanın yoluyla değiştirmen yeterli.
+                loadRealisticAsset('models/house.glb', bGroup, fallbackHouse, 1, 0);
+
                 bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
                 colliders.push(new THREE.Box3().setFromObject(bBody));
             }
 
-            // TAŞITLAR (ARABALAR) GERİ EKLENDİ
             for(let i = 0; i < vehicles.length; i++) {
                 let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50; let carGrp = new THREE.Group();
-                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 })); b.position.set(0, 0.8, 0); carGrp.add(b);
-                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); ps.position.set(0, 0.08, 0); carGrp.add(ps);
+                
+                // HİPER-GERÇEKÇİ MATERYAL (Parlak araba boyası)
+                let carPaint = new THREE.MeshStandardMaterial({ color: vehicles[i].color, metalness: 0.8, roughness: 0.15 });
+                
+                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), carPaint); b.position.set(0, 0.8, 0); b.castShadow = true;
+                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); ps.position.set(0, 0.08, 0); ps.receiveShadow = true;
+                
+                let fallbackCar = new THREE.Group();
+                fallbackCar.add(b); fallbackCar.add(ps);
+
+                // NOT: Gelecekte bir araba modeli indirirsen burayı değiştir (Örn: 'models/taycan.glb')
+                loadRealisticAsset('models/car.glb', carGrp, fallbackCar, 1, 0);
+
                 carGrp.position.set(vx, 0, vz); carGrp.updateMatrixWorld(true); scene.add(carGrp);
                 let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
             }
 
-            // AĞAÇLAR GERİ EKLENDİ
             for(let i=0; i<200; i++) {
                 let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
                 if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
                     let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
-                    trunk.position.y = 1.5; treeGrp.add(trunk);
-                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; treeGrp.add(l); }
+                    trunk.position.y = 1.5; trunk.castShadow = true; treeGrp.add(trunk);
+                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; l.castShadow = true; treeGrp.add(l); }
                     treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
                 }
             }
@@ -732,7 +849,9 @@
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
-            worldPlayerObj.model.scale.set(sc, sh, sc); scene.add(worldPlayerObj.root);
+            worldPlayerObj.model.scale.set(sc, sh, sc); 
+            worldPlayerObj.root.traverse((node) => { if(node.isMesh) { node.castShadow = true; node.receiveShadow = true; }});
+            scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement.tagName === 'INPUT') return;
