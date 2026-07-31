@@ -7,7 +7,6 @@
     
     <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Sunucu offline olsa bile oyunun çökmemesi için script yüklemesini güvenceye alıyoruz -->
     <script>
         window.addEventListener('error', function(e) {
             if(e.target.src && e.target.src.includes('socket.io')) {
@@ -163,7 +162,6 @@
     <!-- SİNEMATİK İNTRO EKRANI -->
     <div id="intro-screen">
         <div class="intro-bg-glow"></div>
-        
         <div class="scene-container">
             <div class="character-box" id="char-player">
                 <svg viewBox="0 0 120 150" class="char-svg">
@@ -397,8 +395,8 @@
         let socket;
         let otherPlayers = {}; 
 
-        // GÜVENLİ VARSAYILAN OYUNCU OBJESİ
-        const defaultProfile = { name: "", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
+        // GÜVENLİ VARSAYILAN OYUNCU OBJESİ (Karşı taraf boş gönderse bile motor çökmesin diye)
+        const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
         let player = {
             username: "", cash: 0, debt: 0, 
@@ -412,78 +410,42 @@
         let metals = generateMarket(["Altın", "Gümüş", "Bor", "Kömür", "Platin", "Paladyum", "Bakır", "Alüminyum"], 50);
         
         const jobs = [
-            { id: 1, name: "Limonata Standı", cost: 500, income: 2 },
-            { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 },
-            { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
-            { id: 4, name: "Çiçekçi", cost: 7500, income: 22 },
-            { id: 5, name: "Büfe", cost: 12000, income: 30 },
-            { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
-            { id: 7, name: "İnternet Kafe", cost: 25000, income: 50 },
-            { id: 8, name: "Oto Yıkama", cost: 35000, income: 65 },
-            { id: 9, name: "Kuru Temizleme", cost: 50000, income: 85 },
-            { id: 10, name: "Fırın", cost: 75000, income: 110 },
-            { id: 11, name: "Restoran", cost: 120000, income: 150 },
-            { id: 12, name: "Süpermarket", cost: 250000, income: 280 },
-            { id: 13, name: "Giyim Mağazası", cost: 400000, income: 400 },
-            { id: 14, name: "Spor Salonu", cost: 600000, income: 550 },
-            { id: 15, name: "Sinema Salonu", cost: 1000000, income: 850 },
-            { id: 16, name: "Otel", cost: 2500000, income: 1800 },
-            { id: 17, name: "AVM", cost: 8000000, income: 4500 },
-            { id: 18, name: "Fabrika", cost: 15000000, income: 7500 },
-            { id: 19, name: "Teknoloji Şirketi", cost: 50000000, income: 20000 },
-            { id: 20, name: "Uluslararası Holding", cost: 150000000, income: 50000 }
+            { id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
+            { id: 4, name: "Çiçekçi", cost: 7500, income: 22 }, { id: 5, name: "Büfe", cost: 12000, income: 30 }, { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
+            { id: 7, name: "İnternet Kafe", cost: 25000, income: 50 }, { id: 8, name: "Oto Yıkama", cost: 35000, income: 65 }, { id: 9, name: "Kuru Temizleme", cost: 50000, income: 85 },
+            { id: 10, name: "Fırın", cost: 75000, income: 110 }, { id: 11, name: "Restoran", cost: 120000, income: 150 }, { id: 12, name: "Süpermarket", cost: 250000, income: 280 },
+            { id: 13, name: "Giyim Mağazası", cost: 400000, income: 400 }, { id: 14, name: "Spor Salonu", cost: 600000, income: 550 }, { id: 15, name: "Sinema Salonu", cost: 1000000, income: 850 },
+            { id: 16, name: "Otel", cost: 2500000, income: 1800 }, { id: 17, name: "AVM", cost: 8000000, income: 4500 }, { id: 18, name: "Fabrika", cost: 15000000, income: 7500 },
+            { id: 19, name: "Teknoloji Şirketi", cost: 50000000, income: 20000 }, { id: 20, name: "Uluslararası Holding", cost: 150000000, income: 50000 }
         ];
 
         const realEstate = [
-            { id: 1, name: "Çadır Kamp Alanı", cost: 15000, income: 40, tax: 5 },
-            { id: 2, name: "Konteyner Ev", cost: 40000, income: 90, tax: 10 },
-            { id: 3, name: "Köy Evi", cost: 80000, income: 160, tax: 20 },
-            { id: 4, name: "Gecekondu", cost: 150000, income: 280, tax: 30 },
-            { id: 5, name: "Prefabrik Ev", cost: 220000, income: 400, tax: 50 },
-            { id: 6, name: "Stüdyo Daire", cost: 300000, income: 550, tax: 70 },
-            { id: 7, name: "1+1 Daire", cost: 450000, income: 800, tax: 100 },
-            { id: 8, name: "2+1 Daire", cost: 650000, income: 1100, tax: 150 },
-            { id: 9, name: "3+1 Apartman", cost: 800000, income: 1400, tax: 200 },
-            { id: 10, name: "Dubleks Ev", cost: 1200000, income: 2000, tax: 300 },
-            { id: 11, name: "Müstakil Ev", cost: 2000000, income: 3000, tax: 400 },
-            { id: 12, name: "Lüks Villa", cost: 5000000, income: 6500, tax: 800 },
-            { id: 13, name: "Çiftlik Evi", cost: 8000000, income: 10000, tax: 1200 },
-            { id: 14, name: "Tarihi Köşk", cost: 12000000, income: 14000, tax: 1800 },
-            { id: 15, name: "Sahil Yalısı", cost: 18000000, income: 20000, tax: 2500 },
-            { id: 16, name: "Lüks Rezidans", cost: 25000000, income: 26000, tax: 3500 },
-            { id: 17, name: "Plaza Katı", cost: 60000000, income: 55000, tax: 7000 },
-            { id: 18, name: "AVM Arsası", cost: 150000000, income: 120000, tax: 15000 },
-            { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 },
-            { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
+            { id: 1, name: "Çadır Kamp Alanı", cost: 15000, income: 40, tax: 5 }, { id: 2, name: "Konteyner Ev", cost: 40000, income: 90, tax: 10 },
+            { id: 3, name: "Köy Evi", cost: 80000, income: 160, tax: 20 }, { id: 4, name: "Gecekondu", cost: 150000, income: 280, tax: 30 },
+            { id: 5, name: "Prefabrik Ev", cost: 220000, income: 400, tax: 50 }, { id: 6, name: "Stüdyo Daire", cost: 300000, income: 550, tax: 70 },
+            { id: 7, name: "1+1 Daire", cost: 450000, income: 800, tax: 100 }, { id: 8, name: "2+1 Daire", cost: 650000, income: 1100, tax: 150 },
+            { id: 9, name: "3+1 Apartman", cost: 800000, income: 1400, tax: 200 }, { id: 10, name: "Dubleks Ev", cost: 1200000, income: 2000, tax: 300 },
+            { id: 11, name: "Müstakil Ev", cost: 2000000, income: 3000, tax: 400 }, { id: 12, name: "Lüks Villa", cost: 5000000, income: 6500, tax: 800 },
+            { id: 13, name: "Çiftlik Evi", cost: 8000000, income: 10000, tax: 1200 }, { id: 14, name: "Tarihi Köşk", cost: 12000000, income: 14000, tax: 1800 },
+            { id: 15, name: "Sahil Yalısı", cost: 18000000, income: 20000, tax: 2500 }, { id: 16, name: "Lüks Rezidans", cost: 25000000, income: 26000, tax: 3500 },
+            { id: 17, name: "Plaza Katı", cost: 60000000, income: 55000, tax: 7000 }, { id: 18, name: "AVM Arsası", cost: 150000000, income: 120000, tax: 15000 },
+            { id: 19, name: "Tatil Köyü", cost: 350000000, income: 250000, tax: 30000 }, { id: 20, name: "Özel Ada", cost: 1000000000, income: 600000, tax: 80000 }
         ];
 
         const vehicles = [
-            { id: 1, name: "Mavi Bisiklet", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Mavi' },
-            { id: 2, name: "Mavi Scooter", cost: 5000, income: 12, tax: 2, color: '#3b82f6', category: 'Mavi' },
-            { id: 3, name: "Sarı Scooter", cost: 8000, income: 18, tax: 3, color: '#f59e0b', category: 'Sarı' },
-            { id: 4, name: "Sarı 50cc Motor", cost: 15000, income: 30, tax: 5, color: '#f59e0b', category: 'Sarı' },
-            { id: 5, name: "Kırmızı Motorsiklet", cost: 30000, income: 55, tax: 8, color: '#ef4444', category: 'Kırmızı' },
-            { id: 6, name: "Kırmızı ATV", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Kırmızı' },
-            { id: 7, name: "Siyah Klasik Motor", cost: 110000, income: 180, tax: 25, color: '#111111', category: 'Siyah' },
-            { id: 8, name: "Siyah Hatchback", cost: 180000, income: 280, tax: 40, color: '#111111', category: 'Siyah' },
-            { id: 9, name: "Mor Hatchback", cost: 240000, income: 360, tax: 50, color: '#8b5cf6', category: 'Mor' },
-            { id: 10, name: "Mor Sedan", cost: 350000, income: 500, tax: 70, color: '#8b5cf6', category: 'Mor' },
-            { id: 11, name: "Yeşil Aile Aracı", cost: 500000, income: 680, tax: 90, color: '#10b981', category: 'Yeşil' },
-            { id: 12, name: "Yeşil Minivan", cost: 750000, income: 950, tax: 120, color: '#10b981', category: 'Yeşil' },
-            { id: 13, name: "Turuncu Pikap", cost: 1100000, income: 1300, tax: 160, color: '#f97316', category: 'Turuncu' },
-            { id: 14, name: "Turuncu Panelvan", cost: 1600000, income: 1800, tax: 220, color: '#f97316', category: 'Turuncu' },
-            { id: 15, name: "Kahverengi Klasik", cost: 2300000, income: 2500, tax: 300, color: '#78350f', category: 'Kahverengi' },
-            { id: 16, name: "Kahverengi Karavan", cost: 4000000, income: 4200, tax: 500, color: '#78350f', category: 'Kahverengi' },
-            { id: 17, name: "Kırmızı Spor Araba", cost: 7500000, income: 7500, tax: 900, color: '#ef4444', category: 'Kırmızı' },
-            { id: 18, name: "Siyah Lüks SUV", cost: 15000000, income: 14000, tax: 1800, color: '#111111', category: 'Siyah' },
-            { id: 19, name: "Sarı Süper Araba", cost: 35000000, income: 30000, tax: 4000, color: '#f59e0b', category: 'Sarı' },
-            { id: 20, name: "Siyah Özel Jet", cost: 150000000, income: 110000, tax: 15000, color: '#111111', category: 'Siyah' }
+            { id: 1, name: "Mavi Bisiklet", cost: 2000, income: 6, tax: 1, color: '#3b82f6', category: 'Mavi' }, { id: 2, name: "Mavi Scooter", cost: 5000, income: 12, tax: 2, color: '#3b82f6', category: 'Mavi' },
+            { id: 3, name: "Sarı Scooter", cost: 8000, income: 18, tax: 3, color: '#f59e0b', category: 'Sarı' }, { id: 4, name: "Sarı 50cc Motor", cost: 15000, income: 30, tax: 5, color: '#f59e0b', category: 'Sarı' },
+            { id: 5, name: "Kırmızı Motorsiklet", cost: 30000, income: 55, tax: 8, color: '#ef4444', category: 'Kırmızı' }, { id: 6, name: "Kırmızı ATV", cost: 65000, income: 110, tax: 15, color: '#ef4444', category: 'Kırmızı' },
+            { id: 7, name: "Siyah Klasik Motor", cost: 110000, income: 180, tax: 25, color: '#111111', category: 'Siyah' }, { id: 8, name: "Siyah Hatchback", cost: 180000, income: 280, tax: 40, color: '#111111', category: 'Siyah' },
+            { id: 9, name: "Mor Hatchback", cost: 240000, income: 360, tax: 50, color: '#8b5cf6', category: 'Mor' }, { id: 10, name: "Mor Sedan", cost: 350000, income: 500, tax: 70, color: '#8b5cf6', category: 'Mor' },
+            { id: 11, name: "Yeşil Aile Aracı", cost: 500000, income: 680, tax: 90, color: '#10b981', category: 'Yeşil' }, { id: 12, name: "Yeşil Minivan", cost: 750000, income: 950, tax: 120, color: '#10b981', category: 'Yeşil' },
+            { id: 13, name: "Turuncu Pikap", cost: 1100000, income: 1300, tax: 160, color: '#f97316', category: 'Turuncu' }, { id: 14, name: "Turuncu Panelvan", cost: 1600000, income: 1800, tax: 220, color: '#f97316', category: 'Turuncu' },
+            { id: 15, name: "Kahverengi Klasik", cost: 2300000, income: 2500, tax: 300, color: '#78350f', category: 'Kahverengi' }, { id: 16, name: "Kahverengi Karavan", cost: 4000000, income: 4200, tax: 500, color: '#78350f', category: 'Kahverengi' },
+            { id: 17, name: "Kırmızı Spor Araba", cost: 7500000, income: 7500, tax: 900, color: '#ef4444', category: 'Kırmızı' }, { id: 18, name: "Siyah Lüks SUV", cost: 15000000, income: 14000, tax: 1800, color: '#111111', category: 'Siyah' },
+            { id: 19, name: "Sarı Süper Araba", cost: 35000000, income: 30000, tax: 4000, color: '#f59e0b', category: 'Sarı' }, { id: 20, name: "Siyah Özel Jet", cost: 150000000, income: 110000, tax: 15000, color: '#111111', category: 'Siyah' }
         ];
 
-        let dialogueStep = 0;
-        let isTyping = false;
-        let typeInterval;
-
+        let dialogueStep = 0; let isTyping = false; let typeInterval;
         const dialogues = [
             { speaker: "Yönetim Kurulu / Patron", title: "Genel Müdür", type: "boss", text: "Yıllardır bu şirketin küresel bir teknoloji devi haline gelmesi için döktüğün alın terini, uykusuz gecelerini çok iyi biliyoruz. Son projendeki başarın gerçekten büyüleyiciydi.", expression: { bossBrow: "M 43 41 Q 50 38 57 41", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" } },
             { speaker: "Sen", title: "Kıdemli Baş Mimar", type: "player", text: "Çok teşekkür ederim efendim. Şirketi bu zirveye taşımak benim için büyük bir onurdu. Gelecek çeyrek için hazırladığım yapay zeka ve otomasyon projelerimi sunmak için sabırsızlanıyorum.", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 40 Q 51 37 58 40", playerBrowR: "M 76 40 Q 69 37 62 40", playerMouth: "M 50 65 Q 60 75 70 65" } },
@@ -495,7 +457,6 @@
             { speaker: "Sen (İç Ses)", title: "Geleceğin İmparatoru", type: "internal", text: "Bekleyin ve görün... Bu küçücük tazminatı sermaye yapıp kendi finans imparatorluğumu kuracağım. And olsun ki bir gün bu şirketi ve sizi tek kalemde satın alacağım!", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 36 L 56 44", playerBrowR: "M 76 36 L 64 44", playerMouth: "M 52 66 L 68 66" } }
         ];
 
-        // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ GİRİŞ SİSTEMİ
         function login() {
             const user = document.getElementById('username').value;
             if(!user) return alert("Kullanıcı adı giriniz!");
@@ -509,6 +470,7 @@
                     player.debt = parsed.debt || 0;
                     player.inventory = { ...player.inventory, ...(parsed.inventory || {}) };
                     player.assets = { ...player.assets, ...(parsed.assets || {}) };
+                    // GÜVENLİ PROFİL YÜKLEMESİ
                     player.profile = { ...defaultProfile, ...(parsed.profile || {}) };
                 } catch(e) {
                     console.error("Kayıt dosyası okunurken hata oluştu, varsayılan profil yükleniyor.", e);
@@ -536,76 +498,40 @@
             document.getElementById('char-boss').classList.remove('active', 'internal');
             document.getElementById('char-player').classList.remove('active', 'internal');
 
-            if(current.type === "boss") {
-                box.classList.add('arrow-right');
-                document.getElementById('speaker-name').style.color = "var(--accent-red)";
-                document.getElementById('char-boss').classList.add('active');
-            } else if (current.type === "player") {
-                box.classList.add('arrow-left');
-                document.getElementById('speaker-name').style.color = "var(--accent-blue)";
-                document.getElementById('char-player').classList.add('active');
-            } else if (current.type === "internal") {
-                box.classList.add('arrow-internal');
-                document.getElementById('speaker-name').style.color = "var(--accent-gold)";
-                document.getElementById('char-player').classList.add('internal');
-            }
+            if(current.type === "boss") { box.classList.add('arrow-right'); document.getElementById('speaker-name').style.color = "var(--accent-red)"; document.getElementById('char-boss').classList.add('active'); } 
+            else if (current.type === "player") { box.classList.add('arrow-left'); document.getElementById('speaker-name').style.color = "var(--accent-blue)"; document.getElementById('char-player').classList.add('active'); } 
+            else if (current.type === "internal") { box.classList.add('arrow-internal'); document.getElementById('speaker-name').style.color = "var(--accent-gold)"; document.getElementById('char-player').classList.add('internal'); }
 
             if(current.expression) {
-                document.getElementById('boss-brow-l').setAttribute('d', current.expression.bossBrow);
-                document.getElementById('boss-mouth').setAttribute('d', current.expression.bossMouth);
-                document.getElementById('player-brow-l').setAttribute('d', current.expression.playerBrowL);
-                document.getElementById('player-brow-r').setAttribute('d', current.expression.playerBrowR);
-                document.getElementById('player-mouth').setAttribute('d', current.expression.playerMouth);
+                document.getElementById('boss-brow-l').setAttribute('d', current.expression.bossBrow); document.getElementById('boss-mouth').setAttribute('d', current.expression.bossMouth);
+                document.getElementById('player-brow-l').setAttribute('d', current.expression.playerBrowL); document.getElementById('player-brow-r').setAttribute('d', current.expression.playerBrowR); document.getElementById('player-mouth').setAttribute('d', current.expression.playerMouth);
             }
 
-            const text = current.text;
-            const targetEl = document.getElementById('dialogue-text');
-            targetEl.innerHTML = "";
-            let i = 0;
+            const text = current.text; const targetEl = document.getElementById('dialogue-text'); targetEl.innerHTML = ""; let i = 0;
             clearInterval(typeInterval);
             typeInterval = setInterval(() => {
-                if (i < text.length) { targetEl.innerHTML += text.charAt(i); i++; } 
-                else { clearInterval(typeInterval); isTyping = false; }
+                if (i < text.length) { targetEl.innerHTML += text.charAt(i); i++; } else { clearInterval(typeInterval); isTyping = false; }
             }, 30); 
         }
 
         function nextDialogue() {
-            if (isTyping) {
-                clearInterval(typeInterval);
-                document.getElementById('dialogue-text').innerHTML = dialogues[dialogueStep].text;
-                isTyping = false;
-                return;
-            }
+            if (isTyping) { clearInterval(typeInterval); document.getElementById('dialogue-text').innerHTML = dialogues[dialogueStep].text; isTyping = false; return; }
             dialogueStep++;
             if(dialogueStep < dialogues.length) { startTypewriter(); } 
             else {
-                document.getElementById('dialogue-box').style.display = 'none';
-                document.getElementById('next-dialogue-btn').style.display = 'none';
-                document.getElementById('skip-btn').style.display = 'none';
-                document.querySelector('.scene-container').style.opacity = "0.2";
-                document.getElementById('claim-btn').style.display = 'inline-block';
+                document.getElementById('dialogue-box').style.display = 'none'; document.getElementById('next-dialogue-btn').style.display = 'none'; document.getElementById('skip-btn').style.display = 'none';
+                document.querySelector('.scene-container').style.opacity = "0.2"; document.getElementById('claim-btn').style.display = 'inline-block';
             }
         }
 
         function skipIntro() { clearInterval(typeInterval); dialogueStep = dialogues.length - 1; nextDialogue(); }
 
         function claimCapital(e) {
-            const anim = document.createElement('div');
-            anim.className = 'money-anim';
-            anim.innerHTML = '💸 +10.000 TL';
-            anim.style.left = (e.clientX - 60) + 'px';
-            anim.style.top = (e.clientY - 30) + 'px';
-            document.body.appendChild(anim);
+            const anim = document.createElement('div'); anim.className = 'money-anim'; anim.innerHTML = '💸 +10.000 TL';
+            anim.style.left = (e.clientX - 60) + 'px'; anim.style.top = (e.clientY - 30) + 'px'; document.body.appendChild(anim);
 
-            player.cash = 10000;
-            saveGame();
-
-            setTimeout(() => { 
-                anim.remove(); 
-                document.getElementById('intro-screen').style.display = 'none'; 
-                startGameUI(); 
-                connectMultiplayer(); 
-            }, 1200);
+            player.cash = 10000; saveGame();
+            setTimeout(() => { anim.remove(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); connectMultiplayer(); }, 1200);
         }
 
         // --- MULTIPLAYER (DEDEKTÖRLÜ YENİ SİSTEM) ---
@@ -617,9 +543,7 @@
             
             socket = io();
 
-            socket.on('connect', () => {
-                logActivity(`<strong style="color:var(--accent-green)"><i class="fa-solid fa-wifi"></i> [ONLINE] Sunucuya başarıyla bağlanıldı!</strong>`);
-            });
+            socket.on('connect', () => { logActivity(`<strong style="color:var(--accent-green)"><i class="fa-solid fa-wifi"></i> [ONLINE] Sunucuya başarıyla bağlanıldı!</strong>`); });
 
             socket.on('currentPlayers', (serverPlayers) => {
                 for(let id in serverPlayers) {
@@ -633,10 +557,13 @@
             });
 
             socket.on('playerMoved', (playerInfo) => {
+                // KORUMA DUVARI (SANİTİZASYON): Gelen verilerde NaN veya tanımsızlık varsa o oyuncunun hareketini yok say ve motoru kurtar
+                if (!playerInfo || isNaN(playerInfo.x) || isNaN(playerInfo.y) || isNaN(playerInfo.z)) return;
+
                 if(otherPlayers[playerInfo.id]) {
                     let op = otherPlayers[playerInfo.id];
                     op.group.position.set(playerInfo.x, playerInfo.y, playerInfo.z);
-                    op.group.rotation.y = playerInfo.rotation;
+                    op.group.rotation.y = playerInfo.rotation || 0;
                     
                     if(playerInfo.isMoving) {
                         op.animTime += 0.15;
@@ -644,10 +571,9 @@
                         op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing;
                         op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
                     } else {
-                        op.lArm.rotation.x = 0; op.rArm.rotation.x = 0;
-                        op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0;
+                        op.lArm.rotation.x = 0; op.rArm.rotation.x = 0; op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0;
                     }
-                    op.tagUser.innerText = playerInfo.username;
+                    op.tagUser.innerText = playerInfo.username || "Oyuncu";
                 } else {
                     addOtherPlayer(playerInfo);
                 }
@@ -656,8 +582,8 @@
             socket.on('playerDisconnected', (id) => {
                 if(otherPlayers[id]) {
                     logActivity(`<strong style="color:var(--accent-red)"><i class="fa-solid fa-user-minus"></i> [SİSTEM]</strong> ${otherPlayers[id].tagUser.innerText} kasabadan ayrıldı.`);
-                    scene.remove(otherPlayers[id].group);
-                    otherPlayers[id].tag.remove();
+                    if(scene) scene.remove(otherPlayers[id].group);
+                    if(otherPlayers[id].tag) otherPlayers[id].tag.remove();
                     delete otherPlayers[id];
                 }
             });
@@ -665,21 +591,26 @@
 
         // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ DİĞER OYUNCU BOYUTLANDIRMASI
         function addOtherPlayer(info) {
-            let prof = info.profile || player.profile;
+            if (!info || isNaN(info.x) || isNaN(info.y) || isNaN(info.z)) return; // Hatalı girişi engelle
+
+            // Karşı tarafın eksik profilini bizim sağlam default profil ile doldur
+            let prof = { ...defaultProfile, ...(info.profile || {}) };
+            
             let mats = createPlayerMaterials(prof);
             let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
             
-            let h = parseInt(prof.height) || 175;
-            let w = parseInt(prof.weight) || 70;
+            // Eğer karşı taraf hatalı boy gönderdiyse NaN olmasını engelle
+            let h = parseInt(prof.height); if(isNaN(h)) h = 175;
+            let w = parseInt(prof.weight); if(isNaN(w)) w = 70;
             obj.model.scale.set(w/70, h/175, w/70);
 
             obj.root.position.set(info.x, info.y, info.z);
-            obj.root.rotation.y = info.rotation;
+            obj.root.rotation.y = info.rotation || 0;
             if(scene) scene.add(obj.root);
 
             let tag = document.createElement('div');
             tag.className = 'other-player-tag';
-            tag.innerHTML = `<div class="tag-username">${info.username}</div>`;
+            tag.innerHTML = `<div class="tag-username">${info.username || "Bilinmeyen"}</div>`;
             document.getElementById('fullscreen-world').appendChild(tag);
 
             otherPlayers[info.id] = {
@@ -690,7 +621,7 @@
         }
 
         function emitMovement(isMovingState) {
-            if(!socket) return;
+            if(!socket || !worldPlayerObj || isNaN(worldPlayerObj.root.position.x)) return; // Çökmüş veriyi gönderme
             socket.emit('playerMovement', {
                 x: worldPlayerObj.root.position.x, y: worldPlayerObj.root.position.y, z: worldPlayerObj.root.position.z,
                 rotation: worldPlayerObj.root.rotation.y,
@@ -705,17 +636,12 @@
             setInterval(fluctuateMarkets, 1500);
             setInterval(processEconomy, 1000); 
 
-            // GARANTİ KONUM EŞİTLEYİCİ (Kimse kaybolmasın diye her 2 saniyede bir zorla konum atar)
             setInterval(() => {
                 if(isInWorld) emitMovement(keys.w || keys.s || keys.a || keys.d);
             }, 2000); 
 
-            loadProfileUI(); 
-            updateUI(); 
-            renderMarkets();
-            renderAssets();
-            initProfile3D(); 
-            init3DWorld();   
+            loadProfileUI(); updateUI(); renderMarkets(); renderAssets();
+            initProfile3D(); init3DWorld();   
         }
 
         function updateClock() {
@@ -727,21 +653,11 @@
 
         function updateUI() {
             let totalAssets = player.cash;
-            if(player.inventory && player.inventory.stocks) {
-                for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price;
-            }
-            if(player.inventory && player.inventory.metals) {
-                for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price;
-            }
-            if(player.assets && player.assets.jobs) {
-                player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost);
-            }
-            if(player.assets && player.assets.realEstate) {
-                player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost);
-            }
-            if(player.assets && player.assets.vehicles) {
-                player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost);
-            }
+            if(player.inventory && player.inventory.stocks) { for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price; }
+            if(player.inventory && player.inventory.metals) { for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price; }
+            if(player.assets && player.assets.jobs) { player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost); }
+            if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost); }
+            if(player.assets && player.assets.vehicles) { player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost); }
 
             document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2});
             document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
@@ -750,13 +666,10 @@
         }
 
         function logActivity(text) {
-            const log = document.getElementById('activity-log');
-            const li = document.createElement('li');
+            const log = document.getElementById('activity-log'); const li = document.createElement('li');
             li.style.cssText = "padding: 12px 15px; background: var(--bg-dark); border-radius: 8px; border-left: 4px solid var(--accent-blue); display: flex; align-items: center; gap: 15px;";
             li.innerHTML = `<span style="color:var(--accent-gold); font-weight:bold; font-family:monospace;">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', second:'2-digit'})}</span> <span style="color:var(--panel-hover);">|</span> <span>${text}</span>`;
-            
-            log.prepend(li);
-            if(log.children.length > 50) log.removeChild(log.lastChild);
+            log.prepend(li); if(log.children.length > 50) log.removeChild(log.lastChild);
         }
 
         function saveGame() { localStorage.setItem('apex_save_' + player.username, JSON.stringify(player)); }
@@ -764,7 +677,6 @@
         function fluctuateMarkets() {
             stocks.forEach(s => { s.price = Math.max(1, s.price + (Math.random() - 0.5) * (s.price * 0.05)); });
             metals.forEach(m => { m.price = Math.max(1, m.price + (Math.random() - 0.5) * (m.price * 0.03)); });
-            
             if(document.getElementById('tab-stocks').classList.contains('active')) renderMarkets('stocks');
             if(document.getElementById('tab-metals').classList.contains('active')) renderMarkets('metals');
             updateUI(); 
@@ -790,23 +702,14 @@
         }
 
         function trade(type, name, action) {
-            let market = type === 'stocks' ? stocks : metals;
-            let item = market.find(x => x.name === name);
-            if(!item) return;
-            if(!player.inventory) player.inventory = { stocks: {}, metals: {} };
+            let market = type === 'stocks' ? stocks : metals; let item = market.find(x => x.name === name);
+            if(!item) return; if(!player.inventory) player.inventory = { stocks: {}, metals: {} };
             
             if(action === 'buy') {
-                if(player.cash >= item.price) { 
-                    player.cash -= item.price; 
-                    player.inventory[type][name] = (player.inventory[type][name] || 0) + 1; 
-                    logActivity(`Borsadan <strong style="color:var(--accent-blue)">1x ${name}</strong> satın alındı.`); 
-                } else alert("Yetersiz bakiye!");
+                if(player.cash >= item.price) { player.cash -= item.price; player.inventory[type][name] = (player.inventory[type][name] || 0) + 1; logActivity(`Borsadan <strong style="color:var(--accent-blue)">1x ${name}</strong> satın alındı.`); } 
+                else alert("Yetersiz bakiye!");
             } else if(action === 'sell') {
-                if((player.inventory[type][name] || 0) > 0) { 
-                    player.cash += item.price; 
-                    player.inventory[type][name] -= 1; 
-                    logActivity(`Borsada <strong style="color:var(--accent-red)">1x ${name}</strong> satıldı.`); 
-                }
+                if((player.inventory[type][name] || 0) > 0) { player.cash += item.price; player.inventory[type][name] -= 1; logActivity(`Borsada <strong style="color:var(--accent-red)">1x ${name}</strong> satıldı.`); }
             }
             renderMarkets(type); updateUI();
         }
@@ -815,116 +718,66 @@
             const buildCards = (arr, invArr, category) => {
                 return arr.map(item => {
                     let owned = invArr && invArr.includes(item.id);
-                    
                     if (category === 'jobs') {
                         let isHighest = owned && Math.max(...invArr) === item.id;
                         let canBuy = !owned && (item.id === 1 || (invArr && invArr.includes(item.id - 1)));
                         let info = `Saniye Başı Maaş: <span style="color:var(--accent-green)">+${item.income} TL</span>`;
-                        
                         let btnHTML = '';
-                        if (isHighest) {
-                            btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Aktif Meslek</button>`;
-                        } else if (owned) {
-                            btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--text-muted); padding:8px 10px; width:100%; border:1px solid var(--panel-hover);">Geçmiş Tecrübe</button>`;
-                        } else if (canBuy) {
-                            btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Terfi Et</button>`;
-                        } else {
-                            btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--accent-red); padding:8px 10px; width:100%; border:1px solid rgba(239,68,68,0.3);"><i class="fa-solid fa-lock"></i> Kilitli</button>`;
-                        }
+                        if (isHighest) btnHTML = `<button disabled style="background:var(--accent-blue); color:white; padding:8px 10px; width:100%; border:none;"><i class="fa-solid fa-check"></i> Aktif Meslek</button>`;
+                        else if (owned) btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--text-muted); padding:8px 10px; width:100%; border:1px solid var(--panel-hover);">Geçmiş Tecrübe</button>`;
+                        else if (canBuy) btnHTML = `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Terfi Et</button>`;
+                        else btnHTML = `<button disabled style="background:var(--bg-dark); color:var(--accent-red); padding:8px 10px; width:100%; border:1px solid rgba(239,68,68,0.3);"><i class="fa-solid fa-lock"></i> Kilitli</button>`;
 
-                        return `
-                        <div class="card" style="${isHighest ? 'border-color:var(--accent-blue); box-shadow: 0 0 15px rgba(59,130,246,0.2);' : ''} ${!owned && !canBuy ? 'opacity:0.6;' : ''}">
-                            <h3>${item.name}</h3>
-                            <p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
-                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>
-                            ${btnHTML}
-                        </div>`;
+                        return `<div class="card" style="${isHighest ? 'border-color:var(--accent-blue); box-shadow: 0 0 15px rgba(59,130,246,0.2);' : ''} ${!owned && !canBuy ? 'opacity:0.6;' : ''}">
+                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
+                            <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>${btnHTML}</div>`;
                     } else {
                         let info = `Saniye Başı Kira: <span style="color:var(--accent-green)">+${item.income} TL</span> | Vergi: <span style="color:var(--accent-red)">-${item.tax} TL</span>`;
                         if(category === 'vehicles') info += ` | Sınıf: <span style="color:${item.color}; font-weight:bold;">${item.category}</span>`;
-                        return `
-                        <div class="card" style="${owned ? 'border-color:var(--accent-green)' : ''}">
-                            <h3>${item.name}</h3>
-                            <p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
+                        return `<div class="card" style="${owned ? 'border-color:var(--accent-green)' : ''}">
+                            <h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">${info}</p>
                             <p style="font-size: 18px; color: var(--accent-gold); margin-bottom: 10px; font-weight:bold;">${item.cost.toLocaleString()} TL</p>
-                            ${owned 
-                                ? `<button disabled style="background:var(--bg-dark); color:var(--accent-green); padding:8px 10px; width:100%; border:1px solid var(--accent-green);">Sahipsin</button>`
-                                : `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`
-                            }
-                        </div>`;
+                            ${owned ? `<button disabled style="background:var(--bg-dark); color:var(--accent-green); padding:8px 10px; width:100%; border:1px solid var(--accent-green);">Sahipsin</button>` : `<button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Satın Al</button>`}</div>`;
                     }
                 }).join('');
             };
-            
             if(!player.assets) player.assets = { jobs: [], realEstate: [], vehicles: [] };
-            
             document.getElementById('jobs-list').innerHTML = buildCards(jobs, player.assets.jobs, 'jobs');
             document.getElementById('realestate-list').innerHTML = buildCards(realEstate, player.assets.realEstate, 'realEstate');
             document.getElementById('vehicles-list').innerHTML = buildCards(vehicles, player.assets.vehicles, 'vehicles');
         }
 
         function buyAsset(category, id) {
-            let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles;
-            let item = list.find(x => x.id === id);
-
-            if (category === 'jobs') {
-                if (id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) {
-                    alert("Önce bir önceki meslekte tecrübe kazanmalısın!");
-                    return;
-                }
-            }
-
+            let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles; let item = list.find(x => x.id === id);
+            if (category === 'jobs' && id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) { alert("Önce bir önceki meslekte tecrübe kazanmalısın!"); return; }
             if(player.cash >= item.cost) { 
-                player.cash -= item.cost; 
-                player.assets[category].push(id); 
-                
-                if (category === 'jobs') {
-                    logActivity(`Terfi ettin! Yeni aktif mesleğin: <strong style="color:var(--accent-blue)">${item.name}</strong>`); 
-                } else {
-                    logActivity(`Yeni mülk edinildi: <strong>${item.name}</strong>`); 
-                }
-                
-                renderAssets(); 
-                updateUI(); 
-            } 
-            else alert("Nakit paranız yetersiz!");
+                player.cash -= item.cost; player.assets[category].push(id); 
+                if (category === 'jobs') logActivity(`Terfi ettin! Yeni aktif mesleğin: <strong style="color:var(--accent-blue)">${item.name}</strong>`); 
+                else logActivity(`Yeni mülk edinildi: <strong>${item.name}</strong>`); 
+                renderAssets(); updateUI(); 
+            } else alert("Nakit paranız yetersiz!");
         }
 
         function processEconomy() {
             let totalIncome = 0; let totalTax = 0;
-            
-            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) {
-                let activeJobId = Math.max(...player.assets.jobs);
-                totalIncome += jobs.find(j => j.id === activeJobId).income;
-            }
-
-            if(player.assets && player.assets.realEstate) {
-                player.assets.realEstate.forEach(id => { let r = realEstate.find(x=>x.id===id); totalIncome += r.income; totalTax += r.tax; });
-            }
-            if(player.assets && player.assets.vehicles) {
-                player.assets.vehicles.forEach(id => { let v = vehicles.find(x=>x.id===id); totalIncome += v.income; totalTax += v.tax; });
-            }
-
+            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) { let activeJobId = Math.max(...player.assets.jobs); totalIncome += jobs.find(j => j.id === activeJobId).income; }
+            if(player.assets && player.assets.realEstate) { player.assets.realEstate.forEach(id => { let r = realEstate.find(x=>x.id===id); totalIncome += r.income; totalTax += r.tax; }); }
+            if(player.assets && player.assets.vehicles) { player.assets.vehicles.forEach(id => { let v = vehicles.find(x=>x.id===id); totalIncome += v.income; totalTax += v.tax; }); }
             if(totalIncome > 0 || totalTax > 0) {
-                player.cash += totalIncome; 
-                player.cash -= totalTax;
-                
-                if(player.cash < 0) { 
-                    player.debt += Math.abs(player.cash); 
-                    player.cash = 0; 
-                }
+                player.cash += totalIncome; player.cash -= totalTax;
+                if(player.cash < 0) { player.debt += Math.abs(player.cash); player.cash = 0; }
                 updateUI();
             }
         }
 
-        // --- ORTAK 3D MATERYALLERİ VE KALİTELİ SAÇ MODELLERİ ---
+        // KUSURSUZ MATERYAL VE KARAKTER ÇİZİCİSİ (Hatalı renk gelirse varsayılan atar)
         function createPlayerMaterials(prof) {
             return {
-                skin: new THREE.MeshStandardMaterial({ color: prof.skin }),
-                hair: new THREE.MeshStandardMaterial({ color: prof.hair }),
-                jacket: new THREE.MeshStandardMaterial({ color: prof.jacket }),
-                shirt: new THREE.MeshStandardMaterial({ color: prof.shirt }),
-                tie: new THREE.MeshStandardMaterial({ color: prof.tie }),
+                skin: new THREE.MeshStandardMaterial({ color: prof.skin || '#ffdbac' }),
+                hair: new THREE.MeshStandardMaterial({ color: prof.hair || '#4a3000' }),
+                jacket: new THREE.MeshStandardMaterial({ color: prof.jacket || '#1e293b' }),
+                shirt: new THREE.MeshStandardMaterial({ color: prof.shirt || '#f8fafc' }),
+                tie: new THREE.MeshStandardMaterial({ color: prof.tie || '#3b82f6' }),
                 pant: new THREE.MeshStandardMaterial({ color: '#0f172a' }),
                 shoe: new THREE.MeshStandardMaterial({ color: '#111111' }),
                 white: new THREE.MeshBasicMaterial({ color: '#ffffff' }),
@@ -989,25 +842,22 @@
         }
 
         function toggleRotation() {
-            isProfileRotating = !isProfileRotating;
-            const btn = document.getElementById('btn-rotate-toggle');
-            btn.innerText = isProfileRotating ? "Döndürmeyi Durdur" : "Döndürmeyi Başlat";
-            btn.style.background = isProfileRotating ? "rgba(15, 23, 42, 0.8)" : "var(--accent-blue)";
+            isProfileRotating = !isProfileRotating; const btn = document.getElementById('btn-rotate-toggle');
+            btn.innerText = isProfileRotating ? "Döndürmeyi Durdur" : "Döndürmeyi Başlat"; btn.style.background = isProfileRotating ? "rgba(15, 23, 42, 0.8)" : "var(--accent-blue)";
         }
 
-        // SİYAH EKRAN HATASINI ÇÖZEN GÜVENLİ KENDİ OYUNCU BOYUTLANDIRMASI
         function loadProfileUI() {
             ['height','weight','hairstyle','skin','hair','jacket','shirt','tie'].forEach(k => {
-                if(document.getElementById('prof-'+k)) document.getElementById('prof-'+k).value = player.profile[k];
-                if(document.getElementById('color-'+k)) document.getElementById('color-'+k).value = player.profile[k];
+                if(document.getElementById('prof-'+k)) document.getElementById('prof-'+k).value = player.profile[k] || defaultProfile[k];
+                if(document.getElementById('color-'+k)) document.getElementById('color-'+k).value = player.profile[k] || defaultProfile[k];
             });
             updateAvatar(); 
         }
 
         function updateAvatar() {
-            player.profile.height = document.getElementById('prof-height').value;
-            player.profile.weight = document.getElementById('prof-weight').value;
-            player.profile.hairstyle = document.getElementById('prof-hairstyle').value;
+            player.profile.height = document.getElementById('prof-height').value || "175";
+            player.profile.weight = document.getElementById('prof-weight').value || "70";
+            player.profile.hairstyle = document.getElementById('prof-hairstyle').value || "classic";
             player.profile.skin = document.getElementById('color-skin').value;
             player.profile.hair = document.getElementById('color-hair').value;
             player.profile.jacket = document.getElementById('color-jacket').value;
@@ -1018,40 +868,30 @@
                 profScene.remove(profilePlayerObj.root);
                 profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
                 profilePlayerObj.root.position.y = -0.5;
-                let sc = (parseInt(player.profile.weight) || 70)/70;
-                let sh = (parseInt(player.profile.height) || 175)/175;
-                profilePlayerObj.model.scale.set(sc, sh, sc);
-                profScene.add(profilePlayerObj.root);
+                let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
+                profilePlayerObj.model.scale.set(sc, sh, sc); profScene.add(profilePlayerObj.root);
             }
             if(scene && worldPlayerObj) {
-                let oldPos = worldPlayerObj.root.position.clone();
-                let oldRot = worldPlayerObj.root.rotation.y;
+                let oldPos = worldPlayerObj.root.position.clone(); let oldRot = worldPlayerObj.root.rotation.y;
                 scene.remove(worldPlayerObj.root);
                 worldPlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
-                worldPlayerObj.root.position.copy(oldPos);
-                worldPlayerObj.root.rotation.y = oldRot;
-                let sc = (parseInt(player.profile.weight) || 70)/70;
-                let sh = (parseInt(player.profile.height) || 175)/175;
-                worldPlayerObj.model.scale.set(sc, sh, sc);
-                scene.add(worldPlayerObj.root);
+                worldPlayerObj.root.position.copy(oldPos); worldPlayerObj.root.rotation.y = oldRot;
+                let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
+                worldPlayerObj.model.scale.set(sc, sh, sc); scene.add(worldPlayerObj.root);
             }
-            saveGame();
-            if(socket && isInWorld) emitMovement(false);
+            saveGame(); if(socket && isInWorld) emitMovement(false);
         }
 
         function openTab(tabName) {
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active');
-            event.currentTarget.classList.add('active');
-
+            document.getElementById('tab-' + tabName).classList.add('active'); event.currentTarget.classList.add('active');
             if (tabName === 'profile') {
                 setTimeout(() => {
                     const container = document.getElementById('profile-3d-canvas');
                     if (container && profRenderer && profCamera) {
                         profCamera.aspect = container.clientWidth / container.clientHeight;
-                        profCamera.updateProjectionMatrix();
-                        profRenderer.setSize(container.clientWidth, container.clientHeight);
+                        profCamera.updateProjectionMatrix(); profRenderer.setSize(container.clientWidth, container.clientHeight);
                     }
                 }, 50);
             }
@@ -1062,8 +902,7 @@
         // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
-        let isInWorld = false;
-        let colliders = []; 
+        let isInWorld = false; let colliders = []; 
         let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
         function init3DWorld() {
@@ -1096,7 +935,6 @@
 
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
-            const winMat = new THREE.MeshStandardMaterial({ color: '#38bdf8', metalness: 0.8, roughness: 0.2 });
 
             for(let i = 0; i < realEstate.length; i++) {
                 let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
@@ -1111,16 +949,10 @@
                 colliders.push(new THREE.Box3().setFromObject(bBody));
             }
 
-            const tireMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.8 });
-            const rimMat = new THREE.MeshStandardMaterial({ color: '#e2e8f0', metalness: 0.9, roughness: 0.2 });
-
             for(let i = 0; i < vehicles.length; i++) {
-                let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50;
-                let carGrp = new THREE.Group();
-                let bodyMat = new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 });
-                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), bodyMat); b.position.set(0, 0.8, 0); carGrp.add(b);
-                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
-                ps.position.set(0, 0.08, 0); carGrp.add(ps);
+                let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50; let carGrp = new THREE.Group();
+                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 })); b.position.set(0, 0.8, 0); carGrp.add(b);
+                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' })); ps.position.set(0, 0.08, 0); carGrp.add(ps);
                 carGrp.position.set(vx, 0, vz); carGrp.updateMatrixWorld(true); scene.add(carGrp);
                 let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
             }
@@ -1128,35 +960,26 @@
             for(let i=0; i<200; i++) {
                 let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
                 if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
-                    let treeGrp = new THREE.Group();
-                    let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
+                    let treeGrp = new THREE.Group(); let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
                     trunk.position.y = 1.5; treeGrp.add(trunk);
-                    for(let j=0; j<3; j++) {
-                        let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' }));
-                        l.position.y = 3 + j*1.5; treeGrp.add(l);
-                    }
-                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp);
-                    colliders.push(new THREE.Box3().setFromObject(trunk));
+                    for(let j=0; j<3; j++) { let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' })); l.position.y = 3 + j*1.5; treeGrp.add(l); }
+                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp); colliders.push(new THREE.Box3().setFromObject(trunk));
                 }
             }
 
             let mats = createPlayerMaterials(player.profile);
             worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
-            let sc = (parseInt(player.profile.weight) || 70)/70;
-            let sh = (parseInt(player.profile.height) || 175)/175;
-            worldPlayerObj.model.scale.set(sc, sh, sc);
-            scene.add(worldPlayerObj.root);
+            let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
+            worldPlayerObj.model.scale.set(sc, sh, sc); scene.add(worldPlayerObj.root);
 
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement.tagName === 'INPUT') return;
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
-                if(e.key.toLowerCase() === ' ') keys.space = true;
-                if(e.key === 'Shift') keys.shift = true;
+                if(e.key.toLowerCase() === ' ') keys.space = true; if(e.key === 'Shift') keys.shift = true;
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
             });
             window.addEventListener('keyup', (e) => {
-                if(e.key.toLowerCase() === ' ') keys.space = false;
-                if(e.key === 'Shift') keys.shift = false;
+                if(e.key.toLowerCase() === ' ') keys.space = false; if(e.key === 'Shift') keys.shift = false;
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
             });
             document.addEventListener('pointerlockchange', () => {
@@ -1174,21 +997,11 @@
 
         function enterWorld() {
             let fw = document.getElementById('fullscreen-world');
-            if(!fw.requestPointerLock) {
-                alert("HATA: Cihazınız bu 3D modu desteklemiyor. Lütfen klavyesi olan bir bilgisayardan (PC/Mac) giriş yapınız.");
-                return;
-            }
+            if(!fw.requestPointerLock) { alert("HATA: Cihazınız bu 3D modu desteklemiyor. Lütfen bilgisayardan girin."); return; }
             
-            isInWorld = true; 
-            fw.style.display = 'block';
-            document.getElementById('esc-menu').style.display = 'none';
-            if(camera && renderer) { 
-                camera.aspect = window.innerWidth / window.innerHeight; 
-                camera.updateProjectionMatrix(); 
-                renderer.setSize(window.innerWidth, window.innerHeight); 
-            }
-            
-            try { fw.requestPointerLock(); } catch(e) { console.error(e); }
+            isInWorld = true; fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
+            if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
+            try { fw.requestPointerLock(); } catch(e) {}
             emitMovement(false);
         }
         
@@ -1240,11 +1053,16 @@
                 worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
             }
 
+            // GÜVENLİ KAMERA TAKİBİ
             const scY = worldPlayerObj.model.scale.y || 1;
-            camera.position.x = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
-            camera.position.y = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
-            camera.position.z = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
-            camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+            let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
+            let targetCamY = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
+            let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
+            
+            if(!isNaN(targetCamX) && !isNaN(targetCamY) && !isNaN(targetCamZ)) {
+                camera.position.set(targetCamX, targetCamY, targetCamZ);
+                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+            }
 
             let tagPos = new THREE.Vector3();
             worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
@@ -1258,11 +1076,13 @@
 
             for(let id in otherPlayers) {
                 let op = otherPlayers[id];
-                let opPos = new THREE.Vector3(); op.group.getWorldPosition(opPos); opPos.y += 5.0 * op.model.scale.y; opPos.project(camera);
-                if(opPos.z > 1) op.tag.style.display = 'none';
-                else {
-                    op.tag.style.display = 'block';
-                    op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
+                if(op && op.group && op.model) {
+                    let opPos = new THREE.Vector3(); op.group.getWorldPosition(opPos); opPos.y += 5.0 * (op.model.scale.y || 1); opPos.project(camera);
+                    if(opPos.z > 1) op.tag.style.display = 'none';
+                    else {
+                        op.tag.style.display = 'block';
+                        op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
+                    }
                 }
             }
 
