@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Simulator - Metaverse</title>
+    <title>Apex Simulator - Metaverse Yaşam</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
@@ -183,9 +183,9 @@
                         <div class="card" style="grid-column: 1 / -1;">
                             <h3><i class="fa-solid fa-circle-info"></i> Metaverse Yaşam Kuralları</h3>
                             <p style="color: var(--text-muted); line-height: 1.6;">
-                                <strong>1. Borsa ve Madenler Kaldırıldı:</strong> Artık spekülasyon yok. Kazancın sadece kariyerinden (mesleğinden) gelir.<br>
-                                <strong>2. Kullanım Odaklı Mülkler:</strong> Evler ve arabalar pasif kira ödemez. Onlar sadece arsanı ve garajını süsleyen, kullandığın prestijli varlıklarındır.<br>
-                                <strong>3. Arsa ve Güvenlik:</strong> 1000 TL'ye arsa alıp evini ve aracını sergileyebilirsin. Sadece izin verdiğin kişiler arsa kalkanından içeri girebilir.
+                                <strong>1. Açılır Kapanır Kapılar (`E` Tuşu):</strong> Arsandaki evinize yaklaşıp klavyeden <b>E</b> tuşuna basarak kapınızı açabilir veya kapatabilirsiniz!<br>
+                                <strong>2. Gerçekçi Pencereler:</strong> Evler artık detaylı beyaz çerçeveli ve cam pencerelere sahip.<br>
+                                <strong>3. Arsa ve Güvenlik:</strong> 1000 TL'ye arsa alıp evini sergileyebilirsin. Sadece izin verdiğin kişiler kalkanı geçebilir.
                             </p>
                         </div>
                     </div>
@@ -277,7 +277,7 @@
             <div id="tag-username">Oyuncu</div>
             <div id="tag-money">0 TL</div>
         </div>
-        <div class="hud-controls"><span>W,A,S,D</span> Yürü | <span>Shift</span> Koş | <span>Space</span> Zıpla | <span>ESC</span> Menü</div>
+        <div class="hud-controls"><span>W,A,S,D</span> Yürü | <span>Shift</span> Koş | <span>Space</span> Zıpla | <span>E</span> Kapıyı Aç/Kapat | <span>ESC</span> Menü</div>
         <div id="esc-menu">
             <h2>Oyun Menüsü</h2>
             <button class="btn-primary" style="width: 300px; padding: 15px; font-size: 18px; margin-bottom: 20px;" onclick="resumeWorld()">Oyuna Dön</button>
@@ -291,6 +291,7 @@
         let globalPlotsGroup; 
         let plotRenderCache = {}; 
         let colliders = []; 
+        let interactiveDoors = []; // Açılır kapanır kapılar listesi
 
         const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
         
@@ -347,7 +348,7 @@
             { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
-        // MİMARİ VE TAŞIT ÇİZİM MOTORLARI
+        // MİMARİ VE ETKİLEŞİMLİ KAPI MOTORU
         function createFenceWall(width) {
             let grp = new THREE.Group();
             let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
@@ -372,7 +373,8 @@
             
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#e2e8f0' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#1e293b' }), new THREE.MeshStandardMaterial({ color: '#475569' })]; 
-            const glassMat = new THREE.MeshStandardMaterial({ color: '#38bdf8', metalness: 0.9, roughness: 0.1 });
+            const glassMat = new THREE.MeshStandardMaterial({ color: '#1e293b', metalness: 0.9, roughness: 0.1 }); // Gerçekçi koyu cam
+            const frameMat = new THREE.MeshStandardMaterial({ color: '#ffffff' }); // Pencere çerçevesi
 
             let bHeight = 8 * scaleMult; let bWidth = 14 * scaleMult; let bDepth = 12 * scaleMult;
             
@@ -387,14 +389,30 @@
                 roof.position.y = bHeight; roof.castShadow = true; bGroup.add(roof);
             }
             
-            let dr = new THREE.Mesh(new THREE.BoxGeometry(3 * scaleMult, 4 * scaleMult, 0.2), new THREE.MeshStandardMaterial({ color: '#333' })); 
-            dr.position.set(0, (4*scaleMult)/2, bDepth/2 + 0.05); bGroup.add(dr);
-
-            let win1 = new THREE.Mesh(new THREE.BoxGeometry(4 * scaleMult, 5 * scaleMult, 0.2), glassMat); 
-            win1.position.set(-bWidth/3, (5*scaleMult)/2 + 2, bDepth/2 + 0.05); bGroup.add(win1);
+            // --- AÇILIR KAPANIR KAPI SİSTEMİ (Menteşeli Pivot) ---
+            let doorPivot = new THREE.Group();
+            doorPivot.position.set(-1.5 * scaleMult, 0, bDepth/2 + 0.05); // Sol menteşe
             
-            let win2 = new THREE.Mesh(new THREE.BoxGeometry(4 * scaleMult, 5 * scaleMult, 0.2), glassMat); 
-            win2.position.set(bWidth/3, (5*scaleMult)/2 + 2, bDepth/2 + 0.05); bGroup.add(win2);
+            let doorMesh = new THREE.Mesh(new THREE.BoxGeometry(3 * scaleMult, 4 * scaleMult, 0.2), new THREE.MeshStandardMaterial({ color: '#78350f', roughness: 0.5 }));
+            doorMesh.position.set(1.5 * scaleMult, (4*scaleMult)/2, 0); doorMesh.castShadow = true;
+            doorPivot.add(doorMesh);
+            bGroup.add(doorPivot);
+
+            // Etkileşim listesine ekle
+            interactiveDoors.push({ pivot: doorPivot, isOpen: false, targetRot: 0 });
+
+            // --- GERÇEKÇİ PENCERELER ---
+            const createWindow = (x, y) => {
+                let wGrp = new THREE.Group();
+                let frame = new THREE.Mesh(new THREE.BoxGeometry(4.2 * scaleMult, 4.2 * scaleMult, 0.15), frameMat);
+                let glass = new THREE.Mesh(new THREE.BoxGeometry(3.8 * scaleMult, 3.8 * scaleMult, 0.2), glassMat);
+                wGrp.add(frame); wGrp.add(glass);
+                wGrp.position.set(x, y, bDepth/2 + 0.05);
+                bGroup.add(wGrp);
+            };
+
+            createWindow(-bWidth/3, (4*scaleMult)/2 + 2);
+            createWindow(bWidth/3, (4*scaleMult)/2 + 2);
 
             return bGroup;
         }
@@ -494,7 +512,6 @@
 
         function createPottedPalm() {
             const grp = new THREE.Group();
-            
             let potMaterial = new THREE.MeshStandardMaterial({color: '#e6a15c', roughness: 0.7});
             let potBase = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 0.9, 3, 24), potMaterial);
             potBase.position.y = 1.5; potBase.castShadow = true; potBase.receiveShadow = true; grp.add(potBase);
@@ -912,10 +929,7 @@
             for(let row=0; row<=10; row++) {
                 for(let col=0; col<=10; col++) {
                     let px = col * 80 - 400; let pz = row * 80 - 400;
-                    let palm = createPottedPalm(); 
-                    palm.position.set(px, 0, pz); 
-                    scene.add(palm);
-                    
+                    let palm = createPottedPalm(); palm.position.set(px, 0, pz); scene.add(palm);
                     let palmBox = new THREE.Box3().setFromObject(palm);
                     colliders.push(palmBox);
                 }
@@ -933,8 +947,15 @@
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
                 if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
                 if(e.key === 'Shift') keys.shift = true;
+                
+                // 'E' TUŞU İLE KAPIYI AÇ / KAPAT
+                if(e.key.toLowerCase() === 'e' && isInWorld) {
+                    toggleNearestDoor();
+                }
+
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
             });
+
             window.addEventListener('keyup', (e) => {
                 if(e.key.toLowerCase() === ' ') keys.space = false; if(e.key === 'Shift') keys.shift = false;
                 if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
@@ -960,8 +981,23 @@
             syncPlots(); animateWorld();
         }
 
+        // YAKINDAKİ KAPIYI AÇMA KAPANMA KONTROLÜ (E Tuşu)
+        function toggleNearestDoor() {
+            if(!worldPlayerObj) return;
+            let pPos = worldPlayerObj.root.position;
+            interactiveDoors.forEach(door => {
+                let dWorldPos = new THREE.Vector3();
+                door.pivot.getWorldPosition(dWorldPos);
+                if(pPos.distanceTo(dWorldPos) < 10) { // 10 birim yakınlıktaysa
+                    door.isOpen = !door.isOpen;
+                    door.targetRot = door.isOpen ? Math.PI / 2 : 0; // 90 derece açılır
+                }
+            });
+        }
+
         function syncPlots() {
             if(!globalPlotsGroup) return;
+            interactiveDoors = []; // Listeyi yenile
             let activeUsers = [player, ...Object.values(otherPlayers)];
             activeUsers.forEach(u => {
                 let pid = u.assets ? u.assets.plotId : u.plotId; 
@@ -979,7 +1015,6 @@
 
         function drawPlot(userData) {
             let pId = userData.assets ? userData.assets.plotId : userData.plotId;
-            let pName = userData.profile ? userData.profile.name : userData.username;
             let selRE = userData.assets ? userData.assets.selectedRealEstate : userData.selectedRealEstate;
             let selVeh = userData.assets ? userData.assets.selectedVehicle : userData.selectedVehicle;
             if(pId === -1) return;
@@ -1059,6 +1094,11 @@
             requestAnimationFrame(animateWorld);
             const delta = Math.min((performance.now() - lastTime) / 1000, 0.1); 
             lastTime = performance.now();
+
+            // Kapı animasyonu (Yumuşak açılma kapanma)
+            interactiveDoors.forEach(door => {
+                door.pivot.rotation.y += (door.targetRot - door.pivot.rotation.y) * 0.1;
+            });
 
             if(document.getElementById('tab-profile').classList.contains('active') && profRenderer) {
                 if(profilePlayerObj && isProfileRotating) profilePlayerObj.root.rotation.y += 0.5 * delta; profRenderer.render(profScene, profCamera);
