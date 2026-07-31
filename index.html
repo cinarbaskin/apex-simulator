@@ -352,7 +352,7 @@
             { id: 20, name: "Beyaz Özel Tasarım İş Jeti", cost: 250000000, color: '#ffffff', category: 'Havacılık', modelType: 'jet' }
         ];
 
-        // MİMARİ VE İÇİ DOLU SAĞLAM ARAÇ ÇİZİMİ
+        // MİMARİ VE ÇİZİM MOTORLARI
         function createFenceWall(width) {
             let grp = new THREE.Group();
             let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
@@ -417,7 +417,6 @@
             return bGroup;
         }
 
-        // İÇİ BOŞLUKSUZ, SAĞLAM VE DOLU ARAÇ GÖVDELERİ
         function createParametricCar(colorHex, type) {
             const grp = new THREE.Group();
             const paint = new THREE.MeshStandardMaterial({ color: colorHex, metalness: type==='super'||type==='sport'? 0.7:0.3, roughness: 0.3 });
@@ -429,11 +428,9 @@
             else if(type === 'sport') { bh=0.9; bd=9.5; }
             else if(type === 'super') { bw=4.8; bh=0.8; bd=9.5; }
 
-            // Ana Masif Gövde (İçi dolu, boşluksuz)
             let solidBody = new THREE.Mesh(new THREE.BoxGeometry(bw, bh*2.2, bd), paint);
             solidBody.position.y = (bh*2.2)/2 + 0.4; solidBody.castShadow = true; solidBody.receiveShadow = true; grp.add(solidBody);
 
-            // Ön ve Arka Cam Detayları
             let frontGlass = new THREE.Mesh(new THREE.BoxGeometry(bw*0.9, bh*0.9, 0.2), glassMat);
             frontGlass.position.set(0, bh*1.6, bd/2 - 1.5); frontGlass.rotation.x = -Math.PI/6; grp.add(frontGlass);
 
@@ -899,8 +896,9 @@
             let sc = (parseInt(player.profile.weight) || 70)/70; let sh = (parseInt(player.profile.height) || 175)/175;
             worldPlayerObj.model.scale.set(sc, sh, sc); worldPlayerObj.root.position.set(0, 2, 0); scene.add(worldPlayerObj.root);
 
+            // GLOBAL TUŞ DİNLEYİCİLERİ (Fokus Problemi Olmadan)
             window.addEventListener('keydown', (e) => {
-                if(document.activeElement.tagName === 'INPUT') return;
+                if(document.activeElement && document.activeElement.tagName === 'INPUT') return;
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
                 if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
                 if(e.key === 'Shift') keys.shift = true;
@@ -942,7 +940,7 @@
             interactiveDoors.forEach(door => {
                 let dWorldPos = new THREE.Vector3();
                 door.pivot.getWorldPosition(dWorldPos);
-                if(pPos.distanceTo(dWorldPos) < 10) {
+                if(pPos.distanceTo(dWorldPos) < 12) {
                     door.isOpen = !door.isOpen;
                     door.targetRot = door.isOpen ? Math.PI / 2 : 0;
                 }
@@ -954,7 +952,9 @@
             if(isDriving) {
                 isDriving = false;
                 if(activeVehicleMesh) {
-                    worldPlayerObj.root.position.copy(activeVehicleMesh.position).add(new THREE.Vector3(4, 0, 0));
+                    let dropPos = new THREE.Vector3();
+                    activeVehicleMesh.getWorldPosition(dropPos);
+                    worldPlayerObj.root.position.copy(dropPos).add(new THREE.Vector3(4, 0, 0));
                     activeVehicleMesh = null;
                 }
                 worldPlayerObj.root.visible = true;
@@ -963,7 +963,9 @@
                 let pPos = worldPlayerObj.root.position;
                 let foundVeh = null;
                 playerVehicleObjects.forEach(vObj => {
-                    if(pPos.distanceTo(vObj.position) < 10) {
+                    let vWorldPos = new THREE.Vector3();
+                    vObj.getWorldPosition(vWorldPos);
+                    if(pPos.distanceTo(vWorldPos) < 12) {
                         foundVeh = vObj;
                     }
                 });
@@ -1098,23 +1100,26 @@
 
             // --- SÜRÜŞ FİZİĞİ ---
             if(isDriving && activeVehicleMesh) {
-                let acc = 18; let maxSpeed = 30;
+                let acc = 20; let maxSpeed = 35;
                 if(keys.w) vehicleSpeed = Math.min(maxSpeed, vehicleSpeed + acc * delta);
                 else if(keys.s) vehicleSpeed = Math.max(-maxSpeed/2, vehicleSpeed - acc * delta);
                 else vehicleSpeed *= 0.95;
 
-                if(keys.a) activeVehicleMesh.rotation.y += 2.2 * delta * (vehicleSpeed > 0 ? 1 : -1);
-                if(keys.d) activeVehicleMesh.rotation.y -= 2.2 * delta * (vehicleSpeed > 0 ? 1 : -1);
+                if(keys.a) activeVehicleMesh.rotation.y += 2.5 * delta * (vehicleSpeed > 0 ? 1 : -1);
+                if(keys.d) activeVehicleMesh.rotation.y -= 2.5 * delta * (vehicleSpeed > 0 ? 1 : -1);
 
                 let moveV = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), activeVehicleMesh.rotation.y);
                 activeVehicleMesh.position.addScaledVector(moveV, vehicleSpeed * delta);
                 worldPlayerObj.root.position.copy(activeVehicleMesh.position);
 
-                let targetCamX = activeVehicleMesh.position.x + 10 * Math.sin(activeVehicleMesh.rotation.y);
-                let targetCamY = activeVehicleMesh.position.y + 4;
-                let targetCamZ = activeVehicleMesh.position.z + 10 * Math.cos(activeVehicleMesh.rotation.y);
+                let vWPos = new THREE.Vector3();
+                activeVehicleMesh.getWorldPosition(vWPos);
+
+                let targetCamX = vWPos.x + 12 * Math.sin(activeVehicleMesh.rotation.y);
+                let targetCamY = vWPos.y + 5;
+                let targetCamZ = vWPos.z + 12 * Math.cos(activeVehicleMesh.rotation.y);
                 camera.position.set(targetCamX, targetCamY, targetCamZ);
-                camera.lookAt(activeVehicleMesh.position);
+                camera.lookAt(vWPos);
 
             } else {
                 // --- YÜRÜME FİZİĞİ ---
