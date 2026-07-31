@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Apex Simulator</title>
+    <title>Apex Simulator - Online</title>
     
-    <!-- THREE.JS ENTEGRASYONU -->
+    <!-- THREE.JS VE SOCKET.IO ENTEGRASYONU -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -133,6 +134,10 @@
         }
         #tag-username { font-size: 16px; letter-spacing: 1px; }
         #tag-money { color: var(--accent-gold); font-size: 14px; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 12px; margin-top: 4px; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);}
+
+        /* ONLİNE DİĞER OYUNCU İSİMLİKLERİ */
+        .other-player-tag { position: absolute; transform: translate(-50%, -50%); text-align: center; pointer-events: none; z-index: 99; display: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
+        .other-player-tag .tag-username { font-size: 14px; font-weight:bold; color: #f8fafc; background: rgba(59, 130, 246, 0.6); padding: 2px 8px; border-radius: 8px; border: 1px solid var(--accent-blue); }
     </style>
 </head>
 <body>
@@ -211,6 +216,7 @@
             <div style="display: flex; align-items: center; gap: 15px;">
                 <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
                 <div class="datetime" id="datetime">Yükleniyor...</div>
+                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-wifi"></i> Sunucuya Bağlı</div>
             </div>
             <div class="finance-summary">
                 <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
@@ -224,7 +230,7 @@
                 <div style="padding-top: 10px;">
                     <div class="nav-item active" onclick="openTab('home')"><i class="fa-solid fa-house"></i> <span class="nav-text">Ana Sayfa</span></div>
                     <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil</span></div>
-                    <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya (3D)</span></div>
+                    <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya (Online)</span></div>
                     <div class="nav-item" onclick="openTab('stocks')"><i class="fa-solid fa-arrow-trend-up"></i> <span class="nav-text">Hisse Senedi</span></div>
                     <div class="nav-item" onclick="openTab('metals')"><i class="fa-solid fa-coins"></i> <span class="nav-text">Değerli Madenler</span></div>
                     <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
@@ -237,20 +243,19 @@
             <main>
                 <div id="tab-home" class="tab-content active">
                     <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">İmparatorluğuna hoş geldin. Her şey sıfırdan başlıyor.</p>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Apex Online Sunucularına hoş geldin. Arkadaşların seni bekliyor.</p>
                     <div class="grid-container">
                         <div class="card" style="grid-column: 1 / -1;">
                             <h3><i class="fa-solid fa-circle-info"></i> Oyun Bilgisi</h3>
                             <p style="color: var(--text-muted); line-height: 1.6;">
-                                <strong>1. Kariyer (Meslek):</strong> Meslek basamaklarını sırayla tırmanmalısın. Sadece son bulunduğun (Aktif) mesleğin maaşını alabilirsin. Eski meslekler tecrübe olarak kalır.<br>
+                                <strong>1. Kariyer (Meslek):</strong> Meslek basamaklarını sırayla tırmanmalısın. Sadece son bulunduğun (Aktif) mesleğin maaşını alabilirsin.<br>
                                 <strong>2. Gayrimenkul & Araçlar:</strong> Satın aldığın evler ve taşıtlar pasif gelir üretir. Ne kadar çok alırsan o kadar çok kiran gelir.<br>
-                                <strong>3. Gerçek Zamanlı Ekonomi:</strong> Sahip olduğun aktif meslek maaşı ve pasif kiraların tümü <strong>her saniye</strong> bölünmeden tam tutarıyla nakit hesabına yatar!
+                                <strong>3. Gerçek Zamanlı Ekonomi:</strong> Sahip olduğun aktif meslek maaşı ve pasif kiraların tümü <strong>her saniye</strong> bölünmeden nakit hesabına yatar!
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- PROFİL SEKMESİ (GENİŞ, FERAH, 2 SÜTUN) -->
                 <div id="tab-profile" class="tab-content">
                     <h2><i class="fa-solid fa-user"></i> Profil & Kıyafet Gardırobu</h2>
                     <p style="color: var(--text-muted); margin-bottom: 20px;">Fiziksel oranları, detaylı saç stilini ve kıyafet renklerini özelleştir.</p>
@@ -315,8 +320,8 @@
                 </div>
 
                 <div id="tab-world" class="tab-content">
-                    <h2><i class="fa-solid fa-globe"></i> Kasaba Meydanı (Açık Dünya)</h2>
-                    <p style="margin-bottom: 15px; color: var(--text-muted);">Güneşli, yeşil ve ağaçlarla kaplı ferah kasabada TPS Kamera kontrolleri ve yürüme çarpışma fiziği ile haritayı keşfet.</p>
+                    <h2><i class="fa-solid fa-globe"></i> Kasaba Meydanı (Online)</h2>
+                    <p style="margin-bottom: 15px; color: var(--text-muted);">Arkadaşlarınla beraber kasabayı keşfet.</p>
                     <div class="card" style="text-align: center; padding: 40px; margin-top: 20px;">
                         <h3 style="border:none; margin-bottom:10px; color:white;">Kasabaya İnmeye Hazır Mısın?</h3>
                         <button class="btn-primary" style="width: auto; padding: 15px 40px; font-size: 18px;" onclick="enterWorld()">Açık Dünyaya Gir</button>
@@ -333,10 +338,9 @@
                     <div class="card"><div class="market-list" id="metals-list"></div></div>
                 </div>
 
-                <!-- MESLEKLER -->
                 <div id="tab-jobs" class="tab-content">
-                    <h2><i class="fa-solid fa-briefcase"></i> Kariyer Basamakları (Sıralı Gelişim)</h2>
-                    <p style="color: var(--text-muted); margin-bottom: 20px;">Meslekleri sırayla açmalısın. Sadece geldiğin son aktif mesleğin saniyelik maaşını alırsın!</p>
+                    <h2><i class="fa-solid fa-briefcase"></i> Kariyer Basamakları</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 20px;">Sadece geldiğin son aktif mesleğin saniyelik maaşını alırsın!</p>
                     <div class="grid-container" id="jobs-list"></div>
                 </div>
 
@@ -382,6 +386,10 @@
 
     <!-- JAVASCRIPT KODLARI -->
     <script>
+        let socket;
+        let otherPlayers = {}; // Diğer online oyuncuların 3D modelleri
+
+        // TIKIR TIKIR ÇALIŞAN EKSİKSİZ OYUNCU OBJESİ (Hatayı Çözen Kısım)
         let player = {
             username: "", cash: 0, debt: 0, 
             inventory: { stocks: {}, metals: {} },
@@ -471,46 +479,14 @@
         let typeInterval;
 
         const dialogues = [
-            { 
-                speaker: "Yönetim Kurulu / Patron", title: "Genel Müdür", type: "boss", 
-                text: "Yıllardır bu şirketin küresel bir teknoloji devi haline gelmesi için döktüğün alın terini, uykusuz gecelerini çok iyi biliyoruz. Son projendeki başarın gerçekten büyüleyiciydi.",
-                expression: { bossBrow: "M 43 41 Q 50 38 57 41", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" }
-            },
-            { 
-                speaker: "Sen", title: "Kıdemli Baş Mimar", type: "player", 
-                text: "Çok teşekkür ederim efendim. Şirketi bu zirveye taşımak benim için büyük bir onurdu. Gelecek çeyrek için hazırladığım yapay zeka ve otomasyon projelerimi sunmak için sabırsızlanıyorum.",
-                expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 40 Q 51 37 58 40", playerBrowR: "M 76 40 Q 69 37 62 40", playerMouth: "M 50 65 Q 60 75 70 65" }
-            },
-            { 
-                speaker: "Yönetim Kurulu / Patron", title: "Yönetim Kurulu Başkanı", type: "boss", 
-                text: "Maalesef yeni bir çeyrek veya gelecekteki vizyon projelerin olmayacak dostum. Küresel ekonomik kriz ve radikal küçülme kararı nedeniyle yönetim kurulu olarak yollarımızı burada ayırma kararı aldık.",
-                expression: { bossBrow: "M 43 37 Q 50 43 57 37", bossMouth: "M 50 70 Q 60 62 70 70", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" }
-            },
-            { 
-                speaker: "Sen", title: "Şoke Olmuş Çalışan", type: "player", 
-                text: "Ne?! Şirketi iflasın eşiğinden tek başıma ben çıkardım! Bütün bu kurumsal altyapıyı, sunucu mimarisini sıfırdan kurdum! Beni bu şekilde kapı önüne atamazsınız!",
-                expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 68 Q 60 72 70 68", playerBrowL: "M 44 35 Q 51 28 58 35", playerBrowR: "M 76 35 Q 69 28 62 35", playerMouth: "M 50 62 C 55 80, 65 80, 70 62" }
-            },
-            { 
-                speaker: "Yönetim Kurulu / Patron", title: "Yönetim Kurulu Başkanı", type: "boss", 
-                text: "Profesyonel dünyada duygulara ve geçmişteki başarılara yer yoktur. Sen sadece bordrolu bir çalışandın ve bu masadaki potansiyeline ne yazık ki sınır koymuştuk.",
-                expression: { bossBrow: "M 43 35 Q 50 41 57 35", bossMouth: "M 50 72 Q 60 64 70 72", playerBrowL: "M 44 38 L 56 44", playerBrowR: "M 76 38 L 64 44", playerMouth: "M 52 70 L 68 70" }
-            },
-            { 
-                speaker: "Yönetim Kurulu / Patron", title: "İK Departmanı Direktörü", type: "boss", 
-                text: "İhbar, kıdem ve performans primi dahil tüm yasal hakların son kuruşuna kadar titizlikle hesaplandı. İşte masadaki çıkış tazminatın: Tam 10.000 TL. Güle güle.",
-                expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 38 L 56 44", playerBrowR: "M 76 38 L 64 44", playerMouth: "M 52 70 L 68 70" }
-            },
-            { 
-                speaker: "Sen (İç Ses)", title: "Yaralı Gurur", type: "internal", 
-                text: "Bunca yıllık emeğimin, gençliğimin, göz nurumun ve uykusuz gecelerimin karşılığı kapı önüne konmak ve üç beş kuruşluk adi bir tazminat mı...",
-                expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 34 Q 51 28 58 34", playerBrowR: "M 76 34 Q 69 28 62 34", playerMouth: "M 54 72 Q 60 65 66 72" }
-            },
-            { 
-                speaker: "Sen (İç Ses)", title: "Geleceğin İmparatoru", type: "internal", 
-                text: "Bekleyin ve görün... Bu küçücük tazminatı sermaye yapıp kendi finans imparatorluğumu kuracağım. And olsun ki bir gün bu şirketi ve sizi tek kalemde satın alacağım!",
-                expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 36 L 56 44", playerBrowR: "M 76 36 L 64 44", playerMouth: "M 52 66 L 68 66" }
-            }
+            { speaker: "Yönetim Kurulu / Patron", title: "Genel Müdür", type: "boss", text: "Yıllardır bu şirketin küresel bir teknoloji devi haline gelmesi için döktüğün alın terini, uykusuz gecelerini çok iyi biliyoruz. Son projendeki başarın gerçekten büyüleyiciydi.", expression: { bossBrow: "M 43 41 Q 50 38 57 41", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" } },
+            { speaker: "Sen", title: "Kıdemli Baş Mimar", type: "player", text: "Çok teşekkür ederim efendim. Şirketi bu zirveye taşımak benim için büyük bir onurdu. Gelecek çeyrek için hazırladığım yapay zeka ve otomasyon projelerimi sunmak için sabırsızlanıyorum.", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 70 70 66", playerBrowL: "M 44 40 Q 51 37 58 40", playerBrowR: "M 76 40 Q 69 37 62 40", playerMouth: "M 50 65 Q 60 75 70 65" } },
+            { speaker: "Yönetim Kurulu / Patron", title: "Yönetim Kurulu Başkanı", type: "boss", text: "Maalesef yeni bir çeyrek veya gelecekteki vizyon projelerin olmayacak dostum. Küresel ekonomik kriz ve radikal küçülme kararı nedeniyle yönetim kurulu olarak yollarımızı burada ayırma kararı aldık.", expression: { bossBrow: "M 43 37 Q 50 43 57 37", bossMouth: "M 50 70 Q 60 62 70 70", playerBrowL: "M 44 43 Q 51 40 58 43", playerBrowR: "M 76 43 Q 69 40 62 43", playerMouth: "M 52 68 Q 60 72 68 68" } },
+            { speaker: "Sen", title: "Şoke Olmuş Çalışan", type: "player", text: "Ne?! Şirketi iflasın eşiğinden tek başıma ben çıkardım! Bütün bu kurumsal altyapıyı, sunucu mimarisini sıfırdan kurdum! Beni bu şekilde kapı önüne atamazsınız!", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 68 Q 60 72 70 68", playerBrowL: "M 44 35 Q 51 28 58 35", playerBrowR: "M 76 35 Q 69 28 62 35", playerMouth: "M 50 62 C 55 80, 65 80, 70 62" } },
+            { speaker: "Yönetim Kurulu / Patron", title: "Yönetim Kurulu Başkanı", type: "boss", text: "Profesyonel dünyada duygulara ve geçmişteki başarılara yer yoktur. Sen sadece bordrolu bir çalışandın ve bu masadaki potansiyeline ne yazık ki sınır koymuştuk.", expression: { bossBrow: "M 43 35 Q 50 41 57 35", bossMouth: "M 50 72 Q 60 64 70 72", playerBrowL: "M 44 38 L 56 44", playerBrowR: "M 76 38 L 64 44", playerMouth: "M 52 70 L 68 70" } },
+            { speaker: "Yönetim Kurulu / Patron", title: "İK Departmanı Direktörü", type: "boss", text: "İhbar, kıdem ve performans primi dahil tüm yasal hakların son kuruşuna kadar titizlikle hesaplandı. İşte masadaki çıkış tazminatın: Tam 10.000 TL. Güle güle.", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 38 L 56 44", playerBrowR: "M 76 38 L 64 44", playerMouth: "M 52 70 L 68 70" } },
+            { speaker: "Sen (İç Ses)", title: "Yaralı Gurur", type: "internal", text: "Bunca yıllık emeğimin, gençliğimin, göz nurumun ve uykusuz gecelerimin karşılığı kapı önüne konmak ve üç beş kuruşluk adi bir tazminat mı...", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 34 Q 51 28 58 34", playerBrowR: "M 76 34 Q 69 28 62 34", playerMouth: "M 54 72 Q 60 65 66 72" } },
+            { speaker: "Sen (İç Ses)", title: "Geleceğin İmparatoru", type: "internal", text: "Bekleyin ve görün... Bu küçücük tazminatı sermaye yapıp kendi finans imparatorluğumu kuracağım. And olsun ki bir gün bu şirketi ve sizi tek kalemde satın alacağım!", expression: { bossBrow: "M 43 39 Q 50 43 57 39", bossMouth: "M 50 66 Q 60 72 70 66", playerBrowL: "M 44 36 L 56 44", playerBrowR: "M 76 36 L 64 44", playerMouth: "M 52 66 L 68 66" } }
         ];
 
         function login() {
@@ -522,11 +498,11 @@
                 player = JSON.parse(saved);
                 document.getElementById('auth-screen').style.display = 'none';
                 startGameUI();
+                connectMultiplayer(); // Eski oyuncu direkt sunucuya bağlanır
             } else {
                 player.username = user;
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('intro-screen').style.display = 'flex';
-                
                 dialogueStep = 0;
                 startTypewriter();
             }
@@ -611,26 +587,107 @@
             player.cash = 10000;
             saveGame();
 
-            setTimeout(() => { anim.remove(); document.getElementById('intro-screen').style.display = 'none'; startGameUI(); }, 1200);
+            setTimeout(() => { 
+                anim.remove(); 
+                document.getElementById('intro-screen').style.display = 'none'; 
+                startGameUI(); 
+                connectMultiplayer(); // Yeni oyuncu intro bitince sunucuya bağlanır (BÜYÜK HATA BURADAYDI, EKLENDİ)
+            }, 1200);
+        }
+
+        // --- MULTIPLAYER (SOCKET.IO) BAĞLANTISI ---
+        function connectMultiplayer() {
+            socket = io();
+
+            socket.on('currentPlayers', (serverPlayers) => {
+                for(let id in serverPlayers) {
+                    if(id !== socket.id) addOtherPlayer(serverPlayers[id]);
+                }
+            });
+
+            socket.on('newPlayer', (playerInfo) => {
+                addOtherPlayer(playerInfo);
+            });
+
+            socket.on('playerMoved', (playerInfo) => {
+                if(otherPlayers[playerInfo.id]) {
+                    let op = otherPlayers[playerInfo.id];
+                    op.group.position.set(playerInfo.x, playerInfo.y, playerInfo.z);
+                    op.group.rotation.y = playerInfo.rotation;
+                    
+                    if(playerInfo.isMoving) {
+                        op.animTime += 0.15;
+                        let swing = Math.sin(op.animTime) * 0.8;
+                        op.lArm.rotation.x = -swing; op.rArm.rotation.x = swing;
+                        op.lLeg.rotation.x = swing; op.rLeg.rotation.x = -swing;
+                    } else {
+                        op.lArm.rotation.x = 0; op.rArm.rotation.x = 0;
+                        op.lLeg.rotation.x = 0; op.rLeg.rotation.x = 0;
+                    }
+                    op.tagUser.innerText = playerInfo.username;
+                } else {
+                    addOtherPlayer(playerInfo);
+                }
+            });
+
+            socket.on('playerDisconnected', (id) => {
+                if(otherPlayers[id]) {
+                    scene.remove(otherPlayers[id].group);
+                    otherPlayers[id].tag.remove();
+                    delete otherPlayers[id];
+                }
+            });
+        }
+
+        function addOtherPlayer(info) {
+            let prof = info.profile || player.profile;
+            let mats = createPlayerMaterials(prof);
+            let obj = buildCharacterModel(mats, prof.hairstyle || 'classic');
+            
+            let h = parseInt(prof.height || 175);
+            let w = parseInt(prof.weight || 70);
+            obj.model.scale.set(w/70, h/175, w/70);
+
+            obj.root.position.set(info.x, info.y, info.z);
+            obj.root.rotation.y = info.rotation;
+            if(scene) scene.add(obj.root);
+
+            let tag = document.createElement('div');
+            tag.className = 'other-player-tag';
+            tag.innerHTML = `<div class="tag-username">${info.username}</div>`;
+            document.getElementById('fullscreen-world').appendChild(tag);
+
+            otherPlayers[info.id] = {
+                group: obj.root, model: obj.model,
+                lArm: obj.lArm, rArm: obj.rArm, lLeg: obj.lLeg, rLeg: obj.rLeg,
+                animTime: 0, tag: tag, tagUser: tag.querySelector('.tag-username')
+            };
+        }
+
+        function emitMovement(isMovingState) {
+            if(!socket) return;
+            socket.emit('playerMovement', {
+                x: worldPlayerObj.root.position.x, y: worldPlayerObj.root.position.y, z: worldPlayerObj.root.position.z,
+                rotation: worldPlayerObj.root.rotation.y,
+                isMoving: isMovingState,
+                username: player.username, profile: player.profile
+            });
         }
 
         function startGameUI() {
             document.getElementById('app-screen').style.display = 'flex';
-            setInterval(updateClock, 1000);
-            updateClock();
-            
+            setInterval(updateClock, 1000); updateClock();
             setInterval(fluctuateMarkets, 1500);
             setInterval(processEconomy, 1000); 
 
-            loadProfileUI();
-            updateUI();
+            loadProfileUI(); 
+            updateUI(); 
             renderMarkets();
             renderAssets();
-            
             initProfile3D(); 
             init3DWorld();   
             
-            logActivity("Apex Simulator sistemlerine başarıyla giriş yapıldı.");
+            logActivity("Apex Simulator online sistemlerine başarıyla giriş yapıldı.");
         }
 
         function updateClock() {
@@ -641,12 +698,23 @@
         }
 
         function updateUI() {
+            // HATA BURADAN KAYNAKLANIYORDU: Eski kodda inventory ve assets objeleri eksikti, JavaScript çöküyordu. Tamamen düzeltildi!
             let totalAssets = player.cash;
-            for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price;
-            for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price;
-            player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost);
-            player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost);
-            player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost);
+            if(player.inventory && player.inventory.stocks) {
+                for(let s in player.inventory.stocks) totalAssets += player.inventory.stocks[s] * stocks.find(x => x.name === s).price;
+            }
+            if(player.inventory && player.inventory.metals) {
+                for(let m in player.inventory.metals) totalAssets += player.inventory.metals[m] * metals.find(x => x.name === m).price;
+            }
+            if(player.assets && player.assets.jobs) {
+                player.assets.jobs.forEach(id => totalAssets += jobs.find(j=>j.id===id).cost);
+            }
+            if(player.assets && player.assets.realEstate) {
+                player.assets.realEstate.forEach(id => totalAssets += realEstate.find(r=>r.id===id).cost);
+            }
+            if(player.assets && player.assets.vehicles) {
+                player.assets.vehicles.forEach(id => totalAssets += vehicles.find(v=>v.id===id).cost);
+            }
 
             document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2});
             document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
@@ -678,7 +746,7 @@
         function renderMarkets(type = 'all') {
             const buildHTML = (arr, invType) => {
                 return arr.map(item => {
-                    let owned = player.inventory[invType][item.name] || 0;
+                    let owned = (player.inventory && player.inventory[invType] && player.inventory[invType][item.name]) || 0;
                     return `
                     <div class="market-item">
                         <div><strong>${item.name}</strong> <br><span style="font-size:12px; color:var(--text-muted)">Sahip: ${owned} adet</span></div>
@@ -698,11 +766,20 @@
             let market = type === 'stocks' ? stocks : metals;
             let item = market.find(x => x.name === name);
             if(!item) return;
+            if(!player.inventory) player.inventory = { stocks: {}, metals: {} };
+            
             if(action === 'buy') {
-                if(player.cash >= item.price) { player.cash -= item.price; player.inventory[type][name] = (player.inventory[type][name] || 0) + 1; logActivity(`Borsadan <strong style="color:var(--accent-blue)">1x ${name}</strong> satın alındı.`); } 
-                else alert("Yetersiz bakiye!");
+                if(player.cash >= item.price) { 
+                    player.cash -= item.price; 
+                    player.inventory[type][name] = (player.inventory[type][name] || 0) + 1; 
+                    logActivity(`Borsadan <strong style="color:var(--accent-blue)">1x ${name}</strong> satın alındı.`); 
+                } else alert("Yetersiz bakiye!");
             } else if(action === 'sell') {
-                if((player.inventory[type][name] || 0) > 0) { player.cash += item.price; player.inventory[type][name] -= 1; logActivity(`Borsada <strong style="color:var(--accent-red)">1x ${name}</strong> satıldı.`); }
+                if((player.inventory[type][name] || 0) > 0) { 
+                    player.cash += item.price; 
+                    player.inventory[type][name] -= 1; 
+                    logActivity(`Borsada <strong style="color:var(--accent-red)">1x ${name}</strong> satıldı.`); 
+                }
             }
             renderMarkets(type); updateUI();
         }
@@ -710,11 +787,11 @@
         function renderAssets() {
             const buildCards = (arr, invArr, category) => {
                 return arr.map(item => {
-                    let owned = invArr.includes(item.id);
+                    let owned = invArr && invArr.includes(item.id);
                     
                     if (category === 'jobs') {
                         let isHighest = owned && Math.max(...invArr) === item.id;
-                        let canBuy = !owned && (item.id === 1 || invArr.includes(item.id - 1));
+                        let canBuy = !owned && (item.id === 1 || (invArr && invArr.includes(item.id - 1)));
                         let info = `Saniye Başı Maaş: <span style="color:var(--accent-green)">+${item.income} TL</span>`;
                         
                         let btnHTML = '';
@@ -751,6 +828,9 @@
                     }
                 }).join('');
             };
+            
+            if(!player.assets) player.assets = { jobs: [], realEstate: [], vehicles: [] };
+            
             document.getElementById('jobs-list').innerHTML = buildCards(jobs, player.assets.jobs, 'jobs');
             document.getElementById('realestate-list').innerHTML = buildCards(realEstate, player.assets.realEstate, 'realEstate');
             document.getElementById('vehicles-list').innerHTML = buildCards(vehicles, player.assets.vehicles, 'vehicles');
@@ -761,7 +841,7 @@
             let item = list.find(x => x.id === id);
 
             if (category === 'jobs') {
-                if (id > 1 && !player.assets.jobs.includes(id - 1)) {
+                if (id > 1 && (!player.assets || !player.assets.jobs.includes(id - 1))) {
                     alert("Önce bir önceki meslekte tecrübe kazanmalısın!");
                     return;
                 }
@@ -786,13 +866,17 @@
         function processEconomy() {
             let totalIncome = 0; let totalTax = 0;
             
-            if (player.assets.jobs.length > 0) {
+            if (player.assets && player.assets.jobs && player.assets.jobs.length > 0) {
                 let activeJobId = Math.max(...player.assets.jobs);
                 totalIncome += jobs.find(j => j.id === activeJobId).income;
             }
 
-            player.assets.realEstate.forEach(id => { let r = realEstate.find(x=>x.id===id); totalIncome += r.income; totalTax += r.tax; });
-            player.assets.vehicles.forEach(id => { let v = vehicles.find(x=>x.id===id); totalIncome += v.income; totalTax += v.tax; });
+            if(player.assets && player.assets.realEstate) {
+                player.assets.realEstate.forEach(id => { let r = realEstate.find(x=>x.id===id); totalIncome += r.income; totalTax += r.tax; });
+            }
+            if(player.assets && player.assets.vehicles) {
+                player.assets.vehicles.forEach(id => { let v = vehicles.find(x=>x.id===id); totalIncome += v.income; totalTax += v.tax; });
+            }
 
             if(totalIncome > 0 || totalTax > 0) {
                 player.cash += totalIncome; 
@@ -807,171 +891,74 @@
         }
 
         // --- ORTAK 3D MATERYALLERİ VE KALİTELİ SAÇ MODELLERİ ---
-        let skinMat = new THREE.MeshStandardMaterial({ color: '#ffdbac' });
-        let hairMat = new THREE.MeshStandardMaterial({ color: '#4a3000' });
-        let eyeMat = new THREE.MeshBasicMaterial({ color: '#000000' });
-        let jacketMat = new THREE.MeshStandardMaterial({ color: '#1e293b' }); 
-        let shirtMat = new THREE.MeshStandardMaterial({ color: '#f8fafc' });  
-        let tieMat = new THREE.MeshStandardMaterial({ color: '#3b82f6' });    
-        let pantMat = new THREE.MeshStandardMaterial({ color: '#0f172a' });   
-        let shoeMat = new THREE.MeshStandardMaterial({ color: '#111111' });   
-        let mouthMat = new THREE.MeshStandardMaterial({ color: '#2a1515' }); 
-        let whiteMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-
-        function buildCharacterModel() {
-            const group = new THREE.Group();
-            const model = new THREE.Group();
-            group.add(model);
-
-            const torso = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), jacketMat);
-            torso.position.y = 2.25; 
-            model.add(torso);
-
-            const innerShirt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.51, 0.05), shirtMat);
-            innerShirt.position.set(0, 2.25, -0.32); 
-            model.add(innerShirt);
-
-            const tie = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.9, 0.08), tieMat);
-            tie.position.set(0, 2.4, -0.34); 
-            model.add(tie);
-
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), skinMat);
-            head.position.y = 3.5; 
-            model.add(head);
-
-            let hairContainer = new THREE.Group();
-            hairContainer.name = "hairContainer";
-            model.add(hairContainer);
-
-            updateHairMesh(hairContainer, player.profile.hairstyle || 'classic');
-
-            const eyeWGeo = new THREE.BoxGeometry(0.2, 0.15, 0.1);
-            const eyeLWhite = new THREE.Mesh(eyeWGeo, whiteMat);
-            eyeLWhite.position.set(-0.2, 3.6, -0.46);
-            model.add(eyeLWhite);
-            
-            const eyeRWhite = new THREE.Mesh(eyeWGeo, whiteMat);
-            eyeRWhite.position.set(0.2, 3.6, -0.46);
-            model.add(eyeRWhite);
-
-            const eyeIGeo = new THREE.BoxGeometry(0.1, 0.15, 0.12);
-            const eyeLIris = new THREE.Mesh(eyeIGeo, eyeMat);
-            eyeLIris.position.set(-0.2, 3.6, -0.47);
-            model.add(eyeLIris);
-            
-            const eyeRIris = new THREE.Mesh(eyeIGeo, eyeMat);
-            eyeRIris.position.set(0.2, 3.6, -0.47);
-            model.add(eyeRIris);
-
-            const nose = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.2, 0.15), skinMat);
-            nose.position.set(0, 3.45, -0.48);
-            model.add(nose);
-
-            const mouth = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.05, 0.1), mouthMat);
-            mouth.position.set(0, 3.3, -0.46);
-            model.add(mouth);
-
-            function createLimb(isLeg) {
-                const limbGrp = new THREE.Group();
-                const upper = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), isLeg ? pantMat : jacketMat);
-                upper.position.y = -0.6; 
-                limbGrp.add(upper);
-
-                if (isLeg) {
-                    const shoe = new THREE.Mesh(new THREE.BoxGeometry(0.45, 0.3, 0.6), shoeMat);
-                    shoe.position.set(0, -1.35, -0.1); 
-                    limbGrp.add(shoe);
-                } else {
-                    const hand = new THREE.Mesh(new THREE.BoxGeometry(0.35, 0.4, 0.35), skinMat);
-                    hand.position.y = -1.4;
-                    limbGrp.add(hand);
-                }
-                return limbGrp;
-            }
-
-            const lArm = createLimb(false);
-            lArm.position.set(-0.85, 2.9, 0); 
-            model.add(lArm);
-
-            const rArm = createLimb(false);
-            rArm.position.set(0.85, 2.9, 0);
-            model.add(rArm);
-
-            const lLeg = createLimb(true);
-            lLeg.position.set(-0.35, 1.5, 0); 
-            model.add(lLeg);
-
-            const rLeg = createLimb(true);
-            rLeg.position.set(0.35, 1.5, 0);
-            model.add(rLeg);
-
-            return { root: group, model: model, lArm, rArm, lLeg, rLeg, hairContainer };
-        }
-
-        function updateHairMesh(container, style) {
-            while(container.children.length > 0) { 
-                container.remove(container.children[0]); 
-            }
-
-            const addPart = (geo, mat, x, y, z, rotX=0, rotY=0, rotZ=0) => {
-                let m = new THREE.Mesh(geo, mat);
-                m.position.set(x, y, z);
-                m.rotation.set(rotX, rotY, rotZ);
-                container.add(m);
+        function createPlayerMaterials(prof) {
+            return {
+                skin: new THREE.MeshStandardMaterial({ color: prof.skin }),
+                hair: new THREE.MeshStandardMaterial({ color: prof.hair }),
+                jacket: new THREE.MeshStandardMaterial({ color: prof.jacket }),
+                shirt: new THREE.MeshStandardMaterial({ color: prof.shirt }),
+                tie: new THREE.MeshStandardMaterial({ color: prof.tie }),
+                pant: new THREE.MeshStandardMaterial({ color: '#0f172a' }),
+                shoe: new THREE.MeshStandardMaterial({ color: '#111111' }),
+                white: new THREE.MeshBasicMaterial({ color: '#ffffff' }),
+                eye: new THREE.MeshBasicMaterial({ color: '#000000' }),
+                mouth: new THREE.MeshStandardMaterial({ color: '#2a1515' })
             };
-
-            if (style === 'classic') {
-                addPart(new THREE.BoxGeometry(0.95, 0.4, 0.95), hairMat, 0, 3.8, 0);
-                addPart(new THREE.BoxGeometry(0.5, 0.2, 0.9), hairMat, -0.2, 4.05, 0);
-                addPart(new THREE.BoxGeometry(0.4, 0.15, 0.9), hairMat, 0.25, 4.0, 0);
-                addPart(new THREE.BoxGeometry(0.9, 0.15, 0.2), hairMat, 0, 4.05, -0.4, -0.1, 0, 0);
-            } else if (style === 'buzz') {
-                addPart(new THREE.BoxGeometry(0.92, 0.2, 0.92), hairMat, 0, 3.85, 0);
-                addPart(new THREE.BoxGeometry(0.88, 0.1, 0.88), hairMat, 0, 3.95, 0);
-            } else if (style === 'messy') {
-                addPart(new THREE.BoxGeometry(0.95, 0.3, 0.95), hairMat, 0, 3.9, 0);
-                const spikes = [
-                    {x: -0.2, z: -0.2, rx: 0.2, rz: -0.2}, {x: 0.2, z: -0.1, rx: -0.1, rz: 0.3},
-                    {x: 0, z: 0.1, rx: -0.3, rz: 0.1}, {x: -0.3, z: 0.2, rx: 0.4, rz: -0.1},
-                    {x: 0.3, z: 0.3, rx: 0.1, rz: 0.4}, {x: -0.1, z: 0.3, rx: -0.4, rz: -0.2}
-                ];
-                spikes.forEach(s => addPart(new THREE.ConeGeometry(0.15, 0.4, 4), hairMat, s.x, 4.1, s.z, s.rx, 0, s.rz));
-                addPart(new THREE.BoxGeometry(0.3, 0.3, 0.2), hairMat, -0.2, 3.8, -0.45, 0.2, 0.2, 0);
-                addPart(new THREE.BoxGeometry(0.2, 0.35, 0.2), hairMat, 0.1, 3.75, -0.45, 0.1, -0.2, 0);
-                addPart(new THREE.BoxGeometry(0.3, 0.2, 0.2), hairMat, 0.3, 3.85, -0.42, 0.3, -0.1, 0);
-            } else if (style === 'wavy') {
-                addPart(new THREE.BoxGeometry(0.92, 0.3, 0.92), hairMat, 0, 3.85, 0);
-                addPart(new THREE.BoxGeometry(0.7, 0.3, 0.3), hairMat, 0, 4.1, -0.3, 0.2, 0, 0);
-                addPart(new THREE.BoxGeometry(0.65, 0.25, 0.3), hairMat, 0, 4.05, 0, 0.15, 0, 0);
-                addPart(new THREE.BoxGeometry(0.6, 0.2, 0.3), hairMat, 0, 4.0, 0.3, 0.1, 0, 0);
-                addPart(new THREE.CylinderGeometry(0.15, 0.15, 0.6, 8), hairMat, 0, 4.15, -0.4, 0, 0, Math.PI/2);
-            }
         }
 
-        // --- PROFİL 3D STÜDYOSU ---
+        function buildCharacterModel(m, style) {
+            const group = new THREE.Group(); const model = new THREE.Group(); group.add(model);
+            
+            model.add(new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), m.jacket)).position.y = 2.25;
+            let shirt = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.51, 0.05), m.shirt); shirt.position.set(0, 2.25, -0.32); model.add(shirt);
+            let tie = new THREE.Mesh(new THREE.BoxGeometry(0.15, 0.9, 0.08), m.tie); tie.position.set(0, 2.4, -0.34); model.add(tie);
+            
+            let head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), m.skin); head.position.y = 3.5; model.add(head);
+            
+            let hairC = new THREE.Group(); model.add(hairC);
+            const addP = (geo, mat, x, y, z, rx=0, ry=0, rz=0) => { let mh=new THREE.Mesh(geo,mat); mh.position.set(x,y,z); mh.rotation.set(rx,ry,rz); hairC.add(mh); };
+            if (style === 'classic') { addP(new THREE.BoxGeometry(0.95,0.4,0.95), m.hair, 0,3.8,0); }
+            else if (style === 'buzz') { addP(new THREE.BoxGeometry(0.92,0.2,0.92), m.hair, 0,3.85,0); }
+            else if (style === 'messy') { addP(new THREE.BoxGeometry(0.95,0.3,0.95), m.hair, 0,3.9,0); addP(new THREE.ConeGeometry(0.15,0.4,4), m.hair, 0,4.1,0, -0.3,0,0.1); }
+            else if (style === 'wavy') { addP(new THREE.BoxGeometry(0.92,0.3,0.92), m.hair, 0,3.85,0); addP(new THREE.CylinderGeometry(0.15,0.15,0.6,8), m.hair, 0,4.15,-0.4, 0,0,Math.PI/2); }
+
+            let eyeL = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeL.position.set(-0.2,3.6,-0.46); model.add(eyeL);
+            let eyeR = new THREE.Mesh(new THREE.BoxGeometry(0.2,0.15,0.1), m.white); eyeR.position.set(0.2,3.6,-0.46); model.add(eyeR);
+            let pL = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pL.position.set(-0.2,3.6,-0.47); model.add(pL);
+            let pR = new THREE.Mesh(new THREE.BoxGeometry(0.1,0.15,0.12), m.eye); pR.position.set(0.2,3.6,-0.47); model.add(pR);
+
+            const limb = (isLeg) => {
+                let grp = new THREE.Group();
+                let up = new THREE.Mesh(new THREE.BoxGeometry(0.4, 1.2, 0.4), isLeg?m.pant:m.jacket); up.position.y = -0.6; grp.add(up);
+                let down = new THREE.Mesh(new THREE.BoxGeometry(isLeg?0.45:0.35, isLeg?0.3:0.4, isLeg?0.6:0.35), isLeg?m.shoe:m.skin);
+                down.position.set(0, isLeg?-1.35:-1.4, isLeg?-0.1:0); grp.add(down);
+                return grp;
+            };
+            let lArm = limb(false); lArm.position.set(-0.85, 2.9, 0); model.add(lArm);
+            let rArm = limb(false); rArm.position.set(0.85, 2.9, 0); model.add(rArm);
+            let lLeg = limb(true); lLeg.position.set(-0.35, 1.5, 0); model.add(lLeg);
+            let rLeg = limb(true); rLeg.position.set(0.35, 1.5, 0); model.add(rLeg);
+
+            return { root: group, model: model, lArm, rArm, lLeg, rLeg };
+        }
+
         let profScene, profCamera, profRenderer, profilePlayerObj;
         let isProfileRotating = true;
 
         function initProfile3D() {
             const container = document.getElementById('profile-3d-canvas');
             profScene = new THREE.Scene();
-            
             profCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100);
-            profCamera.position.set(0, 2.5, 8);
-            profCamera.lookAt(0, 2.2, 0);
-
+            profCamera.position.set(0, 2.5, 8); profCamera.lookAt(0, 2.2, 0);
             profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
             profRenderer.setSize(container.clientWidth, container.clientHeight);
             container.appendChild(profRenderer.domElement);
-
             profScene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let dLight = new THREE.DirectionalLight(0xffffff, 0.9);
-            dLight.position.set(5, 10, 5);
-            profScene.add(dLight);
+            let dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(5, 10, 5); profScene.add(dl);
 
-            profilePlayerObj = buildCharacterModel();
-            profilePlayerObj.root.position.y = -0.5;
-            profScene.add(profilePlayerObj.root);
+            let mats = createPlayerMaterials(player.profile);
+            profilePlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
+            profilePlayerObj.root.position.y = -0.5; profScene.add(profilePlayerObj.root);
         }
 
         function toggleRotation() {
@@ -982,56 +969,44 @@
         }
 
         function loadProfileUI() {
-            document.getElementById('prof-name').value = player.profile.name || player.username;
-            document.getElementById('prof-city').value = player.profile.city || "";
-            document.getElementById('prof-height').value = player.profile.height || "175";
-            document.getElementById('prof-weight').value = player.profile.weight || "70";
-            document.getElementById('prof-hairstyle').value = player.profile.hairstyle || "classic";
-            document.getElementById('color-skin').value = player.profile.skin;
-            document.getElementById('color-hair').value = player.profile.hair;
-            document.getElementById('color-eye').value = player.profile.eye;
-            document.getElementById('color-jacket').value = player.profile.jacket || "#1e293b";
-            document.getElementById('color-shirt').value = player.profile.shirt || "#f8fafc";
-            document.getElementById('color-tie').value = player.profile.tie || "#3b82f6";
+            ['height','weight','hairstyle','skin','hair','jacket','shirt','tie'].forEach(k => {
+                if(document.getElementById('prof-'+k)) document.getElementById('prof-'+k).value = player.profile[k];
+                if(document.getElementById('color-'+k)) document.getElementById('color-'+k).value = player.profile[k];
+            });
             updateAvatar(); 
         }
 
         function updateAvatar() {
-            player.profile.name = document.getElementById('prof-name').value;
-            player.profile.city = document.getElementById('prof-city').value;
-            
-            let h = parseInt(document.getElementById('prof-height').value) || 175;
-            let w = parseInt(document.getElementById('prof-weight').value) || 70;
-            h = Math.max(120, Math.min(240, h)); 
-            w = Math.max(40, Math.min(200, w));  
-            
-            player.profile.height = h.toString();
-            player.profile.weight = w.toString();
+            player.profile.height = document.getElementById('prof-height').value;
+            player.profile.weight = document.getElementById('prof-weight').value;
             player.profile.hairstyle = document.getElementById('prof-hairstyle').value;
             player.profile.skin = document.getElementById('color-skin').value;
             player.profile.hair = document.getElementById('color-hair').value;
-            player.profile.eye = document.getElementById('color-eye').value;
             player.profile.jacket = document.getElementById('color-jacket').value;
             player.profile.shirt = document.getElementById('color-shirt').value;
             player.profile.tie = document.getElementById('color-tie').value;
-            
-            skinMat.color.set(player.profile.skin);
-            hairMat.color.set(player.profile.hair);
-            eyeMat.color.set(player.profile.eye);
-            jacketMat.color.set(player.profile.jacket);
-            shirtMat.color.set(player.profile.shirt);
-            tieMat.color.set(player.profile.tie);
 
-            if (profilePlayerObj) updateHairMesh(profilePlayerObj.hairContainer, player.profile.hairstyle);
-            if (worldPlayerObj) updateHairMesh(worldPlayerObj.hairContainer, player.profile.hairstyle);
-
-            let scaleY = h / 175;
-            let scaleX = w / 70;
-            
-            if (worldPlayerObj) worldPlayerObj.model.scale.set(scaleX, scaleY, scaleX);
-            if (profilePlayerObj) profilePlayerObj.model.scale.set(scaleX, scaleY, scaleX);
-            
+            if(profScene) {
+                profScene.remove(profilePlayerObj.root);
+                profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
+                profilePlayerObj.root.position.y = -0.5;
+                let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+                profilePlayerObj.model.scale.set(sc, sh, sc);
+                profScene.add(profilePlayerObj.root);
+            }
+            if(scene && worldPlayerObj) {
+                let oldPos = worldPlayerObj.root.position.clone();
+                let oldRot = worldPlayerObj.root.rotation.y;
+                scene.remove(worldPlayerObj.root);
+                worldPlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle);
+                worldPlayerObj.root.position.copy(oldPos);
+                worldPlayerObj.root.rotation.y = oldRot;
+                let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+                worldPlayerObj.model.scale.set(sc, sh, sc);
+                scene.add(worldPlayerObj.root);
+            }
             saveGame();
+            if(socket && isInWorld) emitMovement(false);
         }
 
         function openTab(tabName) {
@@ -1054,295 +1029,112 @@
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
 
-        // --- TAM EKRAN 3D AÇIK DÜNYA GÖRÜNÜMÜ ---
+        // --- TAM EKRAN 3D AÇIK DÜNYA (GÜNEŞLİ VE ÇİMENLİ, AĞAÇLI NORMAL DÜNYA) ---
         let scene, camera, renderer, worldPlayerObj;
         let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
         let isInWorld = false;
         let colliders = []; 
-        
-        let camYaw = 0; 
-        let camPitch = 0; 
-        let velocityY = 0;
-        let canJump = true;
-        let animTime = 0;
-        let lastTime = performance.now();
+        let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, animTime = 0, lastTime = performance.now();
 
         function init3DWorld() {
             const container = document.getElementById('fullscreen-world');
-            
-            scene = new THREE.Scene();
-            scene.background = new THREE.Color('#87CEEB'); 
-
+            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
             camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            
-            renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.domElement.style.position = 'absolute';
-            renderer.domElement.style.top = '0';
-            renderer.domElement.style.left = '0';
-            renderer.domElement.style.zIndex = '1';
-            
+            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.domElement.style.position = 'absolute'; renderer.domElement.style.top = '0'; renderer.domElement.style.left = '0';
             container.insertBefore(renderer.domElement, container.firstChild);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let sunLight = new THREE.DirectionalLight(0xffffee, 1.2);
-            sunLight.position.set(150, 200, -150);
-            scene.add(sunLight);
+            let sl = new THREE.DirectionalLight(0xffffee, 1.2); sl.position.set(150, 200, -150); scene.add(sl);
+            scene.add(new THREE.Mesh(new THREE.SphereGeometry(20, 32, 32), new THREE.MeshBasicMaterial({ color: 0xffe600 }))).position.copy(sl.position);
 
-            const sunGeo = new THREE.SphereGeometry(20, 32, 32);
-            const sunMat = new THREE.MeshBasicMaterial({ color: 0xffe600 });
-            const sunMesh = new THREE.Mesh(sunGeo, sunMat);
-            sunMesh.position.copy(sunLight.position);
-            scene.add(sunMesh);
-
-            const floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
-            floor.rotation.x = -Math.PI / 2;
-            scene.add(floor);
+            let floor = new THREE.Mesh(new THREE.PlaneGeometry(800, 800), new THREE.MeshStandardMaterial({ color: '#4ade80', roughness: 1 }));
+            floor.rotation.x = -Math.PI / 2; scene.add(floor);
 
             const asphaltMat = new THREE.MeshStandardMaterial({ color: '#222222' });
             const lineMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-            
             scene.add(new THREE.Mesh(new THREE.BoxGeometry(600, 0.12, 24), asphaltMat));
             scene.add(new THREE.Mesh(new THREE.BoxGeometry(24, 0.12, 600), asphaltMat));
-            const connectRoad = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat);
-            connectRoad.position.set(-60, 0, 0);
-            scene.add(connectRoad);
+            let cr = new THREE.Mesh(new THREE.BoxGeometry(16, 0.14, 400), asphaltMat); cr.position.set(-60, 0, 0); scene.add(cr);
 
             for(let i = -280; i <= 280; i += 12) {
                 if(Math.abs(i) > 15) {
-                    let lx = new THREE.Mesh(new THREE.BoxGeometry(5, 0.16, 0.5), lineMat);
-                    lx.position.set(i, 0, 0);
-                    scene.add(lx);
-                    let lz = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 5), lineMat);
-                    lz.position.set(0, 0, i);
-                    scene.add(lz);
+                    let lx = new THREE.Mesh(new THREE.BoxGeometry(5, 0.16, 0.5), lineMat); lx.position.set(i, 0, 0); scene.add(lx);
+                    let lz = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.16, 5), lineMat); lz.position.set(0, 0, i); scene.add(lz);
                 }
             }
 
             const wallMats = [new THREE.MeshStandardMaterial({ color: '#f8fafc' }), new THREE.MeshStandardMaterial({ color: '#cbd5e1' })];
             const roofMats = [new THREE.MeshStandardMaterial({ color: '#b91c1c' }), new THREE.MeshStandardMaterial({ color: '#475569' })];
-            const doorMat = new THREE.MeshStandardMaterial({ color: '#78350f' });
             const winMat = new THREE.MeshStandardMaterial({ color: '#38bdf8', metalness: 0.8, roughness: 0.2 });
 
             for(let i = 0; i < realEstate.length; i++) {
-                let rx = 40 + (i % 5) * 30;
-                let rz = -120 + Math.floor(i / 5) * 50;
-                let bHeight = 10 + (i * 1.2);
-                let bWidth = 12;
-                let bDepth = 14;
-
+                let rx = 40 + (i % 5) * 30, rz = -120 + Math.floor(i / 5) * 50, bHeight = 10 + (i * 1.2), bDepth = 14;
                 let bGroup = new THREE.Group();
-                let bBody = new THREE.Mesh(new THREE.BoxGeometry(bWidth, bHeight, bDepth), wallMats[i % wallMats.length]);
-                bBody.position.y = bHeight / 2;
-                bGroup.add(bBody);
-
-                let roof = new THREE.Mesh(new THREE.ConeGeometry(bWidth*0.75, 5, 4), roofMats[i % roofMats.length]);
-                roof.rotation.y = Math.PI / 4;
-                roof.position.y = bHeight + 3;
-                bGroup.add(roof);
-
-                let door = new THREE.Mesh(new THREE.BoxGeometry(2.5, 4, bDepth + 0.1), doorMat);
-                door.position.set(0, 2, 0);
-                bGroup.add(door);
-
-                for(let wy = 6; wy < bHeight - 2; wy += 4) {
-                    let winL = new THREE.Mesh(new THREE.BoxGeometry(2, 2, bDepth + 0.2), winMat);
-                    winL.position.set(-3, wy, 0);
-                    bGroup.add(winL);
-
-                    let winR = new THREE.Mesh(new THREE.BoxGeometry(2, 2, bDepth + 0.2), winMat);
-                    winR.position.set(3, wy, 0);
-                    bGroup.add(winR);
-                }
-
-                bGroup.position.set(rx, 0, rz);
-                bGroup.updateMatrixWorld(true);
-                scene.add(bGroup);
-                colliders.push(new THREE.Box3().setFromObject(bGroup));
+                let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, bHeight, bDepth), wallMats[i % wallMats.length]);
+                bBody.position.y = bHeight / 2; bGroup.add(bBody);
+                let roof = new THREE.Mesh(new THREE.ConeGeometry(9, 5, 4), roofMats[i % roofMats.length]);
+                roof.rotation.y = Math.PI / 4; roof.position.y = bHeight + 3; bGroup.add(roof);
+                let dr = new THREE.Mesh(new THREE.BoxGeometry(6, 0.14, 15), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
+                dr.position.set(0, 0, 7.5); bGroup.add(dr);
+                bGroup.position.set(rx, 0, rz); bGroup.updateMatrixWorld(true); scene.add(bGroup);
+                colliders.push(new THREE.Box3().setFromObject(bBody));
             }
 
             const tireMat = new THREE.MeshStandardMaterial({ color: '#111111', roughness: 0.8 });
             const rimMat = new THREE.MeshStandardMaterial({ color: '#e2e8f0', metalness: 0.9, roughness: 0.2 });
-            const driveMat = new THREE.MeshStandardMaterial({ color: '#94a3b8' });
-
-            function createDetailedCar(vehicle) {
-                const carGrp = new THREE.Group();
-                let color = vehicle.color;
-                let id = vehicle.id;
-                const bodyMat = new THREE.MeshStandardMaterial({ color: color, roughness: 0.3 });
-                const glassMat = new THREE.MeshStandardMaterial({ color: '#0f172a', roughness: 0.1, metalness: 0.5 });
-                const lightMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
-
-                const addBox = (w, h, d, y, z, mat) => { let m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat); m.position.set(0, y, z); carGrp.add(m); return m; };
-                const addWheels = (rad, w, coords) => {
-                    let wg = new THREE.CylinderGeometry(rad, rad, w, 24); wg.rotateZ(Math.PI/2);
-                    let rg = new THREE.CylinderGeometry(rad*0.5, rad*0.5, w*1.1, 12); rg.rotateZ(Math.PI/2);
-                    coords.forEach(p => {
-                        let wm = new THREE.Mesh(wg, tireMat); wm.position.set(p[0], p[1], p[2]); carGrp.add(wm);
-                        let rm = new THREE.Mesh(rg, rimMat); rm.position.set(p[0], p[1], p[2]); carGrp.add(rm);
-                    });
-                };
-
-                let parkingSlot = addBox(10, 0.15, 25, 0.08, 0, driveMat);
-
-                if(id <= 3) { 
-                    addBox(0.5, 1.2, 5, 0.8, 0, bodyMat); 
-                    addBox(1.5, 0.1, 0.1, 1.5, -2, bodyMat); 
-                    addWheels(0.6, 0.2, [[0, 0.6, -2], [0, 0.6, 2]]);
-                }
-                else if(id === 4 || id === 5 || id === 7) { 
-                    addBox(1.2, 1.4, 6, 0.9, 0, bodyMat); 
-                    addBox(1.0, 0.5, 2, 1.6, -0.5, glassMat); 
-                    addBox(2.0, 0.1, 0.2, 1.6, -2, bodyMat); 
-                    addWheels(0.7, 0.4, [[0, 0.7, -2.5], [0, 0.7, 2.5]]);
-                }
-                else if(id === 6) { 
-                    addBox(3, 1.2, 5, 0.8, 0, bodyMat);
-                    addBox(2, 0.5, 2, 1.5, -0.5, glassMat);
-                    addWheels(0.8, 1.0, [[-1.8, 0.8, -2], [1.8, 0.8, -2], [-1.8, 0.8, 2], [1.8, 0.8, 2]]);
-                }
-                else if(id === 8 || id === 9 || id === 11) { 
-                    addBox(5, 1.2, 9, 0.8, 0, bodyMat);
-                    addBox(4, 1.0, 4.5, 1.8, 0, glassMat);
-                    addWheels(0.6, 0.5, [[-2.5, 0.6, -3], [2.5, 0.6, -3], [-2.5, 0.6, 3], [2.5, 0.6, 3]]);
-                    let l1=addBox(1, 0.3, 0.1, 0.9, -4.51, lightMat); l1.position.x = -1.5;
-                    let l2=addBox(1, 0.3, 0.1, 0.9, -4.51, lightMat); l2.position.x = 1.5;
-                }
-                else if(id === 13) { 
-                    addBox(5.5, 1.3, 12, 0.9, 0, bodyMat); 
-                    addBox(4.5, 1.2, 4.5, 2.0, -2, glassMat); 
-                    addBox(5.5, 0.8, 5.5, 1.6, 3, bodyMat); 
-                    addWheels(0.7, 0.6, [[-2.8, 0.7, -4], [2.8, 0.7, -4], [-2.8, 0.7, 4], [2.8, 0.7, 4]]);
-                    let l1=addBox(1, 0.3, 0.1, 0.9, -6.01, lightMat); l1.position.x = -1.8;
-                    let l2=addBox(1, 0.3, 0.1, 0.9, -6.01, lightMat); l2.position.x = 1.8;
-                }
-                else if(id === 12 || id === 14 || id === 16 || id === 18) { 
-                    addBox(6, 1.8, 12, 1.3, 0, bodyMat);
-                    addBox(5.5, 1.0, 9, 2.1, -0.5, glassMat);
-                    addWheels(0.8, 0.6, [[-3.0, 0.8, -4], [3.0, 0.8, -4], [-3.0, 0.8, 4], [3.0, 0.8, 4]]);
-                    let l1=addBox(1.2, 0.4, 0.1, 1.2, -6.01, lightMat); l1.position.x = -2.0;
-                    let l2=addBox(1.2, 0.4, 0.1, 1.2, -6.01, lightMat); l2.position.x = 2.0;
-                }
-                else if(id === 17 || id === 19) { 
-                    addBox(6, 0.9, 11, 0.6, 0, bodyMat); 
-                    addBox(4, 0.7, 4, 1.4, -0.5, glassMat); 
-                    addBox(5.5, 0.1, 1.5, 1.5, 4.5, bodyMat); 
-                    addBox(0.2, 0.5, 1.0, 1.2, 4.5, bodyMat).position.x = -2; 
-                    addBox(0.2, 0.5, 1.0, 1.2, 4.5, bodyMat).position.x = 2; 
-                    addWheels(0.65, 0.7, [[-3.1, 0.65, -3.5], [3.1, 0.65, -3.5], [-3.1, 0.65, 3.5], [3.1, 0.65, 3.5]]);
-                    let l1=addBox(1.5, 0.2, 0.1, 0.7, -5.51, lightMat); l1.position.x = -1.8;
-                    let l2=addBox(1.5, 0.2, 0.1, 0.7, -5.51, lightMat); l2.position.x = 1.8;
-                }
-                else if(id === 20) { 
-                    let fuselage = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 16, 16), bodyMat);
-                    fuselage.rotation.x = Math.PI / 2;
-                    fuselage.position.y = 2.5;
-                    carGrp.add(fuselage);
-                    
-                    let nose = new THREE.Mesh(new THREE.ConeGeometry(1.5, 4, 16), bodyMat);
-                    nose.rotation.x = -Math.PI / 2;
-                    nose.position.set(0, 2.5, -10);
-                    carGrp.add(nose);
-
-                    addBox(16, 0.2, 4, 2.5, 0, bodyMat); 
-                    addBox(0.2, 3, 3, 4.0, 6, bodyMat); 
-                    addBox(6, 0.2, 2, 4.5, 6, bodyMat); 
-                    addBox(1.6, 0.8, 3, 3.0, -6, glassMat); 
-                }
-                else { 
-                    addBox(5.5, 1.2, 11, 0.8, 0, bodyMat);
-                    addBox(4.5, 1.0, 5, 1.8, -0.5, glassMat);
-                    addWheels(0.6, 0.5, [[-2.8, 0.6, -3.5], [2.8, 0.6, -3.5], [-2.8, 0.6, 3.5], [2.8, 0.6, 3.5]]);
-                    let l1=addBox(1, 0.3, 0.1, 0.9, -5.51, lightMat); l1.position.x = -1.8;
-                    let l2=addBox(1, 0.3, 0.1, 0.9, -5.51, lightMat); l2.position.x = 1.8;
-                }
-                return carGrp;
-            }
 
             for(let i = 0; i < vehicles.length; i++) {
-                let vx = -100 - (i % 5) * 30;
-                let vz = -120 + Math.floor(i / 5) * 50;
-
-                let car = createDetailedCar(vehicles[i]);
-                car.position.set(vx, 0, vz);
-                car.updateMatrixWorld(true);
-                scene.add(car);
-                
-                let colliderBox = new THREE.Box3().setFromObject(car);
-                colliderBox.min.y = 0.5; 
-                colliders.push(colliderBox);
-            }
-
-            const treeTrunkMat = new THREE.MeshStandardMaterial({ color: '#4a3000', roughness: 0.9 });
-            const treeLeafMat = new THREE.MeshStandardMaterial({ color: '#166534', roughness: 0.8 });
-            
-            function createTree(x, z) {
-                const treeGrp = new THREE.Group();
-                const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), treeTrunkMat);
-                trunk.position.y = 1.5;
-                treeGrp.add(trunk);
-                for(let i=0; i<3; i++) {
-                    const leaves = new THREE.Mesh(new THREE.ConeGeometry(2.5 - i*0.5, 3.5, 8), treeLeafMat);
-                    leaves.position.y = 3 + i*1.5;
-                    treeGrp.add(leaves);
-                }
-                treeGrp.position.set(x, 0, z);
-                treeGrp.updateMatrixWorld(true);
-                scene.add(treeGrp);
-                
-                let box = new THREE.Box3().setFromObject(trunk);
-                colliders.push(box);
+                let vx = -100 - (i % 5) * 30, vz = -120 + Math.floor(i / 5) * 50;
+                let carGrp = new THREE.Group();
+                let bodyMat = new THREE.MeshStandardMaterial({ color: vehicles[i].color, roughness: 0.3 });
+                let b = new THREE.Mesh(new THREE.BoxGeometry(5.5, 1.2, 11), bodyMat); b.position.set(0, 0.8, 0); carGrp.add(b);
+                let ps = new THREE.Mesh(new THREE.BoxGeometry(10, 0.15, 25), new THREE.MeshStandardMaterial({ color: '#94a3b8' }));
+                ps.position.set(0, 0.08, 0); carGrp.add(ps);
+                carGrp.position.set(vx, 0, vz); carGrp.updateMatrixWorld(true); scene.add(carGrp);
+                let cBox = new THREE.Box3().setFromObject(b); cBox.min.y = 0.5; colliders.push(cBox);
             }
 
             for(let i=0; i<200; i++) {
-                let tx = (Math.random() - 0.5) * 550;
-                let tz = (Math.random() - 0.5) * 550;
-                
-                let onMainRoad = Math.abs(tx) < 16 || Math.abs(tz) < 16;
-                let onEastBlock = (tx > 20 && tx < 180) && (tz > -130 && tz < 60);
-                let onWestBlock = (tx < -80 && tx > -240) && (tz > -130 && tz < 60);
-                
-                if(!onMainRoad && !onEastBlock && !onWestBlock) {
-                    createTree(tx, tz);
+                let tx = (Math.random() - 0.5) * 550, tz = (Math.random() - 0.5) * 550;
+                if(Math.abs(tx) > 16 && Math.abs(tz) > 16 && !(tx > 20 && tx < 180 && tz > -130 && tz < 60) && !(tx < -80 && tx > -240 && tz > -130 && tz < 60)) {
+                    let treeGrp = new THREE.Group();
+                    let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 8), new THREE.MeshStandardMaterial({ color: '#4a3000' }));
+                    trunk.position.y = 1.5; treeGrp.add(trunk);
+                    for(let j=0; j<3; j++) {
+                        let l = new THREE.Mesh(new THREE.ConeGeometry(2.5 - j*0.5, 3.5, 8), new THREE.MeshStandardMaterial({ color: '#166534' }));
+                        l.position.y = 3 + j*1.5; treeGrp.add(l);
+                    }
+                    treeGrp.position.set(tx, 0, tz); treeGrp.updateMatrixWorld(true); scene.add(treeGrp);
+                    colliders.push(new THREE.Box3().setFromObject(trunk));
                 }
             }
 
-            worldPlayerObj = buildCharacterModel();
+            let mats = createPlayerMaterials(player.profile);
+            worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
+            let sc = parseInt(player.profile.weight)/70, sh = parseInt(player.profile.height)/175;
+            worldPlayerObj.model.scale.set(sc, sh, sc);
             scene.add(worldPlayerObj.root);
-            updateAvatar(); 
 
             window.addEventListener('keydown', (e) => {
                 if(document.activeElement.tagName === 'INPUT') return;
                 if(e.key === 'Escape' && isInWorld) { document.exitPointerLock(); return; }
                 if(e.key.toLowerCase() === ' ') keys.space = true;
                 if(e.key === 'Shift') keys.shift = true;
-                const key = e.key.toLowerCase();
-                if(keys.hasOwnProperty(key)) keys[key] = true;
+                if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
             });
-
             window.addEventListener('keyup', (e) => {
                 if(e.key.toLowerCase() === ' ') keys.space = false;
                 if(e.key === 'Shift') keys.shift = false;
-                const key = e.key.toLowerCase();
-                if(keys.hasOwnProperty(key)) keys[key] = false;
+                if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
             });
-
             document.addEventListener('pointerlockchange', () => {
-                if (document.pointerLockElement === container) {
-                    document.getElementById('esc-menu').style.display = 'none';
-                } else {
-                    if(isInWorld) {
-                        document.getElementById('esc-menu').style.display = 'flex';
-                        for(let k in keys) keys[k] = false;
-                    }
-                }
+                if(document.pointerLockElement === container) document.getElementById('esc-menu').style.display = 'none';
+                else if(isInWorld) { document.getElementById('esc-menu').style.display = 'flex'; for(let k in keys) keys[k] = false; emitMovement(false); }
             });
-
-            // FARE KONTROLLERİ: Yukarı-Aşağı, Sağ-Sol olarak STANDARD FPS DÜZENİ EKLENDİ!
             document.addEventListener('mousemove', (e) => {
                 if (document.pointerLockElement !== container) return; 
-                camYaw -= e.movementX * 0.002;
-                camPitch += e.movementY * 0.002; // Hem X hem Y ekseni tam doğrusuna ayarlandı
+                camYaw -= e.movementX * 0.002; camPitch -= e.movementY * 0.002; 
                 camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
             });
 
@@ -1350,131 +1142,84 @@
         }
 
         function enterWorld() {
-            isInWorld = true;
-            document.getElementById('fullscreen-world').style.display = 'block';
+            isInWorld = true; document.getElementById('fullscreen-world').style.display = 'block';
             document.getElementById('esc-menu').style.display = 'none';
-
-            if(camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
-            }
+            if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
             document.getElementById('fullscreen-world').requestPointerLock();
+            emitMovement(false);
         }
-
-        function exitWorld() {
-            isInWorld = false;
-            document.exitPointerLock();
-            document.getElementById('fullscreen-world').style.display = 'none';
-            document.getElementById('esc-menu').style.display = 'none';
-        }
-
-        function resumeWorld() { 
-            document.getElementById('fullscreen-world').requestPointerLock(); 
-        }
+        function exitWorld() { isInWorld = false; document.exitPointerLock(); document.getElementById('fullscreen-world').style.display = 'none'; }
+        function resumeWorld() { document.getElementById('fullscreen-world').requestPointerLock(); }
 
         function animateWorld() {
             requestAnimationFrame(animateWorld);
-            const timeNow = performance.now();
-            const delta = (timeNow - lastTime) / 1000;
-            lastTime = timeNow;
+            const delta = (performance.now() - lastTime) / 1000; lastTime = performance.now();
 
             if(document.getElementById('tab-profile').classList.contains('active') && profRenderer) {
-                if(profilePlayerObj && isProfileRotating) {
-                    profilePlayerObj.root.rotation.y += 0.5 * delta;
-                }
+                if(profilePlayerObj && isProfileRotating) profilePlayerObj.root.rotation.y += 0.5 * delta;
                 profRenderer.render(profScene, profCamera);
             }
 
             const nameTag = document.getElementById('player-name-tag');
-            if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) {
-                nameTag.style.display = 'none';
-                return;
-            }
+            if(!isInWorld || document.pointerLockElement !== document.getElementById('fullscreen-world')) { nameTag.style.display = 'none'; return; }
 
-            const gravity = -20;
-            if(keys.space && canJump) { velocityY = 8; canJump = false; }
-            velocityY += gravity * delta;
-            worldPlayerObj.root.position.y += velocityY * delta;
-
-            if(worldPlayerObj.root.position.y <= 0) {
-                worldPlayerObj.root.position.y = 0;
-                velocityY = 0;
-                canJump = true;
-            }
+            velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
+            if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
 
             const speed = keys.shift ? 12 : 5; 
             let moveDir = new THREE.Vector3();
-            if(keys.w) moveDir.z -= 1;
-            if(keys.s) moveDir.z += 1;
-            if(keys.a) moveDir.x -= 1;
-            if(keys.d) moveDir.x += 1;
-            
+            if(keys.w) moveDir.z -= 1; if(keys.s) moveDir.z += 1; if(keys.a) moveDir.x -= 1; if(keys.d) moveDir.x += 1;
             let isMoving = moveDir.length() > 0;
 
+            if(keys.space && canJump) { velocityY = 8; canJump = false; }
+
             if(isMoving) {
-                moveDir.normalize();
-                moveDir.applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
-                
+                moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
                 let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
-                let playerBox = new THREE.Box3(
-                    new THREE.Vector3(nextPos.x - 0.6, nextPos.y, nextPos.z - 0.6),
-                    new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6)
-                );
+                let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
 
                 let collision = false;
-                for (let box of colliders) {
-                    if (box.intersectsBox(playerBox)) {
-                        collision = true;
-                        break;
-                    }
-                }
-
-                if (!collision) {
-                    worldPlayerObj.root.position.copy(nextPos);
-                }
+                for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
+                if(!collision) worldPlayerObj.root.position.copy(nextPos);
                 
                 worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
             }
 
-            const currentScaleY = worldPlayerObj.model.scale.y;
-            const camRadius = 8;
-            camera.position.x = worldPlayerObj.root.position.x + camRadius * Math.sin(camYaw) * Math.cos(camPitch);
-            camera.position.y = worldPlayerObj.root.position.y + (4.5 * currentScaleY) + camRadius * Math.sin(camPitch);
-            camera.position.z = worldPlayerObj.root.position.z + camRadius * Math.cos(camYaw) * Math.cos(camPitch);
-            camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * currentScaleY), worldPlayerObj.root.position.z);
+            if(isMoving || canJump === false) emitMovement(isMoving);
 
             if(isMoving && canJump) {
                 animTime += delta * (keys.shift ? 15 : 10);
-                let swing = Math.sin(animTime) * 0.8;
-                worldPlayerObj.lArm.rotation.x = -swing;
-                worldPlayerObj.rArm.rotation.x = swing;
-                worldPlayerObj.lLeg.rotation.x = swing;
-                worldPlayerObj.rLeg.rotation.x = -swing;
+                worldPlayerObj.lArm.rotation.x = -Math.sin(animTime) * 0.8; worldPlayerObj.rArm.rotation.x = Math.sin(animTime) * 0.8;
+                worldPlayerObj.lLeg.rotation.x = Math.sin(animTime) * 0.8; worldPlayerObj.rLeg.rotation.x = -Math.sin(animTime) * 0.8;
             } else {
-                worldPlayerObj.lArm.rotation.x += (0 - worldPlayerObj.lArm.rotation.x) * 0.1;
-                worldPlayerObj.rArm.rotation.x += (0 - worldPlayerObj.rArm.rotation.x) * 0.1;
-                worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1;
-                worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
+                worldPlayerObj.lArm.rotation.x += (0 - worldPlayerObj.lArm.rotation.x) * 0.1; worldPlayerObj.rArm.rotation.x += (0 - worldPlayerObj.rArm.rotation.x) * 0.1;
+                worldPlayerObj.lLeg.rotation.x += (0 - worldPlayerObj.lLeg.rotation.x) * 0.1; worldPlayerObj.rLeg.rotation.x += (0 - worldPlayerObj.rLeg.rotation.x) * 0.1;
             }
 
+            const scY = worldPlayerObj.model.scale.y;
+            camera.position.x = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
+            camera.position.y = worldPlayerObj.root.position.y + (4.5 * scY) + 8 * Math.sin(camPitch);
+            camera.position.z = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
+            camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + (3.5 * scY), worldPlayerObj.root.position.z);
+
             let tagPos = new THREE.Vector3();
-            worldPlayerObj.root.getWorldPosition(tagPos);
-            tagPos.y += 5.0 * currentScaleY; 
-            
-            tagPos.project(camera);
-            
-            if (tagPos.z > 1) {
-                nameTag.style.display = 'none';
-            } else {
+            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0 * scY; tagPos.project(camera);
+            if(tagPos.z > 1) nameTag.style.display = 'none';
+            else {
                 nameTag.style.display = 'block';
-                let x = (tagPos.x * 0.5 + 0.5) * window.innerWidth;
-                let y = (tagPos.y * -0.5 + 0.5) * window.innerHeight;
-                nameTag.style.left = `${x}px`;
-                nameTag.style.top = `${y}px`;
-                
+                nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
                 document.getElementById('tag-username').innerText = player.profile.name || player.username;
                 document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
+            }
+
+            for(let id in otherPlayers) {
+                let op = otherPlayers[id];
+                let opPos = new THREE.Vector3(); op.group.getWorldPosition(opPos); opPos.y += 5.0 * op.model.scale.y; opPos.project(camera);
+                if(opPos.z > 1) op.tag.style.display = 'none';
+                else {
+                    op.tag.style.display = 'block';
+                    op.tag.style.left = `${(opPos.x * 0.5 + 0.5) * window.innerWidth}px`; op.tag.style.top = `${(opPos.y * -0.5 + 0.5) * window.innerHeight}px`;
+                }
             }
 
             renderer.render(scene, camera);
@@ -1483,11 +1228,9 @@
         window.addEventListener('resize', () => {
             if(isInWorld && camera && renderer) {
                 camera.aspect = window.innerWidth / window.innerHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(window.innerWidth, window.innerHeight);
+                camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
             }
         });
-
     </script>
 </body>
 </html>
