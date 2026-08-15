@@ -7,6 +7,16 @@
     <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#1a4b8c">
 <link rel="apple-touch-icon" href="icon.png">
+    <script>
+  // PWA Desteğini Kontrol Et ve Service Worker'ı Kaydet
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js')
+        .then(reg => console.log('Service Worker başarıyla kaydedildi.', reg))
+        .catch(err => console.log('Service Worker hatası:', err));
+    });
+}
+</script>
     <style>
         * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
         body {
