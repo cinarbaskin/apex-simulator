@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Plane Simulator 3D Style - Mobil Uyumlu</title>
+    <title>Plane Simulator 3D Style</title>
     <style>
         * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
         body {
@@ -61,7 +61,7 @@
             width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 16px; outline: none;
         }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; transition: background 0.2s; }
         .btn-save { background: #2ecc71; }
         .btn-close { background: #e74c3c; }
 
@@ -91,10 +91,10 @@
         }
         .roulette-center-line {
             position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: red;
-            transform: translateX(-50%); z-index: 10; box-shadow: 0 0 5px red;
+            transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px red;
         }
 
-        /* ÜST BAR */
+        /* ÜST BAR VE MENÜ */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; z-index: 10; }
         .user-info { display: flex; align-items: center; gap: 5px; }
         .level-badge {
@@ -130,7 +130,7 @@
         .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
         @keyframes pulseBoost { 0% { opacity: 0.8; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
-        /* PİST */
+        /* SİMETRİK STADYUM PİSTİ */
         #trackContainer {
             position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
             width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; 
@@ -150,19 +150,36 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
+        /* UÇAK VE TURBO EFEKTLERİ */
         .flying-plane { 
             position: absolute; width: 65px; height: 65px; 
             transform-origin: center center; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; 
-            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); 
         }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
-        
-        .floating-money {
-            position: absolute; color: #f1c40f; font-weight: 900; font-size: 20px;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; 
-            pointer-events: none; z-index: 10; animation: popUpMoney 1s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
+
+        /* Turbo alev animasyonu */
+        .turbo-base {
+            transform-origin: 50px 95px;
+            animation: turboFlicker 0.08s infinite alternate;
         }
-        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 50% { transform: translate(-30px, -60px) scale(1.3); } 100% { opacity: 0; transform: translate(-30px, -100px) scale(1); } }
+        @keyframes turboFlicker {
+            0% { transform: scaleY(0.8) scaleX(0.9); opacity: 0.8; }
+            100% { transform: scaleY(1.3) scaleX(1.1); opacity: 1; }
+        }
+        
+        /* UZATILMIŞ PARA EFEKTİ */
+        .floating-money {
+            position: absolute; color: #f1c40f; font-weight: 900; font-size: 24px;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; 
+            pointer-events: none; z-index: 10; animation: popUpMoney 1.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
+        }
+        @keyframes popUpMoney { 
+            0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 
+            20% { transform: translate(-30px, -60px) scale(1.4); opacity: 1; } 
+            80% { opacity: 1; transform: translate(-30px, -90px) scale(1); } 
+            100% { opacity: 0; transform: translate(-30px, -120px) scale(0.8); } 
+        }
 
         /* HANGAR ALANI */
         .grid-container {
@@ -370,6 +387,7 @@
                 document.getElementById("btnLoadGame").style.display = "block";
             }
             setInterval(updateTickers, 1000); 
+            // Döngüyü garanti başlatıyoruz
             requestAnimationFrame(gameLoop);
         };
 
@@ -457,7 +475,9 @@
             closeSettings(); saveGame(); 
         }
 
-        function getJetSVG(level) {
+        // --- UÇAK VE TURBO SVG MOTORU ---
+        // isFlying parametresi ile uçak havadaysa kocaman turbo alevi veriyoruz
+        function getJetSVG(level, isFlying = true) {
             let l = ((level - 1) % 200) + 1;
             let hueBase = (l * 37) % 360;
             let bodyColor = `hsl(${hueBase}, 85%, 55%)`;
@@ -465,12 +485,32 @@
             let accentColor = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`;
             let glassColor = `#74b9ff`;
 
+            // Özel Turbo Renkleri (Uçağın ana rengine çok uyumlu ama zıt parlaklıkta)
+            let turboColorOuter = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; 
+            let turboColorInner = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
+
+            // Uçak model parçaları
             let noseType = l % 5; 
             let wingStyle = l % 6; 
             let engineCount = (l % 3) + 1; 
             let tailStyle = l % 4; 
 
             let svgParts = '';
+
+            // Turbo Efekti (Uçarken devasa, hangarda küçük)
+            let turboLength = isFlying ? 150 : 110;
+            let turboOuterOpacity = isFlying ? 0.7 : 0.3;
+            let turboAnimation = isFlying ? '' : 'animation-duration: 0.3s; transform: scaleY(0.7); opacity: 0.8;';
+            
+            let turboHTML = `
+                <g class="turbo-base" style="${turboAnimation}">
+                    <polygon points="35,90 50,${turboLength} 65,90" fill="${turboColorOuter}" opacity="${turboOuterOpacity}" filter="blur(3px)"/>
+                    <polygon points="40,90 50,${isFlying ? 130 : 105} 60,90" fill="${turboColorInner}" opacity="0.9" filter="blur(1px)"/>
+                    <polygon points="45,90 50,${isFlying ? 110 : 98} 55,90" fill="#fff"/>
+                </g>
+            `;
+            
+            svgParts += turboHTML; // Turbo en altta kalsın ki gövdenin altından çıksın
 
             if (noseType === 0) {
                 svgParts += `<polygon points="50,5 38,45 38,85 50,95 62,85 62,45" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
@@ -534,8 +574,9 @@
             svgParts += `<path d="M 50,22 C 45,22 43,35 43,45 C 43,52 57,52 57,45 C 57,35 55,22 50,22 Z" fill="${glassColor}" stroke="#111" stroke-width="2.5"/>`;
             svgParts += `<path d="M 47,28 C 47,28 49,35 47,40" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 
+            // Overflow visible veriyoruz ki dışarı taşan turbo alevi kesilmesin
             return `
-                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;">
                     <g filter="url(#planeShadow)">
                         ${svgParts}
                     </g>
@@ -555,16 +596,14 @@
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
         }
 
-        // --- MOBİL VE MOUSE UYUMLU SÜRÜKLE BIRAK SİSTEMİ ---
         const trashBin = document.getElementById("trashBin");
         const trackEl = document.getElementById("trackContainer");
         const gameContainer = document.getElementById("gameContainer");
         const ghost = document.getElementById("dragGhost");
 
-        let activeTouchData = null; // { type, index/slotIndex, level }
+        let activeTouchData = null; 
 
         function setupDragAndDropForElement(el, data) {
-            // MOUSE EVENTS
             el.addEventListener("dragstart", (e) => {
                 dragSource = data;
                 setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10);
@@ -573,7 +612,6 @@
                 trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
             });
 
-            // TOUCH (MOBİL) EVENTS
             el.addEventListener("touchstart", (e) => {
                 e.preventDefault();
                 activeTouchData = data;
@@ -583,13 +621,9 @@
                 ghost.style.left = touch.clientX + "px";
                 ghost.style.top = touch.clientY + "px";
                 
-                if(data.type === 'grid') {
-                    el.style.opacity = "0.3";
-                } else if(data.type === 'track') {
-                    el.style.display = "none";
-                }
-                trashBin.style.display = "block";
-                trackEl.classList.add("drag-active");
+                if(data.type === 'grid') { el.style.opacity = "0.3"; } 
+                else if(data.type === 'track') { el.style.display = "none"; }
+                trashBin.style.display = "block"; trackEl.classList.add("drag-active");
             }, {passive: false});
 
             el.addEventListener("touchmove", (e) => {
@@ -601,18 +635,12 @@
 
             el.addEventListener("touchend", (e) => {
                 e.preventDefault();
-                ghost.style.display = "none";
-                trashBin.style.display = "none";
-                trackEl.classList.remove("drag-active");
-
+                ghost.style.display = "none"; trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
                 const touch = e.changedTouches[0];
                 const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
 
-                if (!targetEl) {
-                    initGrid(); return;
-                }
+                if (!targetEl) { initGrid(); return; }
 
-                // Çöp Kutusuna Bırakma
                 if (targetEl.closest('#trashBin')) {
                     if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null;
                     if(activeTouchData.type === 'track') {
@@ -620,9 +648,7 @@
                         removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
                     }
                     initGrid(); saveGame();
-                } 
-                // Hangara (Grid) Bırakma
-                else if (targetEl.closest('.slot')) {
+                } else if (targetEl.closest('.slot')) {
                     const slotEl = targetEl.closest('.slot');
                     const targetIndex = parseInt(slotEl.dataset.index);
                     const targetItem = gridSlots[targetIndex];
@@ -630,40 +656,30 @@
                     if (activeTouchData.type === 'track') {
                         gridSlots[activeTouchData.sourceSlotIndex].isFlying = false;
                         removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
-                        if (!targetItem) {
-                            gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false };
-                        } else if (targetItem.level === activeTouchData.level) {
-                            gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false };
-                            animatedIndex = targetIndex;
+                        if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } 
+                        else if (targetItem.level === activeTouchData.level) {
+                            gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex;
                             if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
                         }
                     } else if (activeTouchData.type === 'grid') {
                         const sourceIndex = activeTouchData.index;
                         if (sourceIndex !== targetIndex) {
                             const sourceItem = gridSlots[sourceIndex];
-                            if (!targetItem) {
-                                gridSlots[targetIndex] = sourceItem;
-                                gridSlots[sourceIndex] = null;
-                            } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) {
-                                gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false };
-                                gridSlots[sourceIndex] = null;
-                                animatedIndex = targetIndex;
+                            if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
+                            else if (targetItem.level === sourceItem.level && !targetItem.isFlying) {
+                                gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
                                 if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
                             }
                         }
                     }
                     initGrid(); saveGame();
-                } 
-                // Piste Bırakma
-                else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') {
+                } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') {
                     if (activeTouchData.type === 'grid') {
                         const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
                         if (activeTrackCount < MAX_PLANES) {
                             gridSlots[activeTouchData.index].isFlying = true;
                             spawnTrackPlane(activeTouchData.level, activeTouchData.index);
-                        } else {
-                            alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`);
-                        }
+                        } else { alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`); }
                     }
                     initGrid(); saveGame();
                 }
@@ -678,14 +694,10 @@
             if (dragSource && dragSource.type === 'grid') {
                 const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
                 if (activeTrackCount >= MAX_PLANES) { alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`); return; }
-                gridSlots[dragSource.index].isFlying = true;
-                spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index);
-                initGrid(); saveGame();
+                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame();
             }
             if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
-                gridSlots[dragSource.sourceSlotIndex].isFlying = false;
-                removeFlyingPlaneBySlot(dragSource.sourceSlotIndex);
-                initGrid(); saveGame();
+                gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame();
             }
         });
 
@@ -717,10 +729,10 @@
                     if(planeObj.isFlying) {
                         planeEl.classList.add("ghost");
                         planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); });
-                        planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
+                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
                     } else {
                         planeEl.draggable = true;
-                        planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
+                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
                         setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level });
                     }
                     if(i === animatedIndex) planeEl.classList.add("merge-anim");
@@ -740,9 +752,7 @@
             const targetItem = gridSlots[targetIndex];
 
             if (dragSource.type === 'track') { 
-                gridSlots[dragSource.sourceSlotIndex].isFlying = false; 
-                removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); 
-                initGrid(); saveGame(); return; 
+                gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); return; 
             }
             if(dragSource.type === 'grid') {
                 const sourceIndex = dragSource.index; 
@@ -750,12 +760,9 @@
                 const sourceItem = gridSlots[sourceIndex];
 
                 if(!targetItem) { 
-                    gridSlots[targetIndex] = sourceItem; 
-                    gridSlots[sourceIndex] = null;
+                    gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null;
                 } else if (targetItem.level === sourceItem.level) {
-                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; 
-                    gridSlots[sourceIndex] = null; 
-                    animatedIndex = targetIndex;
+                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
                     if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
                 }
             } 
@@ -766,26 +773,16 @@
             if(money >= currentPlanePrice) {
                 const emptyIndex = gridSlots.indexOf(null);
                 if(emptyIndex !== -1) {
-                    money -= currentPlanePrice; 
-                    gridSlots[emptyIndex] = { level: 1, isFlying: false }; 
-                    currentPlanePrice = Math.floor(currentPlanePrice * 1.15); 
-                    initGrid(); saveGame();
+                    money -= currentPlanePrice; gridSlots[emptyIndex] = { level: 1, isFlying: false }; currentPlanePrice = Math.floor(currentPlanePrice * 1.15); initGrid(); saveGame();
                 } else { alert("Hangarda yer yok! Uçakları piste sürükle veya birleştir."); }
             } else { alert("Yeterli paran yok!"); }
         }
 
         function spawnTrackPlane(level, slotIndex, savedProgress = 0) {
             const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; 
-            
-            let hue = (level * 45) % 360;
-            visual.style.boxShadow = `0 0 15px hsl(${hue}, 90%, 50%), inset 0 0 10px rgba(255,255,255,0.4)`;
-            visual.style.borderRadius = "50%";
-
-            visual.innerHTML = getJetSVG(level); 
+            visual.innerHTML = getJetSVG(level, true); // Uçarken turbo büyük olur
             trackEl.appendChild(visual);
-
             setupDragAndDropForElement(visual, { type: 'track', sourceSlotIndex: slotIndex, level: level });
-
             const planeObj = { slotIndex: slotIndex, element: visual, level: level, progress: savedProgress };
             flyingPlanes.push(planeObj); updateUI(); 
         }
@@ -796,9 +793,7 @@
         }
 
         function flashFinishLine() { 
-            const flash = document.getElementById('finishFlash'); 
-            flash.style.animation = 'none'; flash.offsetHeight; 
-            flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
+            const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
         function popMoney(x, y, amount) {
@@ -807,7 +802,7 @@
             pop.innerText = "+" + formatNumber(amount);
             pop.style.left = (x - 20) + "px"; pop.style.top = (y - 10) + "px"; 
             trackEl.appendChild(pop);
-            setTimeout(() => pop.remove(), 1000);
+            setTimeout(() => pop.remove(), 1800); // 1.8 Saniyede yavaşça kaybolur
         }
 
         function gameLoop(timestamp) {
@@ -836,15 +831,14 @@
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
-                    flashFinishLine(); 
-                    popMoney(centerX + R, centerY, getPlaneIncome(p.level) * currentIncomeMult); 
+                    flashFinishLine(); popMoney(centerX + R, centerY, getPlaneIncome(p.level) * currentIncomeMult); 
                 }
             });
 
             requestAnimationFrame(gameLoop);
         }
 
-        // --- DAKİKALIK ÖDÜL VE DİĞER FONKSİYONLAR ---
+        // --- DAKİKALIK ÖDÜL VE MODALLAR ---
         function updateTickers() {
             const container = document.getElementById("activeBoosts");
             container.innerHTML = ""; let now = Date.now();
@@ -983,7 +977,7 @@
             for(let i = 0; i < 50; i++) {
                 let r = generateReward(c); if(i === 42) r = currentWonReward;
                 let iconHTML = "";
-                if(r.type === 'plane') iconHTML = getJetSVG(r.value);
+                if(r.type === 'plane') iconHTML = getJetSVG(r.value, false);
                 if(r.type === 'money') iconHTML = `<div style="font-size:40px; color:#f1c40f; text-shadow:0 0 10px #f1c40f;">❂</div>`;
                 if(r.type === 'gem') iconHTML = `<div style="font-size:40px; color:#00ced1; text-shadow:0 0 10px #00ced1;">💎</div>`;
                 if(r.type === 'boost') iconHTML = `<div style="font-size:40px; color:white; text-shadow:0 0 10px white;">⚡</div>`;
