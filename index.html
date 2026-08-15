@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Plane Simulator 3D Style</title>
+    <title>Plane Simulator 3D Style - Mobil Uyumlu</title>
     <style>
-        * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
         body {
             margin: 0; padding: 0; 
             background: radial-gradient(circle, #2980b9, #1a5276, #0d2140);
@@ -201,6 +201,13 @@
         }
         #trashBin.drag-over { transform: translateX(-50%) scale(1.1); background: red; border-color: #f1c40f; color: #f1c40f; }
 
+        /* MOBİL SÜRÜKLEME İÇİN HAYALET ÖĞE */
+        #dragGhost {
+            position: fixed; pointer-events: none; z-index: 10000;
+            width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2);
+            display: none; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+        }
+
         /* ALT BAR */
         .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
         .bottom-btn {
@@ -227,6 +234,8 @@
             </filter>
         </defs>
     </svg>
+
+    <div id="dragGhost"></div>
 
     <div id="gameContainer">
         
@@ -361,7 +370,6 @@
                 document.getElementById("btnLoadGame").style.display = "block";
             }
             setInterval(updateTickers, 1000); 
-            // Döngüyü sayfa açıldığı an başlatıyoruz ki asla durmasın
             requestAnimationFrame(gameLoop);
         };
 
@@ -547,9 +555,121 @@
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
         }
 
+        // --- MOBİL VE MOUSE UYUMLU SÜRÜKLE BIRAK SİSTEMİ ---
         const trashBin = document.getElementById("trashBin");
         const trackEl = document.getElementById("trackContainer");
         const gameContainer = document.getElementById("gameContainer");
+        const ghost = document.getElementById("dragGhost");
+
+        let activeTouchData = null; // { type, index/slotIndex, level }
+
+        function setupDragAndDropForElement(el, data) {
+            // MOUSE EVENTS
+            el.addEventListener("dragstart", (e) => {
+                dragSource = data;
+                setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10);
+            });
+            el.addEventListener("dragend", () => {
+                trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
+            });
+
+            // TOUCH (MOBİL) EVENTS
+            el.addEventListener("touchstart", (e) => {
+                e.preventDefault();
+                activeTouchData = data;
+                ghost.innerHTML = el.innerHTML;
+                ghost.style.display = "block";
+                const touch = e.touches[0];
+                ghost.style.left = touch.clientX + "px";
+                ghost.style.top = touch.clientY + "px";
+                
+                if(data.type === 'grid') {
+                    el.style.opacity = "0.3";
+                } else if(data.type === 'track') {
+                    el.style.display = "none";
+                }
+                trashBin.style.display = "block";
+                trackEl.classList.add("drag-active");
+            }, {passive: false});
+
+            el.addEventListener("touchmove", (e) => {
+                e.preventDefault();
+                const touch = e.touches[0];
+                ghost.style.left = touch.clientX + "px";
+                ghost.style.top = touch.clientY + "px";
+            }, {passive: false});
+
+            el.addEventListener("touchend", (e) => {
+                e.preventDefault();
+                ghost.style.display = "none";
+                trashBin.style.display = "none";
+                trackEl.classList.remove("drag-active");
+
+                const touch = e.changedTouches[0];
+                const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
+
+                if (!targetEl) {
+                    initGrid(); return;
+                }
+
+                // Çöp Kutusuna Bırakma
+                if (targetEl.closest('#trashBin')) {
+                    if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null;
+                    if(activeTouchData.type === 'track') {
+                        gridSlots[activeTouchData.sourceSlotIndex].isFlying = false;
+                        removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
+                    }
+                    initGrid(); saveGame();
+                } 
+                // Hangara (Grid) Bırakma
+                else if (targetEl.closest('.slot')) {
+                    const slotEl = targetEl.closest('.slot');
+                    const targetIndex = parseInt(slotEl.dataset.index);
+                    const targetItem = gridSlots[targetIndex];
+
+                    if (activeTouchData.type === 'track') {
+                        gridSlots[activeTouchData.sourceSlotIndex].isFlying = false;
+                        removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
+                        if (!targetItem) {
+                            gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false };
+                        } else if (targetItem.level === activeTouchData.level) {
+                            gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false };
+                            animatedIndex = targetIndex;
+                            if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                        }
+                    } else if (activeTouchData.type === 'grid') {
+                        const sourceIndex = activeTouchData.index;
+                        if (sourceIndex !== targetIndex) {
+                            const sourceItem = gridSlots[sourceIndex];
+                            if (!targetItem) {
+                                gridSlots[targetIndex] = sourceItem;
+                                gridSlots[sourceIndex] = null;
+                            } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) {
+                                gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false };
+                                gridSlots[sourceIndex] = null;
+                                animatedIndex = targetIndex;
+                                if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                            }
+                        }
+                    }
+                    initGrid(); saveGame();
+                } 
+                // Piste Bırakma
+                else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') {
+                    if (activeTouchData.type === 'grid') {
+                        const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
+                        if (activeTrackCount < MAX_PLANES) {
+                            gridSlots[activeTouchData.index].isFlying = true;
+                            spawnTrackPlane(activeTouchData.level, activeTouchData.index);
+                        } else {
+                            alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`);
+                        }
+                    }
+                    initGrid(); saveGame();
+                }
+                activeTouchData = null;
+            });
+        }
 
         gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
         gameContainer.addEventListener("drop", e => {
@@ -600,9 +720,8 @@
                         planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
                     } else {
                         planeEl.draggable = true;
-                        planeEl.addEventListener("dragstart", () => { dragSource = { type: 'grid', index: i, level: planeObj.level }; setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10); });
-                        planeEl.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
                         planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
+                        setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level });
                     }
                     if(i === animatedIndex) planeEl.classList.add("merge-anim");
                     slot.appendChild(planeEl);
@@ -665,9 +784,9 @@
             visual.innerHTML = getJetSVG(level); 
             trackEl.appendChild(visual);
 
+            setupDragAndDropForElement(visual, { type: 'track', sourceSlotIndex: slotIndex, level: level });
+
             const planeObj = { slotIndex: slotIndex, element: visual, level: level, progress: savedProgress };
-            visual.addEventListener("dragstart", (e) => { dragSource = { type: 'track', sourceSlotIndex: slotIndex, level: level }; setTimeout(() => { visual.style.display = 'none'; trashBin.style.display = "block"; }, 0); });
-            visual.addEventListener("dragend", () => { visual.style.display = 'block'; trashBin.style.display = "none"; });
             flyingPlanes.push(planeObj); updateUI(); 
         }
 
@@ -691,7 +810,6 @@
             setTimeout(() => pop.remove(), 1000);
         }
 
-        // --- GARANTİ ÇALIŞAN FİZİK DÖNGÜSÜ ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
