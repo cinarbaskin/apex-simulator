@@ -3,872 +3,901 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Apex Simulator - Metaverse Yaşam</title>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <title>Plane Simulator 3D Style</title>
     <style>
-        :root { --bg-dark: #090d16; --panel-bg: rgba(30, 41, 59, 0.92); --panel-hover: #334155; --text-light: #f8fafc; --text-muted: #94a3b8; --accent-blue: #3b82f6; --accent-green: #10b981; --accent-red: #ef4444; --accent-gold: #f59e0b; --accent-purple: #a855f7; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-light); overflow-x: hidden; user-select: none; }
-        button { cursor: pointer; border: none; border-radius: 8px; font-weight: bold; transition: all 0.2s; }
-        input, select { background: var(--bg-dark); color: white; border: 1px solid var(--panel-hover); padding: 12px; border-radius: 8px; width: 100%; margin-bottom: 15px; font-size: 15px; }
-
-        #auth-screen { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%); position: relative; z-index: 100; }
-        .auth-box { background: var(--panel-bg); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); padding: 40px; border-radius: 20px; width: 380px; text-align: center; box-shadow: 0 20px 50px rgba(0,0,0,0.7); }
-        .auth-box h1 { margin-bottom: 25px; color: var(--accent-blue); font-size: 28px; letter-spacing: 1px; }
-        .btn-primary { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; padding: 14px 20px; width: 100%; margin-top: 10px; font-size: 16px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6); }
-
-        #intro-screen { display: none; height: 100vh; flex-direction: column; align-items: center; justify-content: space-between; padding: 4vh 20px; background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%); position: relative; z-index: 100; overflow: hidden; }
-        .intro-bg-glow { position: absolute; width: 700px; height: 700px; background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%); top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none; z-index: 0; }
-        .scene-container { display: flex; justify-content: space-around; align-items: flex-end; width: 100%; max-width: 1000px; height: 48vh; z-index: 2; padding: 0 20px; }
-        .character-box { width: 220px; height: 320px; display: flex; justify-content: center; align-items: flex-end; transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); filter: brightness(0.2) blur(3px); transform: scale(0.85); opacity: 0.4; }
-        .character-box.active { filter: brightness(1.1) blur(0); transform: scale(1.12) translateY(-10px); opacity: 1; filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.6)); }
-        .character-box.internal { filter: brightness(0.9) blur(0); transform: scale(1.08); opacity: 1; filter: drop-shadow(0 0 25px rgba(245, 158, 11, 0.6)); }
-        .char-svg { width: 100%; height: 100%; }
-
-        .comic-box { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); padding: 35px; border-radius: 16px; max-width: 850px; width: 95%; border: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; font-size: 19px; line-height: 1.8; text-align: left; min-height: 170px; position: relative; z-index: 10; box-shadow: 0 25px 60px rgba(0,0,0,0.8); transition: all 0.4s; }
-        .comic-box::before { content: ''; position: absolute; top: -15px; border-width: 0 15px 15px 15px; border-style: solid; border-color: transparent transparent rgba(15, 23, 42, 0.95) transparent; transition: all 0.3s; opacity: 0; }
-        .comic-box.arrow-left { border-left: 4px solid var(--accent-blue); } .comic-box.arrow-left::before { left: 12%; opacity: 1; }
-        .comic-box.arrow-right { border-right: 4px solid var(--accent-red); } .comic-box.arrow-right::before { right: 12%; opacity: 1; }
-        .comic-box.arrow-internal { border: 2px dashed var(--accent-gold); }
-        
-        #speaker-name { font-weight: bold; font-size: 15px; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; display: flex; align-items: center; gap: 10px; }
-        #dialogue-text { color: #f1f5f9; font-weight: 400; text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
-        #dialogue-text::after { content: '|'; animation: blink 1s infinite; color: var(--accent-blue); margin-left: 2px; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
-        .intro-buttons { display: flex; flex-direction: column; align-items: center; gap: 15px; z-index: 10; width: 100%; max-width: 400px; }
-        .skip-btn { background: transparent; color: var(--text-muted); text-decoration: underline; font-size: 14px; border: none; cursor: pointer; transition: color 0.2s; }
-        .skip-btn:hover { color: white; }
-        #claim-btn { display: none; background: linear-gradient(135deg, #f59e0b, #b45309); color: #fff; padding: 18px 45px; font-size: 22px; border-radius: 50px; box-shadow: 0 0 35px rgba(245, 158, 11, 0.6); animation: pulseGold 1.5s infinite; border: 2px solid #fde68a; text-transform: uppercase; letter-spacing: 1px; }
-        #claim-btn:hover { transform: scale(1.08); background: linear-gradient(135deg, #fbbf24, #d97706); }
-        @keyframes pulseGold { 0% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } 50% { box-shadow: 0 0 45px rgba(245, 158, 11, 0.9); } 100% { box-shadow: 0 0 20px rgba(245, 158, 11, 0.5); } }
-
-        #app-screen { display: none; height: 100vh; flex-direction: column; background-color: var(--bg-dark); }
-        header { background: var(--panel-bg); height: 70px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; border-bottom: 1px solid var(--panel-hover); z-index: 10; }
-        .finance-summary { display: flex; gap: 15px; font-size: 14px; }
-        .stat-box { padding: 8px 12px; border-radius: 8px; background: var(--bg-dark); border: 1px solid var(--panel-hover); font-weight: bold; }
-        .stat-cash { color: var(--accent-green); } .stat-assets { color: var(--accent-blue); } .stat-debt { color: var(--accent-red); }
-        .datetime { font-family: monospace; font-size: 16px; color: var(--accent-gold); background: var(--bg-dark); padding: 8px 15px; border-radius: 8px; border: 1px solid var(--panel-hover); }
-
-        .layout { display: flex; flex: 1; overflow: hidden; background-color: var(--bg-dark); }
-        aside { width: 270px; background: var(--panel-bg); transition: width 0.3s; display: flex; flex-direction: column; overflow-y: auto; }
-        aside.collapsed { width: 60px; }
-        .nav-item { display: flex; align-items: center; padding: 15px 20px; color: var(--text-muted); cursor: pointer; transition: 0.2s; border-left: 3px solid transparent; }
-        .nav-item:hover, .nav-item.active { background: var(--bg-dark); color: var(--text-light); border-left-color: var(--accent-blue); }
-        .nav-item i { width: 25px; font-size: 18px; }
-        aside.collapsed .nav-text { display: none; }
-
-        main { flex: 1; padding: 20px; overflow-y: auto; background-color: var(--bg-dark); }
-        .tab-content { display: none; animation: fadeIn 0.3s; }
-        .tab-content.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .grid-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: var(--panel-bg); padding: 20px; border-radius: 12px; border: 1px solid var(--panel-hover); transition: all 0.3s; }
-        .card h3 { margin-bottom: 10px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px; font-size: 17px; }
-
-        .avatar-container { position: relative; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; min-height: 450px; height: 100%; background: radial-gradient(circle, var(--panel-hover) 0%, var(--panel-bg) 100%); border-radius: 12px; overflow: hidden; box-shadow: inset 0 0 20px rgba(0,0,0,0.2); padding-bottom: 15px; }
-        #profile-3d-canvas { width: 100%; height: 100%; position: absolute; top: 0; left: 0; display: block; }
-        .btn-rotate { position: absolute; bottom: 15px; z-index: 5; background: rgba(15, 23, 42, 0.8); color: white; border: 1px solid var(--panel-hover); padding: 8px 15px; font-size: 13px; }
-
-        ::-webkit-scrollbar { width: 8px; } ::-webkit-scrollbar-thumb { background: var(--panel-hover); border-radius: 4px; }
-
-        #fullscreen-world { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: #000; }
-        #world-crosshair { position: absolute; top: 50%; left: 50%; width: 6px; height: 6px; background: white; border-radius: 50%; transform: translate(-50%, -50%); opacity: 0.5; pointer-events: none; z-index: 10; }
-        
-        #esc-menu { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); flex-direction: column; align-items: center; justify-content: center; z-index: 30; }
-        #esc-menu h2 { color: white; margin-bottom: 40px; font-size: 32px; letter-spacing: 2px; }
-
-        .hud-controls { position: absolute; bottom: 20px; left: 20px; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 8px; color: white; font-size: 14px; z-index: 10; pointer-events: none; border: 1px solid var(--panel-hover); }
-        .hud-controls span { color: var(--accent-gold); font-weight: bold; margin-right: 5px;}
-
-        #player-name-tag { position: absolute; transform: translate(-50%, -50%); color: white; text-align: center; pointer-events: none; z-index: 100; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-weight: bold; display: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.9); }
-        #tag-username { font-size: 16px; letter-spacing: 1px; }
-        #tag-money { color: var(--accent-gold); font-size: 14px; background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 12px; margin-top: 4px; display: inline-block; border: 1px solid rgba(245, 158, 11, 0.3);}
-        
-        /* MOBİL KONTROL STİLLERİ */
-        #mobile-controls {
-            display: none; 
-            position: absolute;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; 
-            z-index: 50;
+        * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        body {
+            margin: 0; padding: 0; 
+            background: radial-gradient(circle, #2980b9, #1a5276, #0d2140);
+            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden;
         }
-        #touch-pad-zone {
-            position: absolute;
-            top: 0; right: 0;
-            width: 50vw; height: 100vh;
-            pointer-events: auto;
+
+        #gameContainer {
+            width: 100%; max-width: 450px; height: 100%; position: relative;
+            background: radial-gradient(circle at center, #3498db 0%, #1a4b8c 70%, #0d2140 100%);
+            display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
         }
-        .mob-btn {
-            background: rgba(30, 41, 59, 0.7);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: white;
-            border-radius: 50%;
-            width: 50px; height: 50px;
-            font-size: 16px;
-            pointer-events: auto;
-            touch-action: none; 
-            user-select: none;
+
+        /* GİRİŞ EKRANI */
+        #loginOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(26, 75, 140, 0.95), rgba(13, 33, 64, 0.98));
+            display: flex; justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(10px);
+        }
+        .login-box {
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 40px 25px; border-radius: 20px; text-align: center; width: 85%; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+        .login-box h1 {
+            margin: 0 0 5px 0; font-size: 36px; background: linear-gradient(to right, #f1c40f, #f39c12);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .slogan { font-size: 13px; color: #a4c8ff; font-style: italic; margin-bottom: 30px; font-weight: bold; line-height: 1.4; }
+        .login-box input, .login-box select {
+            width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: white; font-size: 16px; outline: none; transition: border 0.3s;
+        }
+        .login-box input:focus, .login-box select:focus { border-color: #f1c40f; }
+        .login-btn {
+            width: 100%; padding: 15px; background: linear-gradient(45deg, #f1c40f, #e67e22);
+            border: none; border-radius: 10px; color: black; font-size: 18px; font-weight: 900;
+            cursor: pointer; margin-top: 10px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); transition: transform 0.1s;
+        }
+        .login-btn:active { transform: scale(0.95); }
+
+        /* MODALLAR */
+        .modal-overlay {
+            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #0f172a; border: 2px solid #f1c40f; border-radius: 15px;
+            padding: 25px; width: 90%; max-height: 85%; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            text-align: center; position: relative;
+        }
+        .modal-content h2 { margin-top: 0; color: #f1c40f; }
+        .modal-content input, .modal-content select {
+            width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 16px; outline: none;
+        }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; }
+        .btn-save { background: #2ecc71; }
+        .btn-close { background: #e74c3c; }
+
+        /* KASA SİSTEMİ */
+        .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .case-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.5));
+            border: 2px solid; border-radius: 12px; padding: 15px 5px; cursor: pointer;
+            transition: transform 0.1s; display: flex; flex-direction: column; align-items: center;
+        }
+        .case-item:active { transform: scale(0.95); }
+        .case-icon { font-size: 30px; margin-bottom: 5px; }
+        .case-name { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .case-price { font-size: 11px; color: #f1c40f; font-weight: bold; }
+        
+        #rouletteContainer { display: none; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
+        .roulette-window {
+            width: 100%; height: 110px; background: #000; border: 3px solid #f1c40f; border-radius: 8px;
+            overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+        .roulette-strip { display: flex; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
+        .roulette-item {
+            width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            border-right: 2px solid rgba(255,255,255,0.1); background: #1a1a2e; flex-shrink: 0; margin: 5px;
+            border-radius: 10px; position: relative; box-sizing: border-box;
+        }
+        .roulette-center-line {
+            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: red;
+            transform: translateX(-50%); z-index: 10; box-shadow: 0 0 5px red;
+        }
+
+        /* ÜST BAR */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; z-index: 10; }
+        .user-info { display: flex; align-items: center; gap: 5px; }
+        .level-badge {
+            background: #2a9df4; border: 2px solid white; border-radius: 50%;
+            width: 36px; height: 36px; display: flex; justify-content: center; align-items: center;
+            font-weight: 900; font-size: 14px; text-shadow: 1px 1px 2px black;
+        }
+        .username { font-size: 13px; font-style: italic; font-weight: bold; }
+        .currencies { display: flex; gap: 10px; }
+        .currency {
+            background: white; color: black; border-radius: 8px; padding: 4px 10px;
+            font-weight: 900; display: flex; align-items: center; gap: 5px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+        .currency.money span { color: #f1c40f; font-size: 16px; }
+        .currency.gem span { color: #9b59b6; font-size: 16px; }
+
+        .side-menu { position: absolute; top: 70px; display: flex; flex-direction: column; gap: 12px; z-index: 10; }
+        .side-menu.left { left: 10px; }
+        .side-menu.right { right: 10px; align-items: center; }
+        .menu-btn { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: bold; cursor: pointer; }
+        .menu-btn .icon {
+            background: radial-gradient(circle, #fff, #ddd); border-radius: 50%;
+            width: 42px; height: 42px; display: flex; justify-content: center; align-items: center;
+            font-size: 20px; margin-bottom: 3px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.4);
+        }
+
+        .center-stats { position: absolute; top: 8%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+        .center-stats h1 { margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .center-stats h1 span { color: #f1c40f; }
+        .center-stats p { margin: 5px 0 0 0; font-size: 14px; color: #74b9ff; font-weight: bold; }
+        
+        #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
+        .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
+        @keyframes pulseBoost { 0% { opacity: 0.8; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
+
+        /* PİST */
+        #trackContainer {
+            position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
+            width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; 
+            background-color: transparent; box-shadow: 0 0 40px rgba(0,0,0,0.5) inset, 0 0 15px rgba(0,0,0,0.6);
+            pointer-events: none; z-index: 2; transition: all 0.3s;
+        }
+        #dashedLine {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 332px; height: 532px; border: 4px dashed rgba(255, 255, 255, 0.4); border-radius: 166px; box-sizing: border-box;
+        }
+        .finish-line {
+            position: absolute; top: 50%; right: -28px; transform: translateY(-50%);
+            width: 28px; height: 60px; background: repeating-linear-gradient(0deg, white, white 10px, #e74c3c 10px, #e74c3c 20px);
+            z-index: 1; border-left: 2px solid #f1c40f; border-right: 2px solid #f1c40f; box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+        .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; filter: blur(10px); opacity: 0; z-index: 5; pointer-events: none; }
+        @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
+        #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
+
+        .flying-plane { 
+            position: absolute; width: 65px; height: 65px; 
+            transform-origin: center center; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; 
+            filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6));
+        }
+        .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
+        
+        .floating-money {
+            position: absolute; color: #f1c40f; font-weight: 900; font-size: 20px;
+            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; 
+            pointer-events: none; z-index: 10; animation: popUpMoney 1s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
+        }
+        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 50% { transform: translate(-30px, -60px) scale(1.3); } 100% { opacity: 0; transform: translate(-30px, -100px) scale(1); } }
+
+        /* HANGAR ALANI */
+        .grid-container {
+            position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
+            display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px);
+            gap: 10px; z-index: 20; padding: 12px; background: rgba(0, 0, 0, 0.25); border-radius: 24px;
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
+            border: 3px solid rgba(255,255,255,0.1);
+        }
+        .slot {
+            width: 100%; height: 100%; 
+            background: linear-gradient(to bottom, #27ae60, #1e8449);
+            border-radius: 16px; display: flex; justify-content: center; align-items: center;
+            border: 3px solid #2ecc71; position: relative;
+            box-shadow: 0 6px 0 #145a32, inset 0 4px 6px rgba(255,255,255,0.3);
+        }
+        .slot.drag-over { background: linear-gradient(to bottom, #f1c40f, #d35400); border-color: #f39c12; transform: scale(1.05); }
+
+        .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 3s ease-in-out infinite; }
+        .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
+        .plane-item.ghost { opacity: 0.35; filter: grayscale(80%); animation: none; cursor: pointer; transition: all 0.2s; }
+        .plane-item.ghost:hover { opacity: 0.7; filter: grayscale(30%); transform: scale(1.1); }
+        .plane-item.ghost:active { transform: scale(0.9); }
+
+        @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .level-tag { position: absolute; bottom: -6px; right: -6px; background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 900; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.6); }
+        @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3) drop-shadow(0 0 20px white); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 30px #f1c40f); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
+        .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
+
+        /* ÇÖP KUTUSU */
+        #trashBin {
+            position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%);
+            background: rgba(231, 76, 60, 0.95); border: 3px dashed white; border-radius: 14px;
+            padding: 15px 30px; color: white; font-weight: bold; font-size: 18px; display: none; z-index: 50;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6); backdrop-filter: blur(5px); pointer-events: auto;
+        }
+        #trashBin.drag-over { transform: translateX(-50%) scale(1.1); background: red; border-color: #f1c40f; color: #f1c40f; }
+
+        /* ALT BAR */
+        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
+        .bottom-btn {
+            flex: 1; background: linear-gradient(to bottom, #2ecc71, #27ae60);
+            border: 2px solid white; border-radius: 12px; padding: 8px;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: white; font-weight: 900; font-size: 13px; text-shadow: 1px 1px 2px black;
+            cursor: pointer; box-shadow: 0 5px 0 #1e8449; transition: transform 0.1s, box-shadow 0.1s;
         }
-        .mob-btn:active { background: rgba(59, 130, 246, 0.8); }
-        .mob-btn span { font-size: 10px; color: var(--accent-gold); }
-        .dpad-container {
-            position: absolute;
-            bottom: 30px; left: 30px;
-            display: flex; flex-direction: column; align-items: center; gap: 5px;
-        }
-        .dpad-row { display: flex; gap: 5px; }
-        .action-container {
-            position: absolute;
-            bottom: 30px; right: 30px;
-            display: flex; flex-wrap: wrap; width: 120px; gap: 10px; justify-content: flex-end;
-        }
-        .action-btn { border-radius: 12px; }
+        .bottom-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #1e8449; }
+        .bottom-btn.shop { background: linear-gradient(to bottom, #ff4757, #ff6b81); box-shadow: 0 5px 0 #c0392b; }
+        .bottom-btn.shop:active { box-shadow: 0 0 0 #c0392b; }
+        .bottom-btn span.big { font-size: 16px; display: block; margin-bottom: 2px; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 3px; }
 
-        @media (max-width: 768px) {
-            #mobile-controls { display: block; }
-            .hud-controls { display: none; } 
-            #world-crosshair { display: none; }
-            aside { position: absolute; height: calc(100vh - 70px); z-index: 20; transform: translateX(-100%); }
-            aside.collapsed { transform: translateX(0); width: 200px; }
-            .nav-text { display: inline-block !important; }
-            .finance-summary { flex-wrap: wrap; justify-content: flex-end; }
-        }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen">
-        <div class="auth-box">
-            <h1><i class="fa-solid fa-building-columns"></i> Apex Simulator</h1>
-            <input type="text" id="username" placeholder="Kullanıcı Adı" autocomplete="off">
-            <input type="password" id="password" placeholder="Şifre" autocomplete="off">
-            <button class="btn-primary" onclick="login()">Kariyerine Başla</button>
-            <p style="margin-top: 15px; font-size: 12px; color: var(--text-muted);">İlerlemeniz tarayıcınıza kaydedilir</p>
-        </div>
-    </div>
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <filter id="planeShadow">
+                <feDropShadow dx="3" dy="6" stdDeviation="4" flood-opacity="0.6"/>
+            </filter>
+        </defs>
+    </svg>
 
-    <!-- İNTRO -->
-    <div id="intro-screen">
-        <div class="intro-bg-glow"></div>
-        <div class="scene-container">
-            <div class="character-box" id="char-player">
-                <svg viewBox="0 0 120 150" class="char-svg">
-                    <path d="M 20 150 C 20 100, 100 100, 100 150" fill="#1e293b" /> <polygon points="50,105 70,105 60,135" fill="#f8fafc" /> <polygon points="57,110 63,110 60,135" fill="#3b82f6" />
-                    <rect x="52" y="80" width="16" height="30" fill="#ffdbac" /> <ellipse cx="60" cy="55" rx="24" ry="28" fill="#ffdbac" /> <path d="M 36 50 C 36 20, 84 20, 84 50 C 84 35, 36 35, 36 50" fill="#4a3000" /> <path d="M 34 35 Q 60 10 86 35 Z" fill="#4a3000" />
-                    <circle cx="51" cy="52" r="3.5" fill="#000" /> <circle cx="69" cy="52" r="3.5" fill="#000" /> <circle cx="52" cy="51" r="1.2" fill="#fff" /> <circle cx="70" cy="51" r="1.2" fill="#fff" />
-                    <path id="player-brow-l" d="M 44 43 Q 51 40 58 43" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/> <path id="player-brow-r" d="M 76 43 Q 69 40 62 43" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/> <path id="player-mouth" d="M 52 68 Q 60 72 68 68" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                </svg>
-            </div>
-            <div class="character-box" id="char-boss">
-                <svg viewBox="0 0 120 150" class="char-svg">
-                    <path d="M 10 150 C 10 90, 110 90, 110 150" fill="#0f172a" /> <polygon points="45,95 75,95 60,130" fill="#fff" /> <polygon points="56,105 64,105 60,135" fill="#ef4444" />
-                    <rect x="52" y="75" width="16" height="30" fill="#fcd0b4" /> <ellipse cx="60" cy="52" rx="25" ry="27" fill="#fcd0b4" /> <path d="M 35 50 C 35 20, 85 20, 85 50 C 85 30, 35 30, 35 50" fill="#64748b" />
-                    <circle cx="50" cy="48" r="3" fill="#000" /> <circle cx="70" cy="48" r="3" fill="#000" />
-                    <path id="boss-brow-l" d="M 43 41 Q 50 38 57 41" stroke="#333" stroke-width="2.8" fill="none" stroke-linecap="round"/> <path id="boss-brow-r" d="M 77 41 Q 70 38 63 41" stroke="#333" stroke-width="2.8" fill="none" stroke-linecap="round"/> <path id="boss-mouth" d="M 50 66 Q 60 70 70 66" stroke="#333" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                    <rect x="44" y="42" width="14" height="10" rx="2" fill="none" stroke="#333" stroke-width="2"/> <rect x="62" y="42" width="14" height="10" rx="2" fill="none" stroke="#333" stroke-width="2"/> <line x1="58" y1="46" x2="62" y2="46" stroke="#333" stroke-width="2"/>
-                </svg>
-            </div>
-        </div>
-        <div style="display: flex; flex-direction: column; align-items: center; width: 100%; z-index: 10;">
-            <div class="comic-box" id="dialogue-box">
-                <div id="speaker-name"><i class="fa-solid fa-user-tie"></i> <span id="speaker-title">Yönetim Kurulu / Patron</span></div>
-                <div id="dialogue-text"></div>
-            </div>
-            <div class="intro-buttons">
-                <button class="btn-primary" style="padding: 16px; font-size: 18px;" id="next-dialogue-btn" onclick="nextDialogue()">Devam Et <i class="fa-solid fa-arrow-right"></i></button>
-                <button id="claim-btn" onclick="claimCapital(event)"><i class="fa-solid fa-file-invoice-dollar"></i> Tazminatı Al (10.000 TL)</button>
-                <button class="skip-btn" id="skip-btn" onclick="skipIntro()">Hikayeyi Geç</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ANA ARAYÜZ -->
-    <div id="app-screen">
-        <header>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <button onclick="toggleSidebar()" style="background: transparent; color: white; font-size: 20px;"><i class="fa-solid fa-bars"></i></button>
-                <div class="datetime" id="datetime">Yükleniyor...</div>
-                <div style="color:var(--accent-green); font-size:14px; font-weight:bold; margin-left:15px;"><i class="fa-solid fa-globe"></i> Metaverse Sürüş Modu</div>
-            </div>
-            <div class="finance-summary">
-                <div class="stat-box stat-cash">Nakit: <span id="ui-cash">0</span> TL</div>
-                <div class="stat-box stat-assets">Varlıklar: <span id="ui-assets">0</span> TL</div>
-                <div class="stat-box stat-debt">Borç: <span id="ui-debt">0</span> TL</div>
-                <div class="stat-box" style="border: 1px solid var(--accent-gold);">Net: <span id="ui-net" style="color: var(--accent-gold); font-weight:bold;">0</span> TL/sn</div>
-            </div>
-        </header>
-
-        <div class="layout">
-            <aside id="sidebar">
-                <div style="padding-top: 10px;">
-                    <div class="nav-item active" onclick="openTab('home')"><i class="fa-solid fa-house"></i> <span class="nav-text">Ana Sayfa</span></div>
-                    <div class="nav-item" onclick="openTab('profile')"><i class="fa-solid fa-user"></i> <span class="nav-text">Profil</span></div>
-                    <div class="nav-item" onclick="openTab('world')"><i class="fa-solid fa-globe"></i> <span class="nav-text">Açık Dünya</span></div>
-                    <div class="nav-item" onclick="openTab('jobs')"><i class="fa-solid fa-briefcase"></i> <span class="nav-text">Kariyer / Meslek</span></div>
-                    <div class="nav-item" onclick="openTab('realestate')"><i class="fa-solid fa-building"></i> <span class="nav-text">Gayrimenkul & Arsa</span></div>
-                    <div class="nav-item" onclick="openTab('vehicles')"><i class="fa-solid fa-car"></i> <span class="nav-text">Garaj & Taşıtlar</span></div>
-                    <div class="nav-item" onclick="openTab('activity')"><i class="fa-solid fa-list-check"></i> <span class="nav-text">Son İşlemler</span></div>
-                </div>
-            </aside>
-
-            <main>
-                <div id="tab-home" class="tab-content active">
-                    <h2><i class="fa-solid fa-house"></i> Ana Sayfa</h2>
-                    <div class="grid-container">
-                        <div class="card" style="grid-column: 1 / -1;">
-                            <h3><i class="fa-solid fa-circle-info"></i> Sürüş ve Etkileşim Kuralları</h3>
-                            <p style="color: var(--text-muted); line-height: 1.6;">
-                                <strong>1. Kapı Kontrolü (`E` Tuşu veya Buton):</strong> Evine yaklaşıp E tuşuna basarak kapıyı açıp kapatabilirsin.<br>
-                                <strong>2. Araca Binme (`F` Tuşu veya Buton):</strong> Arsanın önündeki aracına yaklaşarak F tuşuna basıp sürebilir, inmek için tekrar basabilirsin.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-profile" class="tab-content">
-                    <h2><i class="fa-solid fa-user"></i> Profil & Gardırop</h2>
-                    <div style="display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch;">
-                        <div class="card" style="flex: 2; min-width: 300px;">
-                            <h3 style="margin-bottom:15px;"><i class="fa-solid fa-id-card"></i> Kimlik Bilgileri</h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                                <input type="text" id="prof-name" placeholder="Ad Soyad" oninput="updateAvatar()" style="margin:0;">
-                                <input type="text" id="prof-city" placeholder="Şehir" oninput="updateAvatar()" style="margin:0;">
-                                <input type="number" id="prof-height" placeholder="Boy (cm)" min="120" max="230" oninput="updateAvatar()" style="margin:0;">
-                                <input type="number" id="prof-weight" placeholder="Kilo (kg)" min="40" max="180" oninput="updateAvatar()" style="margin:0;">
-                            </div>
-                            <h3 style="margin-bottom:15px;"><i class="fa-solid fa-palette"></i> Fiziksel ve Saç</h3>
-                            <select id="prof-hairstyle" onchange="updateAvatar()"><option value="classic">Klasik</option><option value="buzz">Kısa</option><option value="messy">Dağınık</option><option value="wavy">Dalgalı</option></select>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                                <div><label>Ten</label><input type="color" id="color-skin" value="#ffdbac" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                                <div><label>Saç</label><input type="color" id="color-hair" value="#4a3000" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                                <div><label>Göz</label><input type="color" id="color-eye" value="#000000" oninput="updateAvatar()" style="margin:0; padding:5px; height:45px;"></div>
-                            </div>
-                        </div>
-                        <div class="card avatar-container" style="flex: 1; min-width: 300px;">
-                            <div id="profile-3d-canvas"></div>
-                            <button class="btn-rotate" id="btn-rotate-toggle" onclick="toggleRotation()">Döndürmeyi Durdur</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tab-world" class="tab-content">
-                    <h2><i class="fa-solid fa-globe"></i> Metaverse Meydanı</h2>
-                    <div class="card" style="text-align: center; padding: 40px; margin-top: 20px;">
-                        <h3 style="border:none; margin-bottom:10px; color:white;">Açık Dünyaya İn</h3>
-                        <button class="btn-primary" style="width: auto; padding: 15px 40px; font-size: 18px;" onclick="enterWorld()">Bağlan</button>
-                    </div>
-                </div>
-
-                <div id="tab-jobs" class="tab-content"><h2>Kariyer Basamakları</h2><div class="grid-container" id="jobs-list"></div></div>
-                
-                <div id="tab-realestate" class="tab-content">
-                    <h2><i class="fa-solid fa-building"></i> Gayrimenkul & Arsa Piyasası</h2>
-                    <div class="card" style="margin-bottom: 20px; border-color: var(--accent-gold);">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <div>
-                                <h3 style="border:none; margin:0; color:var(--accent-gold);">Kişisel Parsel (Arsa)</h3>
-                                <p style="font-size:13px; color:var(--text-muted); margin-top:5px;">Evlerin ve araçların ancak bir arsan varsa haritada yerini alır.</p>
-                            </div>
-                            <div id="plot-ui"></div>
-                        </div>
-                    </div>
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Ev Galerisi</h3>
-                    <div class="grid-container" id="realestate-list"></div>
-                </div>
-                
-                <div id="tab-vehicles" class="tab-content">
-                    <h2><i class="fa-solid fa-car"></i> Garaj & Taşıtlar</h2>
-                    <h3 style="margin-bottom: 15px; border-bottom: 1px solid var(--panel-hover); padding-bottom: 5px;">Taşıt Galerisi</h3>
-                    <div class="grid-container" id="vehicles-list"></div>
-                </div>
-
-                <div id="tab-activity" class="tab-content"><h2>Son İşlemler</h2><div class="card" style="max-height: 70vh; overflow-y: auto;"><ul id="activity-log" style="list-style:none; display:flex; flex-direction:column; gap:12px;"></ul></div></div>
-            </main>
-        </div>
-    </div>
-
-    <!-- TAM EKRAN 3D -->
-    <div id="fullscreen-world">
-        <div id="world-crosshair"></div>
-        <div id="player-name-tag">
-            <div id="tag-username">Oyuncu</div>
-            <div id="tag-money">0 TL</div>
-        </div>
-        <div class="hud-controls"><span>W,A,S,D</span> Yürü/Sür | <span>Shift</span> Koş | <span>Space</span> Zıpla | <span>E</span> Kapı | <span>F</span> Araca Bin/İn | <span>ESC</span> Menü</div>
+    <div id="gameContainer">
         
-        <div id="esc-menu">
-            <h2>Oyun Menüsü</h2>
-            <button class="btn-primary" style="width: 300px; padding: 15px; font-size: 18px; margin-bottom: 20px;" onclick="resumeWorld()">Oyuna Dön</button>
-            <button style="background: var(--accent-red); color: white; width: 300px; padding: 15px; font-size: 18px;" onclick="exitWorld()">Açık Dünyadan Çık</button>
+        <div id="loginOverlay">
+            <div class="login-box">
+                <h1>Plane Simulator</h1>
+                <div class="slogan">"Uçakları birleştir, paraları katla,<br>göklerin hakimi ol, rakipleri atla!"</div>
+                <button class="login-btn" id="btnLoadGame" style="display:none; background: linear-gradient(45deg, #2ecc71, #27ae60); margin-bottom: 15px;" onclick="loadGame()">💾 Kaldığın Yerden Devam Et</button>
+                <input type="text" id="usernameInput" placeholder="Pilot Adı" autocomplete="off">
+                <select id="countrySelect">
+                    <option value="🇹🇷">Türkiye 🇹🇷</option><option value="🇦🇿">Azerbaycan 🇦🇿</option>
+                    <option value="🇺🇸">ABD 🇺🇸</option><option value="🇩🇪">Almanya 🇩🇪</option>
+                    <option value="🇬🇧">İngiltere 🇬🇧</option><option value="🇯🇵">Japonya 🇯🇵</option>
+                </select>
+                <input type="password" id="passwordInput" placeholder="Şifre (İsteğe Bağlı)">
+                <button class="login-btn" onclick="login()">Yeni Oyuna Başla</button>
+            </div>
         </div>
 
-        <!-- MOBİL KONTROLLER -->
-        <div id="mobile-controls">
-            <div id="touch-pad-zone"></div>
-            <div class="dpad-container">
-                <button id="mob-w" class="mob-btn">W</button>
-                <div class="dpad-row">
-                    <button id="mob-a" class="mob-btn">A</button>
-                    <button id="mob-s" class="mob-btn">S</button>
-                    <button id="mob-d" class="mob-btn">D</button>
-                </div>
+        <div id="settingsModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>⚙️ Ayarlar</h2>
+                <input type="text" id="settingNameInput" placeholder="Yeni Pilot Adı" autocomplete="off">
+                <select id="settingCountrySelect">
+                    <option value="🇹🇷">Türkiye 🇹🇷</option><option value="🇦🇿">Azerbaycan 🇦🇿</option>
+                    <option value="🇺🇸">ABD 🇺🇸</option><option value="🇩🇪">Almanya 🇩🇪</option>
+                    <option value="🇬🇧">İngiltere 🇬🇧</option><option value="🇯🇵">Japonya 🇯🇵</option>
+                </select>
+                <button class="modal-btn btn-save" onclick="saveSettings()">Kaydet</button>
+                <button class="modal-btn btn-close" onclick="closeSettings()">Kapat</button>
             </div>
-            <div class="action-container">
-                <button id="mob-e" class="mob-btn action-btn">E <span>Kapı</span></button>
-                <button id="mob-f" class="mob-btn action-btn">F <span>Araç</span></button>
-                <button id="mob-space" class="mob-btn action-btn">Zıpla</button>
-                <button id="mob-shift" class="mob-btn action-btn">Koş</button>
-                <button id="mob-esc" class="mob-btn action-btn" style="background: var(--accent-red);">Menü</button>
+        </div>
+
+        <div id="rewardsModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>🎁 Süpriz Ödül</h2>
+                <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
+                <div style="background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px; border: 2px dashed #f1c40f; margin-bottom: 20px;">
+                    <div id="rewardIcon" style="font-size: 40px; margin-bottom: 10px;">❓</div>
+                    <div id="rewardText" style="font-size: 18px; font-weight: bold; color: white;">...</div>
+                </div>
+                <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
+                <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
+            </div>
+        </div>
+
+        <div id="caseModal" class="modal-overlay">
+            <div class="modal-content" id="caseContent">
+                <h2>📦 Kasalar</h2>
+                <div class="case-grid" id="caseGrid"></div>
+                <button class="modal-btn btn-close" onclick="closeCaseMenu()">Kapat</button>
+            </div>
+            
+            <div class="modal-content" id="rouletteContainer">
+                <h2 id="openingCaseName" style="color:white;">Kasa Açılıyor...</h2>
+                <div class="roulette-window">
+                    <div class="roulette-center-line"></div>
+                    <div class="roulette-strip" id="rouletteStrip"></div>
+                </div>
+                <h3 id="rewardAnnounce" style="margin: 10px 0; font-size: 20px;"></h3>
+                <button class="modal-btn btn-save" id="btnTakeReward" style="display:none;" onclick="takeCaseReward()">Ödülü Al</button>
+            </div>
+        </div>
+
+        <div class="top-bar">
+            <div class="user-info">
+                <div class="level-badge" id="playerLvl">1</div>
+                <div class="username" id="displayUsername">Pilot</div>
+            </div>
+            <div class="currencies">
+                <div class="currency money"><span>❂</span> <div id="moneyDisplay">0</div></div>
+                <div class="currency gem"><span>💎</span> <div id="gemDisplay">0</div></div>
+            </div>
+        </div>
+
+        <div class="side-menu left">
+            <div class="menu-btn" onclick="openSettings()"><div class="icon">⚙️</div>Ayarlar</div>
+            <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
+        </div>
+
+        <div class="side-menu right">
+            <div class="menu-btn"><div class="icon" style="border-color:#f1c40f;">🏆</div>Sıralama</div>
+            <div class="menu-btn" onclick="openCaseMenu()"><div class="icon">📦</div>Kasa</div> 
+        </div>
+
+        <div class="center-stats">
+            <h1><span>❂</span> <span id="centerMoney">0</span></h1>
+            <p id="cpsDisplay">0 / sn</p>
+            <div id="activeBoosts"></div>
+        </div>
+
+        <div id="trackContainer">
+            <div id="dashedLine"></div>
+            <div class="finish-line"></div>
+            <div class="finish-flash" id="finishFlash"></div>
+        </div>
+
+        <div class="grid-container" id="grid"></div>
+        <div id="trashBin">🗑️ Uçağı Sil</div>
+
+        <div class="bottom-bar">
+            <div class="bottom-btn">
+                <span class="big">⏱️ 03:00</span> HIZx2
+            </div>
+            <div class="bottom-btn" onclick="buyPlane()">
+                <span class="big">✈️ Al Lvl. <span id="buyLvlDisplay">1</span></span>
+                <span class="price">❂ <span id="buyPriceDisplay">6</span></span>
+            </div>
+            <div class="bottom-btn shop">
+                <span class="big">🏪</span> Dükkan
             </div>
         </div>
     </div>
 
     <script>
-        let globalPlotsGroup; 
-        let colliders = []; 
-        let interactiveDoors = []; 
-        let playerVehicleObjects = []; 
-
-        let isDriving = false; 
-        let activeVehicleMesh = null; 
-        let vehicleSpeed = 0;
-
-        const defaultProfile = { name: "Bilinmeyen", city: "", height: "175", weight: "70", skin: "#ffdbac", hair: "#4a3000", eye: "#000000", jacket: "#1e293b", shirt: "#f8fafc", tie: "#3b82f6", hairstyle: "classic" };
+        let money = 0; let gems = 0; let currentPlanePrice = 6; let playerLevel = 1;
+        let currentName = "Pilot"; let currentCountry = "🇹🇷";
+        const MAX_PLANES = 5; 
         
-        let player = { 
-            username: "Test", cash: 1000000, debt: 0, 
-            assets: { jobs: [], realEstate: [], vehicles: [], plotId: 0, selectedVehicle: -1, selectedRealEstate: -1 }, 
-            permissions: [],
-            profile: { ...defaultProfile } 
+        let gridSlots = new Array(10).fill(null); 
+        let flyingPlanes = []; 
+        let dragSource = null; let animatedIndex = null; 
+        let lastTime = performance.now();
+        let gameStarted = false; 
+
+        let boostMoneyEnd = 0; let boostMoneyMult = 1;
+        let boostSpeedEnd = 0; let boostSpeedMult = 1;
+        let nextRewardTime = 0; let currentMinuteReward = null;
+
+        window.onload = () => {
+            if(localStorage.getItem("planeTycoonSave")) {
+                document.getElementById("btnLoadGame").style.display = "block";
+            }
+            setInterval(updateTickers, 1000); 
+            // Döngüyü sayfa açıldığı an başlatıyoruz ki asla durmasın
+            requestAnimationFrame(gameLoop);
         };
-        
-        const jobs = [
-            { id: 1, name: "Limonata Standı", cost: 500, income: 2 }, { id: 2, name: "Kahve Arabası", cost: 2000, income: 7 }, { id: 3, name: "Simit Arabası", cost: 4500, income: 15 },
-            { id: 4, name: "Çiçekçi", cost: 7500, income: 22 }, { id: 5, name: "Büfe", cost: 12000, income: 30 }, { id: 6, name: "Seyyar Köfteci", cost: 18000, income: 40 },
-            { id: 7, name: "İnternet Kafe", cost: 25000, income: 50 }, { id: 8, name: "Oto Yıkama", cost: 35000, income: 65 }, { id: 9, name: "Kuru Temizleme", cost: 50000, income: 85 },
-            { id: 10, name: "Fırın", cost: 75000, income: 110 }, { id: 11, name: "Restoran", cost: 120000, income: 150 }, { id: 12, name: "Süpermarket", cost: 250000, income: 280 }
-        ];
 
-        const realEstate = [
-            { id: 1, name: "Çadır Kamp Alanı", cost: 15000 }, { id: 2, name: "Konteyner Ev", cost: 40000 },
-            { id: 3, name: "Köy Evi", cost: 80000 }, { id: 4, name: "Gecekondu", cost: 150000 },
-            { id: 5, name: "Prefabrik Ev", cost: 220000 }, { id: 6, name: "Stüdyo Daire", cost: 300000 }
-        ];
+        function formatNumber(num) {
+            if (num < 1000) return Math.floor(num).toString();
+            const suffixes = ["", "k", "M", "B", "T", "aa", "ab", "ac", "ad", "ae", "af", "ag"];
+            const suffixNum = Math.floor(("" + Math.floor(num)).length / 3);
+            let shortValue = parseFloat((suffixNum !== 0 ? (num / Math.pow(1000, suffixNum)) : num).toPrecision(3));
+            if (shortValue % 1 !== 0) shortValue = shortValue.toFixed(1);
+            if (suffixNum < suffixes.length) return shortValue + suffixes[suffixNum];
+            return num.toExponential(2);
+        }
 
-        const vehicles = [
-            { id: 1, name: "Şehir Bisikleti", cost: 2000, color: '#3b82f6', category: 'Bisiklet', modelType: 'bicycle' },
-            { id: 2, name: "Elektrikli Scooter", cost: 5000, color: '#10b981', category: 'Scooter', modelType: 'scooter' },
-            { id: 3, name: "Sarı Klasik Cruiser Motor", cost: 15000, color: '#f59e0b', category: 'Motor', modelType: 'chopper' },
-            { id: 4, name: "Mavi Şehir Kurye Motoru", cost: 30000, color: '#3b82f6', category: 'Motor', modelType: 'standard' },
-            { id: 5, name: "Kırmızı Spor Motorsiklet", cost: 65000, color: '#ef4444', category: 'Motor', modelType: 'sportbike' },
-            { id: 6, name: "Yeşil Off-Road 4x4", cost: 90000, color: '#84cc16', category: 'Ticari', modelType: 'suv' },
-            { id: 8, name: "Pembe Klasik Sedan", cost: 280000, color: '#e879f9', category: 'Otomobil', modelType: 'sedan' }
-        ];
+        function getPlaneIncome(level) { return Math.pow(6, level); }
+
+        function saveGame() {
+            if(!gameStarted) return;
+            const data = {
+                money, gems, currentPlanePrice, playerLevel, currentName, currentCountry,
+                boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
+                nextRewardTime, currentMinuteReward,
+                gridSlots: gridSlots,
+                flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress }))
+            };
+            localStorage.setItem("planeTycoonSave", JSON.stringify(data));
+        }
+        setInterval(saveGame, 2000); 
+
+        function loadGame() {
+            const saved = localStorage.getItem("planeTycoonSave");
+            if (!saved) return;
+            const data = JSON.parse(saved);
+            money = data.money || 0; gems = data.gems || 0; currentPlanePrice = data.currentPlanePrice || 6;
+            playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; currentCountry = data.currentCountry || "🇹🇷";
+            boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
+            boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
+            nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
+            gridSlots = data.gridSlots || new Array(10).fill(null);
+            
+            document.getElementById('loginOverlay').style.display = 'none';
+            if (currentName.toLowerCase() === "cinar" && money > 999999999) {
+                document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
+            } else { document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`; }
+            
+            gameStarted = true;
+            const savedFlying = data.flying || [];
+            savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
+            initGrid(); updateBoostUI();
+        }
 
         function login() {
-            let u = document.getElementById('username').value;
-            if(!u) u = "Oyuncu";
-            player.username = u; player.profile.name = u;
-            document.getElementById('auth-screen').style.display = 'none';
-            startGameUI();
-        }
+            const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
+            const country = document.getElementById('countrySelect').value;
+            if(user === "") { alert("Pilot adını gir!"); return; }
 
-        function startGameUI() {
-            document.getElementById('app-screen').style.display = 'flex';
-            setInterval(updateClock, 1000); updateClock(); setInterval(processEconomy, 1000); 
-            loadProfileUI(); updateUI(); renderAssets(); updatePlotUI();
-            initProfile3D(); init3DWorld();   
-        }
-
-        function updateClock() { document.getElementById('datetime').innerHTML = `<i class="fa-regular fa-clock"></i> ${new Date().toLocaleTimeString('tr-TR')}`; }
-        
-        function updatePlotUI() {
-            let pUI = document.getElementById('plot-ui');
-            if(player.assets.plotId === -1) {
-                pUI.innerHTML = `<button class="btn-primary" style="background:var(--accent-gold);" onclick="buyPlot()">Arsa Satın Al (1.000 TL)</button>`;
+            currentName = user; currentCountry = country;
+            if(user.toLowerCase() === "cinar" && pass === "1234") {
+                money = 999999999999999; gems = 999999; playerLevel = 200;
+                document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
             } else {
-                pUI.innerHTML = `<span style="background:var(--bg-dark); border:1px solid var(--accent-gold); padding:8px 15px; border-radius:8px; color:var(--accent-gold); font-weight:bold;">Parsel #${player.assets.plotId} Senin</span>`;
+                money = 0; gems = 0; localStorage.removeItem("planeTycoonSave"); 
+                document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
             }
+            
+            nextRewardTime = Date.now();
+            document.getElementById('loginOverlay').style.display = 'none';
+            gameStarted = true;
+            if(money === 0) { setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 6); }, 500); }
+            initGrid(); 
         }
 
-        function buyPlot() {
-            if(player.cash < 1000) return alert("Nakit yetersiz!");
-            player.cash -= 1000; player.assets.plotId = 0;
-            updatePlotUI(); updateUI(); syncPlots();
+        function openSettings() {
+            document.getElementById('settingNameInput').value = currentName; document.getElementById('settingCountrySelect').value = currentCountry;
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+        function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
+        function saveSettings() {
+            const newName = document.getElementById('settingNameInput').value.trim();
+            const newCountry = document.getElementById('settingCountrySelect').value;
+            if(newName !== "") currentName = newName; currentCountry = newCountry;
+            if (currentName.toLowerCase() === "cinar" && money > 999999999) {
+                document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
+            } else { document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`; }
+            closeSettings(); saveGame(); 
         }
 
-        function selectVehicle(id) { player.assets.selectedVehicle = id; renderAssets(); syncPlots(); }
-        function selectRealEstate(id) { player.assets.selectedRealEstate = id; renderAssets(); syncPlots(); }
+        function getJetSVG(level) {
+            let l = ((level - 1) % 200) + 1;
+            let hueBase = (l * 37) % 360;
+            let bodyColor = `hsl(${hueBase}, 85%, 55%)`;
+            let wingColor = `hsl(${(hueBase + 60) % 360}, 90%, 45%)`;
+            let accentColor = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`;
+            let glassColor = `#74b9ff`;
 
-        function updateUI() { 
-            let totalAssets = player.cash;
-            document.getElementById('ui-cash').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}); 
-            document.getElementById('ui-assets').innerText = totalAssets.toLocaleString('tr-TR', {maximumFractionDigits:2});
-            document.getElementById('ui-debt').innerText = player.debt.toLocaleString('tr-TR', {maximumFractionDigits:2});
+            let noseType = l % 5; 
+            let wingStyle = l % 6; 
+            let engineCount = (l % 3) + 1; 
+            let tailStyle = l % 4; 
+
+            let svgParts = '';
+
+            if (noseType === 0) {
+                svgParts += `<polygon points="50,5 38,45 38,85 50,95 62,85 62,45" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            } else if (noseType === 1) {
+                svgParts += `<path d="M 40,20 L 60,20 L 65,80 L 50,95 L 35,80 Z" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            } else if (noseType === 2) {
+                svgParts += `<ellipse cx="50" cy="50" rx="16" ry="42" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
+            } else if (noseType === 3) {
+                svgParts += `<polygon points="50,10 42,40 36,85 50,95 64,85 58,40" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<circle cx="50" cy="25" r="4" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
+            } else {
+                svgParts += `<path d="M 50,2 L 62,30 C 65,60 58,85 50,95 C 42,85 35,60 38,30 Z" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
+            }
+
+            if (wingStyle === 0) {
+                svgParts += `<polygon points="50,40 10,75 18,90 45,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+                svgParts += `<polygon points="50,40 90,75 82,90 55,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            } else if (wingStyle === 1) {
+                svgParts += `<polygon points="45,30 5,50 15,85 45,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+                svgParts += `<polygon points="55,30 95,50 85,85 55,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            } else if (wingStyle === 2) {
+                svgParts += `<path d="M 42,30 L 8,50 L 15,70 L 42,60 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<path d="M 58,30 L 92,50 L 85,70 L 58,60 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<path d="M 42,50 L 20,65 L 25,80 L 42,70 Z" fill="${accentColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<path d="M 58,50 L 80,65 L 75,80 L 58,70 Z" fill="${accentColor}" stroke="#111" stroke-width="3"/>`;
+            } else if (wingStyle === 3) {
+                svgParts += `<polygon points="45,35 90,20 85,55 45,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+                svgParts += `<polygon points="55,35 10,20 15,55 55,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            } else if (wingStyle === 4) {
+                svgParts += `<path d="M 42,40 C 20,35 5,60 15,80 C 30,85 42,70 42,40 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<path d="M 58,40 C 80,35 95,60 85,80 C 70,85 58,70 58,40 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+            } else {
+                svgParts += `<polygon points="50,45 12,65 22,88 45,70" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<polygon points="50,45 88,65 78,88 55,70" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
+                svgParts += `<circle cx="22" cy="76" r="7" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
+                svgParts += `<circle cx="78" cy="76" r="7" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
+            }
+
+            if (engineCount === 1) {
+                svgParts += `<ellipse cx="50" cy="75" rx="7" ry="12" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            } else if (engineCount === 2) {
+                svgParts += `<ellipse cx="32" cy="65" rx="6" ry="10" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+                svgParts += `<ellipse cx="68" cy="65" rx="6" ry="10" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            } else {
+                svgParts += `<ellipse cx="50" cy="80" rx="5" ry="9" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+                svgParts += `<ellipse cx="28" cy="60" rx="5" ry="8" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+                svgParts += `<ellipse cx="72" cy="60" rx="5" ry="8" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            }
+
+            if (tailStyle === 0) {
+                svgParts += `<polygon points="50,75 42,98 58,98" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            } else if (tailStyle === 1) {
+                svgParts += `<polygon points="42,78 30,96 40,96" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+                svgParts += `<polygon points="58,78 70,96 60,96" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            } else if (tailStyle === 2) {
+                svgParts += `<path d="M 45,75 L 50,55 L 55,75 Z" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            } else {
+                svgParts += `<polygon points="35,80 50,95 65,80" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            }
+
+            svgParts += `<path d="M 50,22 C 45,22 43,35 43,45 C 43,52 57,52 57,45 C 57,35 55,22 50,22 Z" fill="${glassColor}" stroke="#111" stroke-width="2.5"/>`;
+            svgParts += `<path d="M 47,28 C 47,28 49,35 47,40" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+
+            return `
+                <svg viewBox="0 0 100 100" width="100%" height="100%">
+                    <g filter="url(#planeShadow)">
+                        ${svgParts}
+                    </g>
+                </svg>
+            `;
         }
-        
-        function logActivity(text) { const log = document.getElementById('activity-log'); const li = document.createElement('li'); li.style.cssText = "padding: 10px; background: var(--bg-dark); border-radius: 8px;"; li.innerHTML = `<span>${text}</span>`; log.prepend(li); }
-        function saveGame() { /* Local storage bypass */ }
 
-        function renderAssets() {
-            const buildCards = (arr, invArr, category) => {
-                return arr.map(item => {
-                    let owned = invArr && invArr.includes(item.id);
-                    if (category === 'jobs') {
-                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 14px; margin-bottom: 10px;">Maaş: +${item.income} TL/sn</p><button class="btn-primary" onclick="buyAsset('${category}', ${item.id})">Seç</button></div>`;
-                    } else if (category === 'realEstate') {
-                        let isSelected = player.assets.selectedRealEstate === item.id;
-                        let btn = isSelected ? `<button disabled style="background:var(--accent-blue); color:white; width:100%;">Kullanımda</button>` : `<button class="btn-primary" onclick="selectRealEstate(${item.id})">Arsaya İnşa Et</button>`;
-                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">Gayrimenkul</p>${btn}</div>`;
-                    } else if (category === 'vehicles') {
-                        let isSelected = player.assets.selectedVehicle === item.id;
-                        let btn = isSelected ? `<button disabled style="background:var(--accent-blue); color:white; width:100%;">Garajda</button>` : `<button class="btn-primary" onclick="selectVehicle(${item.id})">Kullan</button>`;
-                        return `<div class="card"><h3>${item.name}</h3><p style="font-size: 13px; margin-bottom: 10px;">Taşıt</p>${btn}</div>`;
+        function updateUI() {
+            document.getElementById("moneyDisplay").innerText = formatNumber(money);
+            document.getElementById("gemDisplay").innerText = formatNumber(gems);
+            document.getElementById("centerMoney").innerText = formatNumber(money);
+            document.getElementById("buyPriceDisplay").innerText = formatNumber(currentPlanePrice);
+            document.getElementById("playerLvl").innerText = playerLevel;
+            let totalCps = 0; 
+            let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
+            flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
+            document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
+        }
+
+        const trashBin = document.getElementById("trashBin");
+        const trackEl = document.getElementById("trackContainer");
+        const gameContainer = document.getElementById("gameContainer");
+
+        gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
+        gameContainer.addEventListener("drop", e => {
+            e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
+            if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
+            if (dragSource && dragSource.type === 'grid') {
+                const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
+                if (activeTrackCount >= MAX_PLANES) { alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`); return; }
+                gridSlots[dragSource.index].isFlying = true;
+                spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index);
+                initGrid(); saveGame();
+            }
+            if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
+                gridSlots[dragSource.sourceSlotIndex].isFlying = false;
+                removeFlyingPlaneBySlot(dragSource.sourceSlotIndex);
+                initGrid(); saveGame();
+            }
+        });
+
+        trashBin.addEventListener("dragover", e => { e.preventDefault(); trashBin.classList.add("drag-over"); });
+        trashBin.addEventListener("dragleave", e => trashBin.classList.remove("drag-over"));
+        trashBin.addEventListener("drop", e => {
+            e.preventDefault(); e.stopPropagation(); trashBin.classList.remove("drag-over");
+            if(dragSource) {
+                if(dragSource.type === 'grid') gridSlots[dragSource.index] = null;
+                else if (dragSource.type === 'track') { gridSlots[dragSource.sourceSlotIndex] = null; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); }
+                initGrid(); saveGame();
+            }
+            trashBin.style.display = "none";
+        });
+
+        function initGrid() {
+            const gridEl = document.getElementById("grid"); gridEl.innerHTML = "";
+            for(let i = 0; i < 10; i++) {
+                const slot = document.createElement("div"); slot.className = "slot"; slot.dataset.index = i;
+                slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); });
+                slot.addEventListener("dragleave", e => slot.classList.remove("drag-over"));
+                slot.addEventListener("drop", handleSlotDrop);
+
+                if(gridSlots[i]) {
+                    const planeObj = gridSlots[i]; 
+                    const planeEl = document.createElement("div"); 
+                    planeEl.className = "plane-item";
+                    
+                    if(planeObj.isFlying) {
+                        planeEl.classList.add("ghost");
+                        planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); });
+                        planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
+                    } else {
+                        planeEl.draggable = true;
+                        planeEl.addEventListener("dragstart", () => { dragSource = { type: 'grid', index: i, level: planeObj.level }; setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10); });
+                        planeEl.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
+                        planeEl.innerHTML = getJetSVG(planeObj.level) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
                     }
-                }).join('');
-            };
-            document.getElementById('jobs-list').innerHTML = buildCards(jobs, player.assets.jobs, 'jobs');
-            document.getElementById('realestate-list').innerHTML = buildCards(realEstate, player.assets.realEstate, 'realEstate');
-            document.getElementById('vehicles-list').innerHTML = buildCards(vehicles, player.assets.vehicles, 'vehicles');
-        }
-
-        function buyAsset(category, id) {
-            let list = category === 'jobs' ? jobs : category === 'realEstate' ? realEstate : vehicles; 
-            let item = list.find(x => x.id === id);
-            player.assets[category].push(id);
-            if(category === 'vehicles' && player.assets.selectedVehicle === -1) player.assets.selectedVehicle = id;
-            if(category === 'realEstate' && player.assets.selectedRealEstate === -1) player.assets.selectedRealEstate = id;
-            renderAssets(); syncPlots();
-        }
-
-        function processEconomy() {
-            player.cash += 5; updateUI();
-        }
-
-        function createPlayerMaterials(prof) {
-            return {
-                skin: new THREE.MeshStandardMaterial({ color: prof.skin || '#ffdbac' }), hair: new THREE.MeshStandardMaterial({ color: prof.hair || '#4a3000' }),
-                jacket: new THREE.MeshStandardMaterial({ color: prof.jacket || '#1e293b' }), shirt: new THREE.MeshStandardMaterial({ color: prof.shirt || '#f8fafc' }), tie: new THREE.MeshStandardMaterial({ color: prof.tie || '#3b82f6' }),
-                pant: new THREE.MeshStandardMaterial({ color: '#0f172a' }), shoe: new THREE.MeshStandardMaterial({ color: '#111111' }),
-                white: new THREE.MeshBasicMaterial({ color: '#ffffff' }), eye: new THREE.MeshBasicMaterial({ color: '#000000' }), mouth: new THREE.MeshStandardMaterial({ color: '#2a1515' })
-            };
-        }
-
-        function buildCharacterModel(m, style) {
-            const group = new THREE.Group(); const model = new THREE.Group(); group.add(model);
-            let jacket = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.5, 0.6), m.jacket); jacket.position.y = 2.25; model.add(jacket);
-            let head = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.9, 0.9), m.skin); head.position.y = 3.5; model.add(head);
-            return { root: group, model: model, lArm: new THREE.Group(), rArm: new THREE.Group(), lLeg: new THREE.Group(), rLeg: new THREE.Group() };
-        }
-
-        let profScene, profCamera, profRenderer, profilePlayerObj; let isProfileRotating = true;
-
-        function initProfile3D() {
-            const container = document.getElementById('profile-3d-canvas'); profScene = new THREE.Scene();
-            profCamera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.1, 100); profCamera.position.set(0, 2.5, 8); profCamera.lookAt(0, 2.2, 0);
-            profRenderer = new THREE.WebGLRenderer({ alpha: true, antialias: true }); profRenderer.setSize(container.clientWidth, container.clientHeight); container.appendChild(profRenderer.domElement);
-            profScene.add(new THREE.AmbientLight(0xffffff, 0.7)); let dl = new THREE.DirectionalLight(0xffffff, 0.9); dl.position.set(5, 10, 5); profScene.add(dl);
-            profilePlayerObj = buildCharacterModel(createPlayerMaterials(player.profile), player.profile.hairstyle); profilePlayerObj.root.position.y = -0.5; profScene.add(profilePlayerObj.root);
-        }
-
-        function toggleRotation() { isProfileRotating = !isProfileRotating; }
-        function loadProfileUI() {}
-        function updateAvatar() {}
-
-        function openTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tabName).classList.add('active'); event.currentTarget.classList.add('active');
-        }
-
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('collapsed'); }
-
-        let scene, camera, renderer, worldPlayerObj;
-        let keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
-        let isInWorld = false; 
-        let camYaw = 0, camPitch = 0, velocityY = 0, canJump = true, lastTime = performance.now();
-
-        function getPlotCenter(plotId) {
-            let col = plotId % 10; let row = Math.floor(plotId / 10);
-            return { x: col * 80 - 360, z: row * 80 - 360 }; 
-        }
-
-        function init3DWorld() {
-            const container = document.getElementById('fullscreen-world');
-            scene = new THREE.Scene(); scene.background = new THREE.Color('#87CEEB'); 
-            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
-            renderer = new THREE.WebGLRenderer({ antialias: true }); renderer.setSize(window.innerWidth, window.innerHeight);
-            renderer.shadowMap.enabled = true;
-            container.insertBefore(renderer.domElement, container.firstChild);
-
-            scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            let sl = new THREE.DirectionalLight('#ffdfa0', 1.5); sl.position.set(150, 200, -150); scene.add(sl);
-            
-            let floor = new THREE.Mesh(new THREE.PlaneGeometry(1000, 1000), new THREE.MeshStandardMaterial({ color: '#222222' }));
-            floor.rotation.x = -Math.PI / 2; scene.add(floor);
-
-            for(let row=0; row<=10; row++) {
-                for(let col=0; col<=10; col++) {
-                    let px = col * 80 - 400; let pz = row * 80 - 400;
-                    let palm = createPottedPalm(); palm.position.set(px, 0, pz); scene.add(palm);
-                    colliders.push(new THREE.Box3().setFromObject(palm));
+                    if(i === animatedIndex) planeEl.classList.add("merge-anim");
+                    slot.appendChild(planeEl);
                 }
+                gridEl.appendChild(slot);
             }
+            animatedIndex = null; updateUI();
+        }
 
-            globalPlotsGroup = new THREE.Group(); scene.add(globalPlotsGroup);
+        function handleSlotDrop(e) {
+            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("drag-over"); 
+            trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
+            if(!dragSource) return;
 
-            let mats = createPlayerMaterials(player.profile);
-            worldPlayerObj = buildCharacterModel(mats, player.profile.hairstyle);
-            worldPlayerObj.root.position.set(0, 2, 0); scene.add(worldPlayerObj.root);
+            const targetIndex = parseInt(e.currentTarget.dataset.index); 
+            const targetItem = gridSlots[targetIndex];
 
-            window.addEventListener('keydown', (e) => {
-                if(document.activeElement && document.activeElement.tagName === 'INPUT') return;
-                if(e.key === 'Escape' && isInWorld) { if(window.innerWidth > 768) document.exitPointerLock(); return; }
-                if(e.key.toLowerCase() === ' ') { keys.space = true; e.preventDefault(); }
-                if(e.key === 'Shift') keys.shift = true;
-                
-                if(e.key.toLowerCase() === 'e' && isInWorld) { toggleNearestDoor(); }
-                if(e.key.toLowerCase() === 'f' && isInWorld) { toggleVehicleDrive(); }
+            if (dragSource.type === 'track') { 
+                gridSlots[dragSource.sourceSlotIndex].isFlying = false; 
+                removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); 
+                initGrid(); saveGame(); return; 
+            }
+            if(dragSource.type === 'grid') {
+                const sourceIndex = dragSource.index; 
+                if(sourceIndex === targetIndex || (targetItem && targetItem.isFlying)) return;
+                const sourceItem = gridSlots[sourceIndex];
 
-                if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = true;
-            });
+                if(!targetItem) { 
+                    gridSlots[targetIndex] = sourceItem; 
+                    gridSlots[sourceIndex] = null;
+                } else if (targetItem.level === sourceItem.level) {
+                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; 
+                    gridSlots[sourceIndex] = null; 
+                    animatedIndex = targetIndex;
+                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                }
+            } 
+            initGrid(); saveGame();
+        }
 
-            window.addEventListener('keyup', (e) => {
-                if(e.key.toLowerCase() === ' ') keys.space = false; if(e.key === 'Shift') keys.shift = false;
-                if(keys.hasOwnProperty(e.key.toLowerCase())) keys[e.key.toLowerCase()] = false;
-            });
+        function buyPlane() {
+            if(money >= currentPlanePrice) {
+                const emptyIndex = gridSlots.indexOf(null);
+                if(emptyIndex !== -1) {
+                    money -= currentPlanePrice; 
+                    gridSlots[emptyIndex] = { level: 1, isFlying: false }; 
+                    currentPlanePrice = Math.floor(currentPlanePrice * 1.15); 
+                    initGrid(); saveGame();
+                } else { alert("Hangarda yer yok! Uçakları piste sürükle veya birleştir."); }
+            } else { alert("Yeterli paran yok!"); }
+        }
+
+        function spawnTrackPlane(level, slotIndex, savedProgress = 0) {
+            const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; 
             
-            document.addEventListener('pointerlockchange', () => {
-                if (window.innerWidth <= 768) return; // Mobilde kilit mekanizmasını atla
-                if(document.pointerLockElement === container) {
-                    document.getElementById('esc-menu').style.display = 'none'; isInWorld = true; lastTime = performance.now();
+            let hue = (level * 45) % 360;
+            visual.style.boxShadow = `0 0 15px hsl(${hue}, 90%, 50%), inset 0 0 10px rgba(255,255,255,0.4)`;
+            visual.style.borderRadius = "50%";
+
+            visual.innerHTML = getJetSVG(level); 
+            trackEl.appendChild(visual);
+
+            const planeObj = { slotIndex: slotIndex, element: visual, level: level, progress: savedProgress };
+            visual.addEventListener("dragstart", (e) => { dragSource = { type: 'track', sourceSlotIndex: slotIndex, level: level }; setTimeout(() => { visual.style.display = 'none'; trashBin.style.display = "block"; }, 0); });
+            visual.addEventListener("dragend", () => { visual.style.display = 'block'; trashBin.style.display = "none"; });
+            flyingPlanes.push(planeObj); updateUI(); 
+        }
+
+        function removeFlyingPlaneBySlot(slotIdx) {
+            const pIndex = flyingPlanes.findIndex(p => p.slotIndex === slotIdx);
+            if (pIndex !== -1) { flyingPlanes[pIndex].element.remove(); flyingPlanes.splice(pIndex, 1); updateUI(); }
+        }
+
+        function flashFinishLine() { 
+            const flash = document.getElementById('finishFlash'); 
+            flash.style.animation = 'none'; flash.offsetHeight; 
+            flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
+        }
+
+        function popMoney(x, y, amount) {
+            money += amount; updateUI();
+            const pop = document.createElement("div"); pop.className = "floating-money"; 
+            pop.innerText = "+" + formatNumber(amount);
+            pop.style.left = (x - 20) + "px"; pop.style.top = (y - 10) + "px"; 
+            trackEl.appendChild(pop);
+            setTimeout(() => pop.remove(), 1000);
+        }
+
+        // --- GARANTİ ÇALIŞAN FİZİK DÖNGÜSÜ ---
+        function gameLoop(timestamp) {
+            const dt = timestamp - lastTime; lastTime = timestamp;
+
+            const trackWidth = 332; const trackHeight = 532; 
+            const R = trackWidth / 2; const L = trackHeight - trackWidth; const P = 2 * L + 2 * Math.PI * R; 
+            const centerX = 152; const centerY = 252; 
+
+            let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
+            let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
+
+            flyingPlanes.forEach(p => {
+                let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
+                const oldProgress = p.progress; p.progress += speed; 
+                let d = p.progress % P; if (d < 0) d += P; 
+                let x = 0, y = 0, angle = 0;
+
+                if (d < L / 2) { x = R; y = d; angle = 180; } 
+                else if (d < L / 2 + Math.PI * R) { let theta = (d - L/2) / R; x = R * Math.cos(theta); y = L/2 + R * Math.sin(theta); angle = 180 + (theta * 180 / Math.PI); } 
+                else if (d < L / 2 + Math.PI * R + L) { let localD = d - (L/2 + Math.PI * R); x = -R; y = L/2 - localD; angle = 0; } 
+                else if (d < L / 2 + 2 * Math.PI * R + L) { let theta = (d - (L/2 + Math.PI * R + L)) / R; x = -R * Math.cos(theta); y = -L/2 - R * Math.sin(theta); angle = 0 + (theta * 180 / Math.PI); } 
+                else { let localD = d - (L/2 + 2 * Math.PI * R + L); x = R; y = -L/2 + localD; angle = 180; }
+
+                p.element.style.transform = `translate(${centerX + x - 25}px, ${centerY + y - 25}px) rotate(${angle}deg)`;
+
+                const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
+                if (currentLap > oldLap) { 
+                    flashFinishLine(); 
+                    popMoney(centerX + R, centerY, getPlaneIncome(p.level) * currentIncomeMult); 
+                }
+            });
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // --- DAKİKALIK ÖDÜL VE DİĞER FONKSİYONLAR ---
+        function updateTickers() {
+            const container = document.getElementById("activeBoosts");
+            container.innerHTML = ""; let now = Date.now();
+            if (now < boostMoneyEnd) {
+                let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
+                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
+            } else { boostMoneyMult = 1; }
+
+            if (now < boostSpeedEnd) {
+                let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
+                container.innerHTML += `<div class="boost-tag" style="color:#e74c3c; border-color:#e74c3c;">⚡ ${boostSpeedMult}x Hız (${m}:${s < 10 ? '0'+s : s})</div>`;
+            } else { boostSpeedMult = 1; }
+            updateRewardsUI();
+        }
+
+        function openRewardsMenu() { document.getElementById("rewardsModal").style.display = "flex"; updateRewardsUI(); }
+        function closeRewardsMenu() { document.getElementById("rewardsModal").style.display = "none"; }
+        function updateRewardsUI() {
+            if(document.getElementById("rewardsModal").style.display !== "flex") return;
+            let now = Date.now(); let btn = document.getElementById("btnClaimReward");
+            let desc = document.getElementById("rewardDesc"); let icon = document.getElementById("rewardIcon"); let text = document.getElementById("rewardText");
+
+            if (now >= nextRewardTime) {
+                if (!currentMinuteReward) { currentMinuteReward = generateRandomMinuteReward(); saveGame(); }
+                desc.innerText = "Ödülün hazır, hemen al!"; icon.innerText = currentMinuteReward.icon; text.innerText = currentMinuteReward.text;
+                btn.style.background = "#2ecc71"; btn.innerText = "Ödülü Al"; btn.disabled = false;
+            } else {
+                let left = Math.ceil((nextRewardTime - now) / 1000);
+                desc.innerText = "Sonraki ödüle kalan süre:"; icon.innerText = "⏳"; text.innerText = left + " saniye";
+                btn.style.background = "#7f8c8d"; btn.innerText = "Bekleniyor..."; btn.disabled = true;
+            }
+        }
+        function generateRandomMinuteReward() {
+            const types = ['money', 'gem', 'plane', 'boost'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            let reward = { type: type, value: 0, text: '', icon: '' };
+            if (type === 'money') {
+                let amount = getPlaneIncome(playerLevel) * (Math.random() * 5 + 10);
+                reward.value = amount; reward.text = formatNumber(amount) + " Altın"; reward.icon = "❂";
+            } else if (type === 'gem') {
+                let amount = Math.floor(Math.random() * 5) + 1;
+                reward.value = amount; reward.text = amount + " Elmas"; reward.icon = "💎";
+            } else if (type === 'plane') {
+                let maxLvl = Math.max(1, playerLevel - 2); let lvl = Math.floor(Math.random() * maxLvl) + 1;
+                reward.value = lvl; reward.text = "Lv." + lvl + " Uçak"; reward.icon = "✈️";
+            } else if (type === 'boost') {
+                let boosts = ['2xMoney', '2xSpeed']; let b = boosts[Math.floor(Math.random() * boosts.length)];
+                reward.value = b; reward.text = (b === '2xMoney' ? "2x Para" : "2x Hız") + " (30sn)"; reward.icon = "⚡";
+            }
+            return reward;
+        }
+        function claimMinuteReward() {
+            let now = Date.now(); if (now < nextRewardTime || !currentMinuteReward) return;
+            if (currentMinuteReward.type === 'money') { money += currentMinuteReward.value; } 
+            else if (currentMinuteReward.type === 'gem') { gems += currentMinuteReward.value; } 
+            else if (currentMinuteReward.type === 'plane') {
+                const emptyIndex = gridSlots.indexOf(null);
+                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentMinuteReward.value, isFlying: false }; animatedIndex = emptyIndex; initGrid(); } 
+                else { alert("Hangarda yer yok!"); return; }
+            } else if (currentMinuteReward.type === 'boost') {
+                let duration = 30 * 1000;
+                if(currentMinuteReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
+                if(currentMinuteReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
+            }
+            updateUI(); currentMinuteReward = null; nextRewardTime = now + 60000; saveGame(); updateRewardsUI();
+        }
+
+        const caseData = [
+            { id: 1, name: "Lv.1 Tahta Kasa", price: 5000, min: 2, max: 8, color: "#a0522d", icon: "📦" },
+            { id: 2, name: "Lv.2 Demir Kasa", price: 250000, min: 8, max: 15, color: "#95a5a6", icon: "🧰" },
+            { id: 3, name: "Lv.3 Altın Kasa", price: 15000000, min: 15, max: 25, color: "#f1c40f", icon: "🪙" },
+            { id: 4, name: "Lv.4 Elmas Kasa", price: 1000000000, min: 25, max: 40, color: "#00ced1", icon: "💎" },
+            { id: 5, name: "Lv.5 Galaktik Kasa", price: 75000000000, min: 40, max: 60, color: "#9b59b6", icon: "🌌" },
+            { id: 6, name: "Lv.6 Hiper Kasa", price: 5000000000000, min: 60, max: 100, color: "#e74c3c", icon: "🔥" }
+        ];
+        const rarities = [
+            { name: "Sıradan", color: "#7f8c8d", id: 0 }, { name: "Nadir", color: "#3498db", id: 1 }, 
+            { name: "Epik", color: "#9b59b6", id: 2 }, { name: "Gizemli", color: "#e74c3c", id: 3 }, 
+            { name: "Efsanevi", color: "#f1c40f", id: 4 }, { name: "Mistik", color: "#ff9ff3", id: 5 }
+        ];
+        function getRandomRarity(crateId) {
+            let roll = Math.random() * 100; let chances = [];
+            if (crateId === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; if (crateId === 2) chances = [40, 35, 15, 7, 2.5, 0.5];
+            if (crateId === 3) chances = [25, 35, 20, 12, 6, 2]; if (crateId === 4) chances = [15, 30, 25, 16, 10, 4];
+            if (crateId === 5) chances = [10, 20, 30, 20, 13, 7]; if (crateId === 6) chances = [5, 15, 25, 25, 18, 12];
+            let acc = 0; for (let i=0; i<6; i++) { acc += chances[i]; if (roll <= acc) return rarities[i]; } return rarities[0];
+        }
+        function generateReward(crate) {
+            let rarity = getRandomRarity(crate.id); let typeRoll = Math.random();
+            let type = 'plane';
+            if (typeRoll > 0.6 && typeRoll <= 0.75) type = 'money';
+            else if (typeRoll > 0.75 && typeRoll <= 0.85) type = 'gem';
+            else if (typeRoll > 0.85) type = 'boost';
+
+            let value = null; let title = "";
+            if (type === 'plane') {
+                let range = crate.max - crate.min; let extra = Math.round((rarity.id / 5) * range);
+                value = crate.min + extra; title = `Lv.${value} Uçak`;
+            } else if (type === 'money') {
+                value = crate.price * (rarity.id + 1) * (Math.random() * 2 + 1); title = `${formatNumber(value)} Altın`;
+            } else if (type === 'gem') {
+                value = 5 * crate.id * (rarity.id + 1); title = `${formatNumber(value)} Elmas`;
+            } else if (type === 'boost') {
+                if (rarity.id <= 1) rarity = rarities[2]; 
+                if (rarity.id === 2 || rarity.id === 3) {
+                    let isMoney = Math.random() > 0.5; value = isMoney ? '2xMoney' : '2xSpeed'; title = isMoney ? '2x Para (3Dk)' : '2x Hız (3Dk)';
                 } else {
-                    document.getElementById('esc-menu').style.display = 'flex'; isInWorld = false; for(let k in keys) keys[k] = false; 
+                    let isMoney = Math.random() > 0.5; value = isMoney ? '5xMoney' : '5xSpeed'; title = isMoney ? '5x Para (3Dk)' : '5x Hız (3Dk)';
                 }
+            }
+            return { type, value, rarity, title };
+        }
+        let currentWonReward = null;
+        function openCaseMenu() {
+            const gridEl = document.getElementById("caseGrid"); gridEl.innerHTML = "";
+            caseData.forEach(c => {
+                const item = document.createElement("div"); item.className = "case-item"; item.style.borderColor = c.color;
+                item.innerHTML = `<div class="case-icon">${c.icon}</div><div class="case-name" style="color:${c.color}">${c.name}</div><div class="case-price">❂ ${formatNumber(c.price)}</div><div style="font-size:9px; color:#aaa; margin-top:3px;">Lv. ${c.min} - ${c.max}</div>`;
+                item.onclick = () => buyCase(c); gridEl.appendChild(item);
             });
-
-            document.addEventListener('mousemove', (e) => {
-                if (window.innerWidth <= 768) return; // Fare kontrolünü mobilde engelle
-                if (document.pointerLockElement !== container) return; 
-                let mx = e.movementX || 0; let my = e.movementY || 0;
-                camYaw -= mx * 0.002; camPitch += my * 0.002; 
-                camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
-            });
-
-            container.addEventListener('click', () => { 
-                if (window.innerWidth > 768 && document.pointerLockElement !== container) { 
-                    try { container.requestPointerLock(); } catch(err) {} 
-                } 
-            });
-
-            syncPlots(); animateWorld();
+            document.getElementById("caseModal").style.display = "flex"; document.getElementById("caseContent").style.display = "block"; document.getElementById("rouletteContainer").style.display = "none";
         }
-
-        function createFenceWall(width) {
-            let grp = new THREE.Group();
-            let base = new THREE.Mesh(new THREE.BoxGeometry(width, 0.5, 0.5), new THREE.MeshStandardMaterial({color:'#475569'}));
-            base.position.y = 0.25; grp.add(base);
-            return grp;
-        }
-
-        function createParametricBuilding(id) {
-            let bGroup = new THREE.Group();
-            let bBody = new THREE.Mesh(new THREE.BoxGeometry(12, 8, 10), new THREE.MeshStandardMaterial({ color: '#f8fafc' }));
-            bBody.position.y = 4; bGroup.add(bBody);
-            
-            let doorPivot = new THREE.Group();
-            doorPivot.position.set(-1.5, 0, 5.1);
-            let doorMesh = new THREE.Mesh(new THREE.BoxGeometry(3, 4, 0.2), new THREE.MeshStandardMaterial({ color: '#78350f' }));
-            doorMesh.position.set(1.5, 2, 0); doorPivot.add(doorMesh);
-            bGroup.add(doorPivot);
-            interactiveDoors.push({ pivot: doorPivot, isOpen: false, targetRot: 0 });
-            return bGroup;
-        }
-
-        function createParametricCar(colorHex, type) {
-            const grp = new THREE.Group();
-            let solidBody = new THREE.Mesh(new THREE.BoxGeometry(4.2, 2.5, 10), new THREE.MeshStandardMaterial({ color: colorHex }));
-            solidBody.position.y = 1.5; grp.add(solidBody);
-            return grp;
-        }
-
-        function createParametricBike(colorHex, type) {
-            const grp = new THREE.Group();
-            let body = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2, 4), new THREE.MeshStandardMaterial({ color: colorHex }));
-            body.position.y = 1; grp.add(body);
-            return grp;
-        }
-
-        function createPottedPalm() {
-            const grp = new THREE.Group();
-            let pot = new THREE.Mesh(new THREE.CylinderGeometry(1, 0.8, 2, 12), new THREE.MeshStandardMaterial({color: '#e6a15c'}));
-            pot.position.y = 1; grp.add(pot);
-            let trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.4, 6, 8), new THREE.MeshStandardMaterial({color: '#5c4033'}));
-            trunk.position.y = 4; grp.add(trunk);
-            return grp;
-        }
-
-        function toggleNearestDoor() {
-            if(!worldPlayerObj) return;
-            let pPos = worldPlayerObj.root.position;
-            interactiveDoors.forEach(door => {
-                let dWorldPos = new THREE.Vector3(); door.pivot.getWorldPosition(dWorldPos);
-                if(pPos.distanceTo(dWorldPos) < 15) {
-                    door.isOpen = !door.isOpen;
-                    door.targetRot = door.isOpen ? Math.PI / 2 : 0;
-                }
-            });
-        }
-
-        function toggleVehicleDrive() {
-            if(!worldPlayerObj) return;
-            if(isDriving) {
-                isDriving = false;
-                if(activeVehicleMesh) {
-                    let dropPos = new THREE.Vector3(); activeVehicleMesh.getWorldPosition(dropPos);
-                    worldPlayerObj.root.position.copy(dropPos).add(new THREE.Vector3(4, 0, 0));
-                    activeVehicleMesh = null;
-                }
-                worldPlayerObj.root.visible = true;
-            } else {
-                let pPos = worldPlayerObj.root.position;
-                let foundVeh = null;
-                playerVehicleObjects.forEach(vObj => {
-                    let vWorldPos = new THREE.Vector3(); vObj.getWorldPosition(vWorldPos);
-                    if(pPos.distanceTo(vWorldPos) < 15) foundVeh = vObj;
-                });
-                if(foundVeh) {
-                    isDriving = true; activeVehicleMesh = foundVeh; vehicleSpeed = 0;
-                    worldPlayerObj.root.visible = false;
-                }
+        function closeCaseMenu() { document.getElementById("caseModal").style.display = "none"; }
+        function buyCase(c) {
+            const emptyIndex = gridSlots.indexOf(null);
+            if (emptyIndex === -1) { alert("Hangarda yer yok!"); return; }
+            if (money < c.price) { alert("Yetersiz bakiye!"); return; }
+            money -= c.price; updateUI(); saveGame(); 
+            document.getElementById("caseContent").style.display = "none"; document.getElementById("rouletteContainer").style.display = "flex";
+            document.getElementById("openingCaseName").innerText = c.name + " Açılıyor..."; 
+            document.getElementById("btnTakeReward").style.display = "none"; document.getElementById("rewardAnnounce").innerText = "";
+            const strip = document.getElementById("rouletteStrip");
+            strip.style.transition = "none"; strip.style.transform = "translateX(0px)"; strip.innerHTML = "";
+            currentWonReward = generateReward(c);
+            let itemsHTML = "";
+            for(let i = 0; i < 50; i++) {
+                let r = generateReward(c); if(i === 42) r = currentWonReward;
+                let iconHTML = "";
+                if(r.type === 'plane') iconHTML = getJetSVG(r.value);
+                if(r.type === 'money') iconHTML = `<div style="font-size:40px; color:#f1c40f; text-shadow:0 0 10px #f1c40f;">❂</div>`;
+                if(r.type === 'gem') iconHTML = `<div style="font-size:40px; color:#00ced1; text-shadow:0 0 10px #00ced1;">💎</div>`;
+                if(r.type === 'boost') iconHTML = `<div style="font-size:40px; color:white; text-shadow:0 0 10px white;">⚡</div>`;
+                itemsHTML += `<div class="roulette-item" style="border:2px solid ${r.rarity.color}; box-shadow: inset 0 0 15px ${r.rarity.color};"><div style="font-size:9px; color:${r.rarity.color}; position:absolute; top:2px; font-weight:bold;">${r.rarity.name}</div>${iconHTML}<div style="font-size:10px; font-weight:bold; position:absolute; bottom:5px; text-align:center; width:100%;">${r.title}</div></div>`;
             }
+            strip.innerHTML = itemsHTML;
+            setTimeout(() => {
+                strip.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
+                const offset = -(42 * 110) + (130); const randomOffset = Math.floor(Math.random() * 80) - 40; 
+                strip.style.transform = `translateX(${offset + randomOffset}px)`;
+                setTimeout(() => { 
+                    document.getElementById("btnTakeReward").style.display = "block"; 
+                    document.getElementById("rewardAnnounce").innerHTML = `Kazandın: <span style="color:${currentWonReward.rarity.color}">${currentWonReward.title}</span>`;
+                }, 4000);
+            }, 50);
         }
-
-        function syncPlots() {
-            if(!globalPlotsGroup) return;
-            interactiveDoors = []; playerVehicleObjects = [];
-            if(player.assets.plotId !== -1) { drawPlot(player); }
+        function takeCaseReward() {
+            document.getElementById("btnTakeReward").style.display = "none";
+            if (currentWonReward.type === 'plane') {
+                const emptyIndex = gridSlots.indexOf(null);
+                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) playerLevel = currentWonReward.value; }
+            } else if (currentWonReward.type === 'money') { money += currentWonReward.value;
+            } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value;
+            } else if (currentWonReward.type === 'boost') {
+                let duration = 3 * 60 * 1000; let now = Date.now();
+                if(currentWonReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
+                if(currentWonReward.value === '5xMoney') { boostMoneyMult = 5; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
+                if(currentWonReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
+                if(currentWonReward.value === '5xSpeed') { boostSpeedMult = 5; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
+            }
+            initGrid(); saveGame(); closeCaseMenu(); updateTickers();
         }
-
-        function drawPlot(userData) {
-            let pId = userData.assets.plotId;
-            let selRE = userData.assets.selectedRealEstate;
-            let selVeh = userData.assets.selectedVehicle;
-            if(pId === -1) return;
-
-            let oldPlot = globalPlotsGroup.getObjectByName('plot_user');
-            if(oldPlot) globalPlotsGroup.remove(oldPlot);
-
-            let plotGrp = new THREE.Group(); plotGrp.name = 'plot_user';
-            let center = getPlotCenter(pId);
-            
-            let ground = new THREE.Mesh(new THREE.PlaneGeometry(60, 60), new THREE.MeshStandardMaterial({color: '#333333'}));
-            ground.rotation.x = -Math.PI/2; ground.position.y = 0.05; plotGrp.add(ground);
-
-            let bFence = createFenceWall(60); bFence.position.set(0, 0, -30); plotGrp.add(bFence);
-            let lFence = createFenceWall(60); lFence.rotation.y = Math.PI/2; lFence.position.set(-30, 0, 0); plotGrp.add(lFence);
-            let rFence = createFenceWall(60); rFence.rotation.y = Math.PI/2; rFence.position.set(30, 0, 0); plotGrp.add(rFence);
-            let fFenceL = createFenceWall(25); fFenceL.position.set(-17.5, 0, 30); plotGrp.add(fFenceL);
-            let fFenceR = createFenceWall(25); fFenceR.position.set(17.5, 0, 30); plotGrp.add(fFenceR);
-
-            let bMesh, vMesh;
-            if(selRE && selRE !== -1) {
-                bMesh = createParametricBuilding(selRE); bMesh.position.set(0, 0, -10); plotGrp.add(bMesh);
-            }
-            if(selVeh && selVeh !== -1) {
-                let vData = vehicles.find(v => v.id === selVeh);
-                if(vData) {
-                    let type = vData.modelType;
-                    if(type === 'bicycle' || type === 'scooter' || type === 'chopper' || type === 'standard' || type === 'sportbike') vMesh = createParametricBike(vData.color, type);
-                    else vMesh = createParametricCar(vData.color, type);
-                    vMesh.position.set(0, 0, 15); plotGrp.add(vMesh);
-                    playerVehicleObjects.push(vMesh);
-                }
-            }
-
-            plotGrp.position.set(center.x, 0, center.z); 
-            globalPlotsGroup.add(plotGrp);
-            plotGrp.updateMatrixWorld(true);
-        }
-
-        function enterWorld() {
-            if(document.activeElement) document.activeElement.blur();
-            let fw = document.getElementById('fullscreen-world');
-            fw.style.display = 'block'; document.getElementById('esc-menu').style.display = 'none';
-            if(camera && renderer) { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
-            
-            if(window.innerWidth > 768) {
-                try { fw.requestPointerLock(); } catch(e) {}
-            } else {
-                isInWorld = true; 
-            }
-
-            if(player.assets.plotId !== -1) { let c = getPlotCenter(player.assets.plotId); worldPlayerObj.root.position.set(c.x, 2, c.z); }
-            lastTime = performance.now();
-        }
-        
-        function exitWorld() { 
-            if(document.activeElement) document.activeElement.blur();
-            isInWorld = false; isDriving = false; 
-            if(window.innerWidth > 768) document.exitPointerLock(); 
-            document.getElementById('fullscreen-world').style.display = 'none'; 
-        }
-        
-        function resumeWorld() { 
-            if(document.activeElement) document.activeElement.blur();
-            if(window.innerWidth > 768) {
-                document.getElementById('fullscreen-world').requestPointerLock(); 
-            } else {
-                document.getElementById('esc-menu').style.display = 'none';
-                isInWorld = true;
-            }
-            lastTime = performance.now(); 
-        }
-
-        function animateWorld() {
-            requestAnimationFrame(animateWorld);
-            const delta = Math.min((performance.now() - lastTime) / 1000, 0.1); 
-            lastTime = performance.now();
-
-            interactiveDoors.forEach(door => {
-                door.pivot.rotation.y += (door.targetRot - door.pivot.rotation.y) * 0.1;
-            });
-
-            if(document.getElementById('tab-profile').classList.contains('active') && profRenderer) {
-                if(profilePlayerObj && isProfileRotating) profilePlayerObj.root.rotation.y += 0.5 * delta; profRenderer.render(profScene, profCamera);
-            }
-
-            const nameTag = document.getElementById('player-name-tag');
-            if(!isInWorld || (window.innerWidth > 768 && document.pointerLockElement !== document.getElementById('fullscreen-world'))) { 
-                nameTag.style.display = 'none'; 
-                return; 
-            }
-
-            if (isDriving && activeVehicleMesh) {
-                let acc = 20; let maxSpeed = 35;
-                if(keys.w) vehicleSpeed = Math.min(maxSpeed, vehicleSpeed + acc * delta);
-                else if(keys.s) vehicleSpeed = Math.max(-maxSpeed/2, vehicleSpeed - acc * delta);
-                else vehicleSpeed *= 0.95;
-
-                if(keys.a) activeVehicleMesh.rotation.y += 2.5 * delta * (vehicleSpeed > 0 ? 1 : -1);
-                if(keys.d) activeVehicleMesh.rotation.y -= 2.5 * delta * (vehicleSpeed > 0 ? 1 : -1);
-
-                let moveV = new THREE.Vector3(0, 0, -1).applyAxisAngle(new THREE.Vector3(0, 1, 0), activeVehicleMesh.rotation.y);
-                activeVehicleMesh.position.addScaledVector(moveV, vehicleSpeed * delta);
-                worldPlayerObj.root.position.copy(activeVehicleMesh.position);
-
-                let vWPos = new THREE.Vector3(); activeVehicleMesh.getWorldPosition(vWPos);
-                camera.position.set(vWPos.x + 12 * Math.sin(activeVehicleMesh.rotation.y), vWPos.y + 5, vWPos.z + 12 * Math.cos(activeVehicleMesh.rotation.y));
-                camera.lookAt(vWPos);
-            } else {
-                velocityY += -20 * delta; worldPlayerObj.root.position.y += velocityY * delta;
-                if(worldPlayerObj.root.position.y <= 0) { worldPlayerObj.root.position.y = 0; velocityY = 0; canJump = true; }
-
-                const speed = keys.shift ? 12 : 5; 
-                let moveDir = new THREE.Vector3();
-                if(keys.w) moveDir.z -= 1; if(keys.s) moveDir.z += 1; if(keys.a) moveDir.x -= 1; if(keys.d) moveDir.x += 1;
-                let isMoving = moveDir.length() > 0;
-
-                if(keys.space && canJump) { velocityY = 8; canJump = false; }
-
-                if(isMoving) {
-                    moveDir.normalize().applyAxisAngle(new THREE.Vector3(0, 1, 0), camYaw);
-                    let nextPos = worldPlayerObj.root.position.clone().addScaledVector(moveDir, speed * delta);
-                    
-                    let playerBox = new THREE.Box3(new THREE.Vector3(nextPos.x - 0.6, nextPos.y + 0.5, nextPos.z - 0.6), new THREE.Vector3(nextPos.x + 0.6, nextPos.y + 4, nextPos.z + 0.6));
-                    let collision = false;
-                    for(let box of colliders) { if(box.intersectsBox(playerBox)) { collision = true; break; } }
-                    
-                    if(!collision) worldPlayerObj.root.position.copy(nextPos);
-                    worldPlayerObj.root.rotation.y = Math.atan2(moveDir.x, moveDir.z) + Math.PI;
-                }
-
-                let targetCamX = worldPlayerObj.root.position.x + 8 * Math.sin(camYaw) * Math.cos(camPitch);
-                let targetCamY = worldPlayerObj.root.position.y + 4.5 + 8 * Math.sin(camPitch);
-                let targetCamZ = worldPlayerObj.root.position.z + 8 * Math.cos(camYaw) * Math.cos(camPitch);
-                camera.position.set(targetCamX, targetCamY, targetCamZ);
-                camera.lookAt(worldPlayerObj.root.position.x, worldPlayerObj.root.position.y + 3.5, worldPlayerObj.root.position.z);
-            }
-
-            let tagPos = new THREE.Vector3();
-            worldPlayerObj.root.getWorldPosition(tagPos); tagPos.y += 5.0; tagPos.project(camera);
-            if(isDriving) { nameTag.style.display = 'none'; } else {
-                nameTag.style.display = 'block';
-                nameTag.style.left = `${(tagPos.x * 0.5 + 0.5) * window.innerWidth}px`; nameTag.style.top = `${(tagPos.y * -0.5 + 0.5) * window.innerHeight}px`;
-                document.getElementById('tag-username').innerText = player.profile.name;
-                document.getElementById('tag-money').innerText = player.cash.toLocaleString('tr-TR', {maximumFractionDigits:2}) + ' TL';
-            }
-
-            renderer.render(scene, camera);
-        }
-
-        window.addEventListener('resize', () => {
-            if(isInWorld && camera && renderer) {
-                camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight);
-            }
-        });
-
-        // --- MOBİL DOKUNMATİK ENTEGRASYONU ---
-        const bindTouchKey = (btnId, keyName) => {
-            const btn = document.getElementById(btnId);
-            if(!btn) return;
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); keys[keyName] = true; });
-            btn.addEventListener('touchend', (e) => { e.preventDefault(); keys[keyName] = false; });
-        };
-
-        bindTouchKey('mob-w', 'w');
-        bindTouchKey('mob-a', 'a');
-        bindTouchKey('mob-s', 's');
-        bindTouchKey('mob-d', 'd');
-        bindTouchKey('mob-shift', 'shift');
-
-        const spaceBtn = document.getElementById('mob-space');
-        spaceBtn.addEventListener('touchstart', (e) => { e.preventDefault(); keys.space = true; });
-        spaceBtn.addEventListener('touchend', (e) => { e.preventDefault(); keys.space = false; });
-
-        document.getElementById('mob-e').addEventListener('touchstart', (e) => { e.preventDefault(); toggleNearestDoor(); });
-        document.getElementById('mob-f').addEventListener('touchstart', (e) => { e.preventDefault(); toggleVehicleDrive(); });
-        document.getElementById('mob-esc').addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            document.getElementById('esc-menu').style.display = 'flex'; 
-            isInWorld = false; 
-            for(let k in keys) keys[k] = false; 
-        });
-
-        let lastTouchX = 0;
-        let lastTouchY = 0;
-        const touchZone = document.getElementById('touch-pad-zone');
-
-        touchZone.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            lastTouchX = e.touches[0].clientX;
-            lastTouchY = e.touches[0].clientY;
-        });
-
-        touchZone.addEventListener('touchmove', (e) => {
-            e.preventDefault();
-            if (!isInWorld) return;
-            
-            let touchX = e.touches[0].clientX;
-            let touchY = e.touches[0].clientY;
-            
-            let deltaX = touchX - lastTouchX;
-            let deltaY = touchY - lastTouchY;
-            
-            camYaw -= deltaX * 0.005; 
-            camPitch += deltaY * 0.005; 
-            
-            camPitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, camPitch));
-            
-            lastTouchX = touchX;
-            lastTouchY = touchY;
-        });
     </script>
 </body>
 </html>
