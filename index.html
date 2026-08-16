@@ -128,7 +128,7 @@
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
         .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
 
-        /* PİST VE DÜMDÜZ UÇUŞ KİLİDİ (0 AÇI) */
+        /* PİST VE AKICI DÖNÜŞLÜ UÇUŞ MOTORU */
         #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; background-color: transparent; box-shadow: 0 0 40px rgba(0,0,0,0.5) inset, 0 0 15px rgba(0,0,0,0.6); pointer-events: none; z-index: 2; transition: all 0.3s; }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(255, 255, 255, 0.4); border-radius: 166px; box-sizing: border-box; }
         .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, white, white 10px, #e74c3c 10px, #e74c3c 20px); z-index: 1; border-left: 2px solid #f1c40f; border-right: 2px solid #f1c40f; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -136,8 +136,8 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
-        /* Uçaklar dümdüz ilerleyecek (0deg) */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
+        /* Uçaklar virajlarda sağa yatıp akıcı dönecek */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); transition: transform 0.05s linear; }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
         .floating-money { position: absolute; color: #f1c40f; font-weight: 900; font-size: 24px; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; pointer-events: none; z-index: 10; animation: popUpMoney 1.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
@@ -195,7 +195,7 @@
             </div>
         </div>
 
-        <!-- GİRİŞ EKRANI -->
+        <!-- YENİ SADE GİRİŞ EKRANI -->
         <div id="loginOverlay" style="display: none;">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
@@ -909,14 +909,14 @@
             setTimeout(() => pop.remove(), 1800); 
         }
 
-        // --- UÇAKLARIN DÜMDÜZ (0 AÇI) GİTMESİNİ SAĞLAYAN MOTOR ---
+        // --- AKICI SAĞ DÖNÜŞ ANİMASYONLU UÇUŞ MOTORU ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
             const L = 200; // Düz Yol Uzunluğu
             const R = 166; // Dönüş Yarıçapı
             const P = 2 * L + 2 * Math.PI * R; // Toplam Yol Çevresi
-            const cx = 152; const cy = 252; // Tam çizgiye oturtulmuş merkez koordinatları
+            const cx = 152; const cy = 252; // Tam Merkez Koordinatları
 
             let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
@@ -925,31 +925,33 @@
                 let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
                 const oldProgress = p.progress; p.progress += speed; 
                 let d = p.progress % P; if (d < 0) d += P; 
-                let x = 0, y = 0;
+                let x = 0, y = 0, tilt = 0;
 
-                // Uçakların kendi etrafında dönmesini (rotate) tamamen sıfırlayıp (0deg) dümdüz ilerletiyoruz
+                // Uçağın virajlarda sağa doğru akıcı yatma (tilt) açısı hesaplaması
                 if (d < L/2) {
-                    x = cx + R; y = cy + d;
+                    x = cx + R; y = cy + d; tilt = 0; // Düz giderken dik
                 }
                 else if (d < L/2 + Math.PI * R) {
                     let dist = d - L/2; let theta = dist / R;
                     x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
+                    tilt = 15; // Alt virajda sağa hafif yatış animasyonu
                 }
                 else if (d < L/2 + Math.PI * R + L) {
                     let dist = d - (L/2 + Math.PI * R);
-                    x = cx - R; y = (cy + L/2) - dist;
+                    x = cx - R; y = (cy + L/2) - dist; tilt = 0; // Sol düzlükte dik
                 }
                 else if (d < L/2 + 2 * Math.PI * R + L) {
                     let dist = d - (L/2 + Math.PI * R + L); let theta = Math.PI + dist / R;
                     x = cx + R * Math.cos(theta); y = (cy - L/2) + R * Math.sin(theta);
+                    tilt = 15; // Üst virajda sağa akıcı yatış animasyonu
                 }
                 else {
                     let dist = d - (L/2 + 2 * Math.PI * R + L);
-                    x = cx + R; y = (cy - L/2) + dist;
+                    x = cx + R; y = (cy - L/2) + dist; tilt = 0; // Sağ düzlükte dik
                 }
 
-                // AÇI KİLİDİ: rotate(0deg) yapılarak uçakların hiçbir zaman yamulması / dönmesi engellendi
-                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(0deg)`;
+                // Uçak dümdüz bakar ancak virajlarda sağa doğru akıcı bir şekilde yatar (rotate(0deg) + tilt)
+                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${tilt}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
