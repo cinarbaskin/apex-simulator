@@ -60,7 +60,7 @@
         .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; transition: background 0.2s; }
         .btn-save { background: #2ecc71; } .btn-close { background: #e74c3c; }
 
-        /* YENİ EFSANEVİ ÇERÇEVELER */
+        /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
         .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 2px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
         .frame-card:active { transform: scale(0.95); }
@@ -128,7 +128,7 @@
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
         .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
 
-        /* SİMETRİK STADYUM PİSTİ VE UÇAKLAR (MİLİMETRİK HİZALAMA İÇİN DEĞİŞTİRİLDİ) */
+        /* PİST VE DÜMDÜZ UÇUŞ KİLİDİ (0 AÇI) */
         #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; background-color: transparent; box-shadow: 0 0 40px rgba(0,0,0,0.5) inset, 0 0 15px rgba(0,0,0,0.6); pointer-events: none; z-index: 2; transition: all 0.3s; }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(255, 255, 255, 0.4); border-radius: 166px; box-sizing: border-box; }
         .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, white, white 10px, #e74c3c 10px, #e74c3c 20px); z-index: 1; border-left: 2px solid #f1c40f; border-right: 2px solid #f1c40f; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -136,7 +136,7 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
-        /* Uçakların pozisyonu sıfırlandı ki merkezden doğru hesaplansın */
+        /* Uçaklar dümdüz (0deg) ilerleyecek şekilde kilitlendi */
         .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
@@ -700,6 +700,7 @@
             document.getElementById("moneyDisplay").innerText = formatNumber(money);
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
             document.getElementById("centerMoney").innerText = formatNumber(money);
+            
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
             
@@ -810,7 +811,7 @@
             if (dragSource && dragSource.type === 'grid') {
                 const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
                 if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; }
-                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame();
+                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(dragSource.index, dragSource.index); initGrid(); saveGame();
             }
             if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
                 gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame();
@@ -926,7 +927,7 @@
             setTimeout(() => pop.remove(), 1800); 
         }
 
-        // --- MİLİMETRİK UÇUŞ ROTASI VE KUSURSUZ YÖNELİM SİSTEMİ ---
+        // --- UÇAKLARIN DÜMDÜZ (AÇISIZ, KİLİTLİ) GİTMESİNİ SAĞLAYAN MOTOR ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
@@ -942,32 +943,31 @@
                 let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
                 const oldProgress = p.progress; p.progress += speed; 
                 let d = p.progress % P; if (d < 0) d += P; 
-                let x = 0, y = 0, angle = 0;
+                let x = 0, y = 0;
 
+                // Uçakların kendi etrafında dönmesini (rotate) tamamen sıfırlayıp (0deg) dümdüz ilerletiyoruz
                 if (d < L/2) {
-                    x = cx + R; y = cy + d; angle = 90;
+                    x = cx + R; y = cy + d;
                 }
                 else if (d < L/2 + Math.PI * R) {
                     let dist = d - L/2; let theta = dist / R;
                     x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
-                    angle = 90 + (theta * 180 / Math.PI);
                 }
                 else if (d < L/2 + Math.PI * R + L) {
                     let dist = d - (L/2 + Math.PI * R);
-                    x = cx - R; y = (cy + L/2) - dist; angle = 270;
+                    x = cx - R; y = (cy + L/2) - dist;
                 }
                 else if (d < L/2 + 2 * Math.PI * R + L) {
                     let dist = d - (L/2 + Math.PI * R + L); let theta = Math.PI + dist / R;
                     x = cx + R * Math.cos(theta); y = (cy - L/2) + R * Math.sin(theta);
-                    angle = 90 + (theta * 180 / Math.PI);
                 }
                 else {
                     let dist = d - (L/2 + 2 * Math.PI * R + L);
-                    x = cx + R; y = (cy - L/2) + dist; angle = 90;
+                    x = cx + R; y = (cy - L/2) + dist;
                 }
 
-                // Uçağın tam merkez noktası olan 32.5 baz alındı
-                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${angle}deg)`;
+                // AÇI KİLİDİ: rotate(0deg) yapılarak uçakların hiçbir zaman yamulması / dönmesi engellendi
+                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(0deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
