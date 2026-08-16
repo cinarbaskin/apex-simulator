@@ -43,7 +43,7 @@
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
-        #loginOverlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(26, 75, 140, 0.95), rgba(13, 33, 64, 0.98)); justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(10px); }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(26, 75, 140, 0.95), rgba(13, 33, 64, 0.98)); justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(10px); }
         .login-box { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); padding: 40px 25px; border-radius: 20px; text-align: center; width: 85%; box-shadow: 0 15px 35px rgba(0,0,0,0.5); }
         .login-box h1 { margin: 0 0 5px 0; font-size: 36px; background: linear-gradient(to right, #f1c40f, #f39c12); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
         .slogan { font-size: 13px; color: #a4c8ff; font-style: italic; margin-bottom: 30px; font-weight: bold; line-height: 1.4; }
@@ -56,8 +56,8 @@
         .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
         .modal-content { background: #0f172a; border: 2px solid #f1c40f; border-radius: 15px; padding: 25px; width: 90%; max-height: 85%; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.8); text-align: center; position: relative; }
         .modal-content h2 { margin-top: 0; color: #f1c40f; }
-        .modal-content input { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 16px; outline: none; text-align: center; font-weight: bold; }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; transition: 0.2s; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; color: white; font-size: 16px; outline: none; }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; transition: background 0.2s; }
         .btn-save { background: #2ecc71; } .btn-close { background: #e74c3c; }
 
         /* YENİ EFSANEVİ ÇERÇEVELER */
@@ -168,7 +168,7 @@
         .bottom-btn.shop { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #732d91; }
         .bottom-btn.speed { background: linear-gradient(to bottom, #2980b9, #2c3e50); box-shadow: 0 5px 0 #1a252f; }
         .bottom-btn span.big { font-size: 16px; display: block; margin-bottom: 2px; }
-        __{ display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 3px; }
 
     </style>
 </head>
