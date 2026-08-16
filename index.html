@@ -21,7 +21,7 @@
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-touch-callout: none; font-family: 'Share Tech Mono', monospace; }
         
-        h1, h2, h3, .loading-title, .bottom-btn span.big { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
 
         /* HAREKETLİ NEON SİBER IZGARA VE UZAY ARKA PLANI */
         body { 
@@ -84,34 +84,45 @@
         /* GİRİŞ EKRANI */
         #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.92); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(15px); }
         .login-box { background: rgba(10, 15, 25, 0.85); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(0,255,255,0.15); }
-        .login-box h1 { margin: 0 0 10px 0; font-size: 48px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
-        .slogan { font-size: 16px; color: #00ffff; margin-bottom: 30px; letter-spacing: 1px; text-shadow: 0 0 5px #00ffff; }
-        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.7); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; box-shadow: inset 0 0 15px rgba(188,19,254,0.2); font-weight: bold; }
-        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 25px rgba(0,255,255,0.5), inset 0 0 15px rgba(0,255,255,0.3); }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #fff; font-size: 26px; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 30px rgba(0,255,255,0.5); transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px 3px black; }
-        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        .login-box h1 { margin: 0 0 5px 0; font-size: 42px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 900; }
+        .slogan { font-size: 14px; color: #a4c8ff; font-style: italic; margin-bottom: 30px; font-weight: 600; letter-spacing: 1px; text-shadow: 0 0 5px #00ffff; }
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.7); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 20px; font-weight: bold; text-align: center; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,255,255,0.1); }
+        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4), inset 0 0 10px rgba(0,255,255,0.2); }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #fff; font-size: 20px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 0 20px rgba(0,255,255,0.4); transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px 3px black; font-family: 'Teko', sans-serif;}
+        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(0,255,255,0.4); }
 
         /* MODALLAR */
         .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
         .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 25px rgba(0,255,255,0.15); text-align: center; position: relative; }
-        .modal-content h2 { margin-top: 0; font-size: 36px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); letter-spacing: 1px; font-weight: 700; }
+        .modal-content h2 { margin-top: 0; font-size: 32px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); letter-spacing: 1px; font-weight: 700; }
         .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0,255,255,0.4); border-radius: 8px; color: #00ffff; font-size: 18px; outline: none; text-align: center; font-weight: bold; }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 24px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #fff; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.3); text-transform: uppercase; text-shadow: 1px 1px 2px black;}
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #fff; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.3); text-transform: uppercase; font-family: 'Teko', sans-serif; text-shadow: 1px 1px 2px black;}
         .modal-btn:active { transform: scale(0.95); }
         .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
         .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); box-shadow: 0 0 15px rgba(255,0,60,0.5); border: 1px solid #ff003c; }
 
-        /* GÖREVLER (MISSIONS) TASARIMI */
-        .mission-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(52,152,219,0.15); transition: 0.3s; }
-        .mission-item:hover { background: rgba(0,255,255,0.1); transform: translateX(5px); border-color: #00ffff; box-shadow: inset 0 0 20px rgba(0,255,255,0.4); }
+        /* GÖREVLER VE SIRALAMA LİSTELERİ */
+        .mission-item, .lb-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(52,152,219,0.15); transition: 0.3s; }
+        .mission-item:hover, .lb-item:hover { background: rgba(0,255,255,0.1); transform: translateX(5px); border-color: #00ffff; box-shadow: inset 0 0 20px rgba(0,255,255,0.4); }
         .mission-info { text-align: left; }
-        .mission-title { font-size: 18px; font-weight: bold; color: #00ffff; margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,255,0.5); letter-spacing: 1px;}
-        .mission-reward { font-size: 16px; color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-weight: bold; }
-        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: 1px solid #2ecc71; border-radius: 8px; color: white; padding: 8px 18px; font-weight: 700; cursor: pointer; box-shadow: 0 0 15px rgba(46,204,113,0.6); transition: 0.2s; font-size: 20px; }
+        .mission-title { font-size: 16px; font-weight: bold; color: #00ffff; margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,255,0.5); letter-spacing: 1px;}
+        .mission-reward { font-size: 14px; color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-weight: bold; }
+        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: 1px solid #2ecc71; border-radius: 8px; color: white; padding: 8px 18px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(46,204,113,0.6); transition: 0.2s; font-size: 18px; font-family: 'Teko', sans-serif;}
         .btn-claim-mission:active { transform: scale(0.9); }
         .btn-claim-mission:disabled { background: rgba(255,255,255,0.1); box-shadow: none; border-color: transparent; cursor: not-allowed; color: #555; }
-        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 14px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 15px red; z-index: 20; animation: pulseBadge 1.5s infinite; }
+        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 15px red; z-index: 20; animation: pulseBadge 1.5s infinite; font-family: 'Share Tech Mono', sans-serif;}
         @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.15); box-shadow: 0 0 25px red; } 100% { transform: scale(1); } }
+
+        /* SIRALAMA (LEADERBOARD) SPESİFİK */
+        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
+        .lb-item { padding: 12px 15px; border-color: #444; }
+        .lb-item.is-player { background: rgba(0,255,255,0.15); border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        .lb-rank { font-size: 20px; font-weight: bold; width: 30px; text-align: center; font-family: 'Teko', sans-serif; }
+        .lb-rank-1 { color: #f1c40f; text-shadow: 0 0 10px #f1c40f; font-size: 24px; }
+        .lb-rank-2 { color: #bdc3c7; text-shadow: 0 0 10px #bdc3c7; font-size: 22px; }
+        .lb-rank-3 { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; font-size: 20px; }
+        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; }
+        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-family: 'Share Tech Mono', sans-serif; }
 
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; margin-bottom: 15px; }
@@ -154,7 +165,7 @@
         .case-item:hover { box-shadow: inset 0 0 30px rgba(0,255,255,0.2); transform: translateY(-3px); border-color: #00ffff; }
         .case-item:active { transform: scale(0.95); }
         .case-icon { font-size: 35px; margin-bottom: 8px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); } 
-        .case-name { font-size: 15px; font-weight: bold; margin-bottom: 5px; letter-spacing: 0.5px; font-family: 'Share Tech Mono', sans-serif;} 
+        .case-name { font-size: 13px; font-weight: bold; margin-bottom: 5px; letter-spacing: 0.5px; } 
         .case-price { font-size: 16px; color: #00ffff; font-weight: bold; text-shadow: 0 0 8px rgba(0,255,255,0.6); }
         
         #crateInfoModal { z-index: 10500; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
@@ -173,28 +184,29 @@
         .user-info { display: flex; align-items: center; gap: 10px; background: rgba(10, 15, 30, 0.8); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(0, 255, 255, 0.4); cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
         .user-info:hover { border-color: #00ffff; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,255,255,0.3); }
         .user-info:active { transform: scale(0.95); }
-        .username { font-size: 18px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
-        .settings-icon { font-size: 18px; margin-left: 2px; opacity: 0.8; }
+        .username { font-size: 16px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
+        .settings-icon { font-size: 16px; margin-left: 2px; opacity: 0.8; }
 
         .currencies { display: flex; gap: 10px; }
-        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 18px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
+        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
         .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
         .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
 
-        .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
-        .side-menu.left { left: 10px; } .side-menu.right { right: 10px; align-items: center; }
-        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
-        .menu-btn .icon { background: rgba(10, 15, 30, 0.9); border-radius: 50%; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; font-size: 20px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,255,255,0.25); transition: 0.2s; backdrop-filter: blur(8px); }
+        /* YAN MENÜLER (Daha dar ekranlarda pist ile çarpışmasın diye köşelere sıkıştırıldı) */
+        .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: scale(0.9); }
+        .side-menu.left { left: 5px; transform-origin: top left; } .side-menu.right { right: 5px; align-items: center; transform-origin: top right; }
+        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 12px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
+        .menu-btn .icon { background: rgba(10, 15, 30, 0.9); border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,255,255,0.25); transition: 0.2s; backdrop-filter: blur(8px); }
         .menu-btn:hover .icon { transform: scale(1.1); box-shadow: 0 5px 25px rgba(0,255,255,0.4), inset 0 0 20px rgba(0,255,255,0.4); border-color: #00ffff; }
         .menu-btn:active .icon { transform: scale(0.9); }
 
         /* MERKEZ (SADECE CPS) */
-        .center-stats { position: absolute; top: 8%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+        .center-stats { position: absolute; top: 12%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
         .center-stats p { margin: 0; font-size: 20px; color: #00ffff; font-weight: bold; text-shadow: 0 0 15px #00ffff; letter-spacing: 1.5px; }
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
-        .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.5); animation: pulseBoost 1.5s infinite alternate; color: #f1c40f; font-family: 'Share Tech Mono', sans-serif;}
+        .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.5); animation: pulseBoost 1.5s infinite alternate; color: #f1c40f; }
 
-        /* ESKİ DİKEY BÜYÜK HANGAR VE PİST SİSTEMİ (Orijinal Tasarım) */
+        /* ESKİ DİKEY BÜYÜK HANGAR VE PİST SİSTEMİ (Orijinal Tasarım - Milimetrik Hiza) */
         #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 0.3s; backdrop-filter: blur(3px); }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(0, 255, 255, 0.7); border-radius: 166px; box-sizing: border-box; filter: drop-shadow(0 0 6px #00ffff); }
         .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9) 10px, rgba(0,255,255,0.9) 10px, rgba(0,255,255,0.9) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 20px #00ffff; }
@@ -202,20 +214,21 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 80px rgba(0, 255, 255, 0.6) inset; }
 
-        /* UÇAKLAR (ROTASYON DÜZELTİLDİ VE AKICI DÖNÜŞ EKLENDİ) */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7)); }
-        .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; filter: drop-shadow(0 0 20px rgba(0, 255, 255, 1)); }
+        /* UÇAKLAR (120 FPS OPTİMİZASYONU) */
+        /* Ağır drop-shadow filtreleri kaldırıldı, Translate3D (Hardware Acceleration) kullanılıyor */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); transform: translateZ(0); }
+        .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); }
 
         /* Z-INDEX 999999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
-        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 36px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
+        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 36px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
         @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -50px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -70px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -100px) scale(0.8); } }
 
-        /* ORİJİNAL DİKEY HANGAR ALANI */
-        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(12px); }
+        /* ORİJİNAL DİKEY HANGAR ALANI (İçe Doğru Hafif Daraltıldı ki Yanlarla Çarpışmasın) */
+        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 70px); grid-template-rows: repeat(5, 70px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(12px); }
         .slot { width: 100%; height: 100%; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.15); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); transition: 0.2s; }
         .slot.drag-over { background: rgba(0,255,255,0.25); border-color: #00ffff; box-shadow: inset 0 0 25px rgba(0,255,255,0.6); transform: scale(1.05); }
 
-        .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
+        .plane-item { width: 65px; height: 65px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
         .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
         .plane-item.ghost { opacity: 0.4; filter: grayscale(50%); animation: none; cursor: pointer; transition: 0.2s; }
         .plane-item.ghost:hover { opacity: 0.8; filter: grayscale(10%); transform: scale(1.1); }
@@ -224,13 +237,14 @@
         .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
         @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3) drop-shadow(0 0 25px #00ffff); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 40px #00ffff); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
 
-        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(255, 0, 60, 0.85); border: 2px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; z-index: 50; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif;}
+        /* MOBİL UYUMLU DÜZELTİLMİŞ ÇÖP KUTUSU (BoundingBox ile Çarpışma Testi) */
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(255, 0, 60, 0.85); border: 2px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; z-index: 50; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px;}
         #trashBin.drag-over { transform: translateX(-50%) scale(1.1); background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 24px; }
         #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
 
-        /* ALT BAR (CAM EFEKTİ VE IŞIK) */
+        /* ALT BAR */
         .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
-        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); font-family: 'Share Tech Mono', sans-serif;}
+        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); }
         .bottom-btn:hover { background: rgba(10, 15, 30, 0.95); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(0,255,255,0.3); border-color: #00ffff; }
         .bottom-btn:active { transform: translateY(5px); box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,255,255,0.4); }
         .bottom-btn.shop { border-color: rgba(188, 19, 254, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(188, 19, 254, 0.15); }
@@ -243,15 +257,6 @@
     </style>
 </head>
 <body>
-
-    <!-- YENİ DİNAMİK DROP SHADOW (JavaScript ile Rengi Değişecek) -->
-    <svg width="0" height="0" style="position: absolute;">
-        <defs>
-            <filter id="planeShadow">
-                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-opacity="0.9"/>
-            </filter>
-        </defs>
-    </svg>
 
     <div id="dragGhost"></div>
 
@@ -301,7 +306,7 @@
                 <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
                 <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);">
                     <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));">❓</div>
-                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff; font-family: 'Teko', sans-serif;">...</div>
+                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;">...</div>
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
@@ -335,18 +340,18 @@
                 
                 <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f; box-shadow: inset 0 0 20px rgba(241,196,15,0.15);">
                     <h3 style="margin: 0 0 10px 0; color: #f1c40f; text-shadow: 0 0 8px #f1c40f;">⚡ 2x Hızlanma</h3>
-                    <p style="font-size:12px; color:#aaa; margin-bottom:8px; font-family:'Share Tech Mono', sans-serif;">Her alım +3 Dakika (Maksimum 30Dk)</p>
+                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
                     <div class="tier-container" id="shopSpeedTierBar">
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                     </div>
-                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px; font-family:'Teko', sans-serif;">Aktif Süre: 00:00</h4>
+                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px;">Aktif Süre: 00:00</h4>
                     <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:20px; padding:12px; box-shadow: 0 0 15px rgba(241,196,15,0.6); margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
 
                 <h3 style="color:#00ffff; margin-bottom:8px; text-shadow: 0 0 8px #00ffff;">✈️ Neon Uçak Galerisi</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:15px; font-family:'Share Tech Mono', sans-serif;">Ulaştığın seviyeye kadar tüm jetler burada.</p>
+                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Ulaştığın seviyeye kadar tüm jetler burada.</p>
                 <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 12px; padding-right: 5px;"></div>
 
                 <button class="modal-btn btn-close" style="margin-top:15px;" onclick="closeGeneralShop()">Kapat</button>
@@ -357,7 +362,7 @@
         <div id="crateInfoModal" class="modal-overlay">
             <div class="modal-content" style="max-width: 350px;">
                 <h2 id="ciTitle" style="color: #00ffff;">Kasa İçeriği</h2>
-                <div id="ciContent" style="text-align: left; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px; border: 1px solid #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2); font-family:'Share Tech Mono', sans-serif;"></div>
+                <div id="ciContent" style="text-align: left; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px; border: 1px solid #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);"></div>
                 <button class="modal-btn btn-close" onclick="closeCrateInfo()">Kapat</button>
             </div>
         </div>
@@ -376,8 +381,18 @@
                     <div class="roulette-center-line"></div>
                     <div class="roulette-strip" id="rouletteStrip"></div>
                 </div>
-                <h3 id="rewardAnnounce" style="margin: 15px 0; font-size: 30px; font-family:'Teko', sans-serif;"></h3>
+                <h3 id="rewardAnnounce" style="margin: 15px 0; font-size: 30px;"></h3>
                 <button class="modal-btn btn-save" id="btnTakeReward" style="display:none;" onclick="takeCaseReward()">Ödülü Al</button>
+            </div>
+        </div>
+
+        <!-- SIRALAMA (LEADERBOARD) EKRANI -->
+        <div id="leaderboardModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 style="color: #f1c40f; text-shadow: 0 0 15px #f1c40f;">🏆 Canlı Sıralama</h2>
+                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Dünyanın en zengin pilotları!</p>
+                <div class="leaderboard-list" id="leaderboardList"></div>
+                <button class="modal-btn btn-close" style="margin-top: 15px;" onclick="closeLeaderboard()">Kapat</button>
             </div>
         </div>
 
@@ -396,16 +411,16 @@
             </div>
         </div>
 
-        <!-- YAN MENÜLER -->
+        <!-- YAN MENÜLER (KÖŞELERE YASLANDI) -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
-            <div class="menu-btn" onclick="openMissionsMenu()" style="position: relative;">
+            <div class="menu-btn" onclick="openMissionsMenu()">
                 <div class="icon" style="border-color:#3498db; color: #3498db; text-shadow: 0 0 8px #3498db;">📜</div>Görevler
                 <div id="missionBadge" class="mission-badge" style="display: none;">0</div>
             </div>
         </div>
         <div class="side-menu right">
-            <div class="menu-btn" onclick="alert('Sıralama yakında!')"><div class="icon" style="color: #f1c40f; border-color:#f1c40f;">🏆</div>Sıralama</div>
+            <div class="menu-btn" onclick="openLeaderboard()"><div class="icon" style="color: #f1c40f; border-color:#f1c40f;">🏆</div>Sıralama</div>
             <div class="menu-btn" onclick="openCaseMenu()"><div class="icon" style="color: #bc13fe; border-color:#bc13fe;">📦</div>Kasa</div> 
         </div>
 
@@ -422,11 +437,11 @@
             <div class="finish-flash" id="finishFlash"></div>
         </div>
 
-        <!-- ORİJİNAL DİKEY HANGAR (Pistin İçinde) -->
+        <!-- ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) -->
         <div class="grid-container" id="grid"></div>
         
         <!-- ÇÖP KUTUSU -->
-        <div id="trashBin">🗑️ Uçağı Sil</div>
+        <div id="trashBin">🗑️ UÇAĞI SİL</div>
 
         <!-- ALT BUTONLAR -->
         <div class="bottom-bar">
@@ -502,6 +517,23 @@
 
         let nextRewardTime = 0; let currentMinuteReward = null;
 
+        // --- CANLI SIRALAMA (BOT SİSTEMİ) ---
+        const botNames = ["SkyKing", "NeonFlyer", "CyberPilot", "AeroNinja", "JetFighter", "Mach10", "CloudStrife", "WindRider", "StarGazer", "Nova", "GalaxyCruiser", "SpaceFox", "CosmicRay", "Meteor", "Comet", "Astro", "Lunar", "Solaris", "Orbit", "Zenith", "Apex", "Vortex", "Pulsar", "Quasar", "Horizon", "Mirage", "Echo", "Phantom", "Specter", "Shadow"];
+        let bots = [];
+
+        function initBots() {
+            if(bots.length === 0) {
+                let baseMoney = money === 0 ? 1000 : money;
+                botNames.forEach((name, i) => {
+                    bots.push({
+                        name: name,
+                        money: baseMoney * (Math.random() * 2) + (i * baseMoney * 0.1),
+                        cps: Math.floor(getPlaneIncome(playerLevel > 0 ? playerLevel : 1) * (Math.random() * 5 + 1))
+                    });
+                });
+            }
+        }
+
         // YÜKLEME EKRANI BAŞLANGICI
         window.onload = () => {
             createStars();
@@ -539,7 +571,7 @@
                 gameStarted = true;
                 (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
                 initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
-                startGameLoops();
+                initBots(); startGameLoops();
             } catch(e) {
                 console.error(e);
                 showToast("Kayıt dosyası bozuk, yeni oyun başlatılıyor.", "error");
@@ -574,7 +606,7 @@
                 setTimeout(() => { flashFinishLine(); popMoneyFixed(100); }, 500); 
                 showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
-            initGrid(); updateFrameUI(); startGameLoops();
+            initBots(); initGrid(); updateFrameUI(); startGameLoops();
         }
         
         function checkAndSetUsernameDisplay() {
@@ -617,6 +649,41 @@
             };
             localStorage.setItem("planeTycoonSave", JSON.stringify(data));
         }
+
+        // --- SIRALAMA GÖSTERİMİ ---
+        function openLeaderboard() {
+            const list = document.getElementById("leaderboardList");
+            list.innerHTML = "";
+            
+            // Gerçek oyuncu
+            let allPlayers = [...bots];
+            allPlayers.push({ name: currentName, money: money, isPlayer: true });
+            
+            // Paraya göre sırala
+            allPlayers.sort((a, b) => b.money - a.money);
+            
+            let html = "";
+            allPlayers.forEach((p, index) => {
+                let rankStr = index + 1;
+                let rankClass = "";
+                if(index === 0) { rankStr = "👑"; rankClass = "lb-rank-1"; }
+                else if(index === 1) { rankStr = "2."; rankClass = "lb-rank-2"; }
+                else if(index === 2) { rankStr = "3."; rankClass = "lb-rank-3"; }
+                
+                let isPClass = p.isPlayer ? "is-player" : "";
+                
+                html += `
+                    <div class="lb-item ${isPClass}">
+                        <div class="lb-rank ${rankClass}">${rankStr}</div>
+                        <div class="lb-name">${p.name} ${p.isPlayer ? '(Sen)' : ''}</div>
+                        <div class="lb-money">❂ ${formatNumber(p.money)}</div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+            document.getElementById("leaderboardModal").style.display = "flex";
+        }
+        function closeLeaderboard() { document.getElementById("leaderboardModal").style.display = "none"; }
 
         function updateMissionsBadge() {
             let claimableCount = 0; for(let i = 2; i <= playerLevel; i++) { if(!claimedLevels.includes(i)) claimableCount++; }
@@ -695,7 +762,7 @@
             updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
             for(let i = 1; i <= playerLevel; i++) {
                 let price = Math.floor(50 * Math.pow(1.6, i)); let income = getPlaneIncome(i); let planeSVG = getJetSVG(i, false); 
-                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.6); padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0; text-shadow: 0 0 5px #f1c40f; font-family:'Orbitron', sans-serif;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold; font-family:'Share Tech Mono', sans-serif;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:16px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
+                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.6); padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0; text-shadow: 0 0 5px #f1c40f; font-family:'Orbitron', sans-serif;">❂ ${formatNumber(price)}</div><div style="font-size:11px; color:#2ecc71; margin-bottom: 8px; font-weight:bold; font-family:'Share Tech Mono', sans-serif;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:16px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
             }
             document.getElementById("generalShopModal").style.display = "flex";
         }
@@ -705,16 +772,15 @@
             else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
+        // --- GPU HIZLANDIRMALI SVG (FPS ARTIRIMI) ---
         function getJetSVG(level, isFlying = true) {
             let l = level; let hueBase = (l * 37) % 360; 
             let c1 = `hsl(${hueBase}, 85%, 55%)`; let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
             let cG = `#74b9ff`; let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
-            
-            let shadowColor = `hsl(${hueBase}, 100%, 50%)`;
 
             let bodyType = l % 6; let wingType = l % 6; let tailType = l % 4; let engineType = l % 3;
             let svg = ''; let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3; let anim = isFlying ? '' : 'animation-duration: 0.3s; transform: scaleY(0.7); opacity: 0.8;';
-            let engineFire = (x, y) => `<g class="turbo-base" style="transform-origin: ${x}px ${y}px; ${anim}"><polygon points="${x-8},${y} ${x},${tL} ${x+8},${y}" fill="${cTo}" opacity="${tO}" filter="blur(2px)"/><polygon points="${x-4},${y} ${x},${isFlying?y+40:y+15} ${x+4},${y}" fill="${cT}" opacity="0.9"/><polygon points="${x-1.5},${y} ${x},${isFlying?y+20:y+8} ${x+1.5},${y}" fill="#fff"/></g>`;
+            let engineFire = (x, y) => `<g class="turbo-base" style="transform-origin: ${x}px ${y}px; ${anim}"><polygon points="${x-8},${y} ${x},${tL} ${x+8},${y}" fill="${cTo}" opacity="${tO}"/><polygon points="${x-4},${y} ${x},${isFlying?y+40:y+15} ${x+4},${y}" fill="${cT}" opacity="0.9"/><polygon points="${x-1.5},${y} ${x},${isFlying?y+20:y+8} ${x+1.5},${y}" fill="#fff"/></g>`;
 
             if (engineType === 0) { svg += engineFire(50, 90); } else if (engineType === 1) { svg += engineFire(35, 85) + engineFire(65, 85); } else { svg += engineFire(50, 90) + engineFire(25, 80) + engineFire(75, 80); }
             if (wingType === 0) { svg += `<polygon points="50,40 10,75 18,85 45,70" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,40 90,75 82,85 55,70" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 1) { svg += `<polygon points="50,30 5,60 15,85 45,65" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,30 95,60 85,85 55,65" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 2) { svg += `<polygon points="45,50 0,60 10,80 40,75" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="55,50 100,60 90,80 60,75" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 3) { svg += `<polygon points="50,20 10,80 50,70" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,20 90,80 50,70" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 4) { svg += `<polygon points="45,65 5,20 15,10 50,55" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="55,65 95,20 85,10 50,55" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else { svg += `<circle cx="50" cy="55" r="40" fill="none" stroke="${c2}" stroke-width="6"/>`; }
@@ -722,14 +788,12 @@
             if (tailType === 0) { svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else if (tailType === 1) { svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/><polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else if (tailType === 2) { svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/><rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else { svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`; }
             svg += `<ellipse cx="50" cy="35" rx="6" ry="14" fill="${cG}" stroke="#111" stroke-width="2"/><path d="M 47,26 C 46,30 46,38 50,42" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
             
-            let filter = isFlying ? `filter: drop-shadow(0 0 10px ${shadowColor}) drop-shadow(0 0 20px ${shadowColor});` : '';
-            return `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible; ${filter}"><g>${svg}</g></svg>`;
+            return `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;"><g>${svg}</g></svg>`;
         }
 
         function updateUI() {
             document.getElementById("moneyDisplay").innerText = formatNumber(money);
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
-            
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
             let lvlSpan = document.getElementById("playerLvl"); if(lvlSpan) lvlSpan.innerText = playerLevel;
@@ -743,17 +807,54 @@
         const gameContainer = document.getElementById("gameContainer"); const ghost = document.getElementById("dragGhost");
         let activeTouchData = null; 
 
+        // --- MOBİL İÇİN MÜKEMMEL ÇARPIŞMA TESTİ VE SİLME ---
         function setupDragAndDropForElement(el, data) {
             el.addEventListener("dragstart", (e) => { dragSource = data; setTimeout(() => { trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); }, 10); });
             el.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
-            el.addEventListener("touchstart", (e) => { e.preventDefault(); activeTouchData = data; ghost.innerHTML = el.innerHTML; ghost.style.display = "block"; const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; if(data.type === 'grid') { el.style.opacity = "0.3"; } else if(data.type === 'track') { el.style.display = "none"; } trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); }, {passive: false});
-            el.addEventListener("touchmove", (e) => { e.preventDefault(); const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; }, {passive: false});
-            el.addEventListener("touchend", (e) => { e.preventDefault(); ghost.style.display = "none"; trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); const touch = e.changedTouches[0]; const targetEl = document.elementFromPoint(touch.clientX, touch.clientY); if (!targetEl) { initGrid(); return; }
-                if (targetEl.closest('#trashBin')) { if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null; if(activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); } initGrid(); saveGame(); } 
-                else if (targetEl.closest('.slot')) { const slotEl = targetEl.closest('.slot'); const targetIndex = parseInt(slotEl.dataset.index); const targetItem = gridSlots[targetIndex];
-                    if (activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } else if (targetItem.level === activeTouchData.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } 
-                    else if (activeTouchData.type === 'grid') { const sourceIndex = activeTouchData.index; if (sourceIndex !== targetIndex) { const sourceItem = gridSlots[sourceIndex]; if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } } initGrid(); saveGame();
-                } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') { if (activeTouchData.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount < MAX_PLANES) { gridSlots[activeTouchData.index].isFlying = true; spawnTrackPlane(gridSlots[activeTouchData.index].level, activeTouchData.index); } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); } } initGrid(); saveGame(); } activeTouchData = null;
+            
+            el.addEventListener("touchstart", (e) => { 
+                e.preventDefault(); activeTouchData = data; 
+                ghost.innerHTML = el.innerHTML; ghost.style.display = "block"; 
+                const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; 
+                if(data.type === 'grid') { el.style.opacity = "0.3"; } else if(data.type === 'track') { el.style.display = "none"; } 
+                trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); 
+            }, {passive: false});
+            
+            el.addEventListener("touchmove", (e) => { 
+                e.preventDefault(); const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; 
+                if(trashBin.style.display !== "none") {
+                    const trashRect = trashBin.getBoundingClientRect();
+                    if(touch.clientX >= trashRect.left && touch.clientX <= trashRect.right && touch.clientY >= trashRect.top && touch.clientY <= trashRect.bottom) {
+                        trashBin.classList.add("drag-over");
+                    } else { trashBin.classList.remove("drag-over"); }
+                }
+            }, {passive: false});
+            
+            el.addEventListener("touchend", (e) => { 
+                e.preventDefault(); ghost.style.display = "none"; trackEl.classList.remove("drag-active"); 
+                const touch = e.changedTouches[0]; 
+                
+                let isDeleted = false;
+                if(trashBin.style.display !== "none") {
+                    const trashRect = trashBin.getBoundingClientRect();
+                    if(touch.clientX >= trashRect.left && touch.clientX <= trashRect.right && touch.clientY >= trashRect.top && touch.clientY <= trashRect.bottom) {
+                        if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null; 
+                        if(activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); } 
+                        isDeleted = true; showToast("Uçak silindi!", "info");
+                    }
+                }
+                trashBin.style.display = "none"; trashBin.classList.remove("drag-over");
+
+                if(!isDeleted) {
+                    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY); if (!targetEl) { initGrid(); return; }
+                    if (targetEl.closest('.slot')) { const slotEl = targetEl.closest('.slot'); const targetIndex = parseInt(slotEl.dataset.index); const targetItem = gridSlots[targetIndex];
+                        if (activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } else if (targetItem.level === activeTouchData.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } 
+                        else if (activeTouchData.type === 'grid') { const sourceIndex = activeTouchData.index; if (sourceIndex !== targetIndex) { const sourceItem = gridSlots[sourceIndex]; if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } } 
+                    } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') { 
+                        if (activeTouchData.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount < MAX_PLANES) { gridSlots[activeTouchData.index].isFlying = true; spawnTrackPlane(gridSlots[activeTouchData.index].level, activeTouchData.index); } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); } } 
+                    }
+                }
+                initGrid(); saveGame(); activeTouchData = null;
             });
         }
 
@@ -771,91 +872,43 @@
             const gridEl = document.getElementById("grid"); gridEl.innerHTML = "";
             for(let i = 0; i < 10; i++) {
                 const slot = document.createElement("div"); slot.className = "slot"; slot.dataset.index = i;
-                slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); });
-                slot.addEventListener("dragleave", e => { slot.classList.remove("drag-over"); });
-                slot.addEventListener("drop", handleSlotDrop);
-
+                slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); }); slot.addEventListener("dragleave", e => { slot.classList.remove("drag-over"); }); slot.addEventListener("drop", handleSlotDrop);
                 if(gridSlots[i]) {
-                    const planeObj = gridSlots[i]; 
-                    const planeEl = document.createElement("div"); 
-                    planeEl.className = "plane-item";
-                    
-                    if(planeObj.isFlying) {
-                        planeEl.classList.add("ghost");
-                        planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); });
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                    } else {
-                        planeEl.draggable = true;
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                        setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level });
-                    }
-                    if(i === animatedIndex) planeEl.classList.add("merge-anim");
-                    slot.appendChild(planeEl);
-                }
-                gridEl.appendChild(slot);
-            }
-            animatedIndex = null; updateUI();
+                    const planeObj = gridSlots[i]; const planeEl = document.createElement("div"); planeEl.className = "plane-item";
+                    if(planeObj.isFlying) { planeEl.classList.add("ghost"); planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); }); planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; } 
+                    else { planeEl.draggable = true; planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level }); }
+                    if(i === animatedIndex) planeEl.classList.add("merge-anim"); slot.appendChild(planeEl);
+                } gridEl.appendChild(slot);
+            } animatedIndex = null; updateUI();
         }
 
         function handleSlotDrop(e) {
-            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("drag-over"); 
-            trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
-            if(!dragSource) return;
-
-            const targetIndex = parseInt(e.currentTarget.dataset.index); 
-            const targetItem = gridSlots[targetIndex];
-
-            if (dragSource.type === 'track') { 
-                gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); return; 
-            }
+            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("drag-over"); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if(!dragSource) return;
+            const targetIndex = parseInt(e.currentTarget.dataset.index); const targetItem = gridSlots[targetIndex];
+            if (dragSource.type === 'track') { gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); return; }
             if(dragSource.type === 'grid') {
-                const sourceIndex = dragSource.index; 
-                if(sourceIndex === targetIndex || (targetItem && targetItem.isFlying)) return;
-                const sourceItem = gridSlots[sourceIndex];
-
-                if(!targetItem) { 
-                    gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null;
-                } else if (targetItem.level === sourceItem.level) {
-                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
-                }
-            } 
-            initGrid(); saveGame();
+                const sourceIndex = dragSource.index; if(sourceIndex === targetIndex || (targetItem && targetItem.isFlying)) return; const sourceItem = gridSlots[sourceIndex];
+                if(!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
+                else if (targetItem.level === sourceItem.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } }
+            } initGrid(); saveGame();
         }
 
         function buyPlane() {
-            let lvl = getMarketLevel();
-            let cost = getMarketPrice();
-            if(money >= cost) {
-                const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) {
-                    money -= cost; 
-                    gridSlots[emptyIndex] = { level: lvl, isFlying: false }; 
-                    initGrid(); 
-                    saveGame();
-                } else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
-            } else { showToast("Yetersiz bakiye kral!", "error"); }
+            let lvl = getMarketLevel(); let cost = getMarketPrice();
+            if(money >= cost) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= cost; gridSlots[emptyIndex] = { level: lvl, isFlying: false }; initGrid(); saveGame(); } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); } } 
+            else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
         function spawnTrackPlane(level, slotIndex, savedProgress = 0) {
-            const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; 
-            visual.innerHTML = getJetSVG(level, true); 
-            trackEl.appendChild(visual);
+            const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; visual.innerHTML = getJetSVG(level, true); document.getElementById("trackContainer").appendChild(visual);
             setupDragAndDropForElement(visual, { type: 'track', sourceSlotIndex: slotIndex, level: level });
-            const planeObj = { slotIndex: slotIndex, element: visual, level: level, progress: savedProgress };
-            flyingPlanes.push(planeObj); updateUI(); 
+            flyingPlanes.push({ slotIndex: slotIndex, element: visual, level: level, progress: savedProgress }); updateUI(); 
         }
 
-        function removeFlyingPlaneBySlot(slotIdx) {
-            const pIndex = flyingPlanes.findIndex(p => p.slotIndex === slotIdx);
-            if (pIndex !== -1) { flyingPlanes[pIndex].element.remove(); flyingPlanes.splice(pIndex, 1); updateUI(); }
-        }
-
-        function flashFinishLine() { 
-            const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
-        }
-
-        // --- EN ÜST KATMAN PARA ANİMASYONU ---
+        function removeFlyingPlaneBySlot(slotIdx) { const pIndex = flyingPlanes.findIndex(p => p.slotIndex === slotIdx); if (pIndex !== -1) { flyingPlanes[pIndex].element.remove(); flyingPlanes.splice(pIndex, 1); updateUI(); } }
+        function flashFinishLine() { const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; }
+        
+        // --- PARA EKRANIN EN ÜSTÜNE ÇIKARILDI (Z-INDEX 9999999) ---
         function popMoneyFixed(amount) { 
             money += amount; updateUI(); 
             const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
@@ -864,7 +917,7 @@
             setTimeout(() => pop.remove(), 1500); 
         }
 
-        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist Uyumlu) ---
+        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist) ---
         function getPosAt(progress) {
             const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
             const cx = 152; const cy = 252; 
@@ -904,7 +957,7 @@
                 const oldProgress = p.progress; p.progress += speed; 
                 
                 let pos = getPosAt(p.progress);
-                let nextPos = getPosAt(p.progress + 1); // Rotasyon için bir adım sonrası
+                let nextPos = getPosAt(p.progress + 1); 
                 
                 let rawAngle = Math.atan2(nextPos.y - pos.y, nextPos.x - pos.x) * 180 / Math.PI;
                 let targetAngle = rawAngle + 90; 
@@ -918,7 +971,8 @@
 
                 let finalAngle = p.lastAngle + p.currentTilt;
 
-                p.element.style.transform = `translate(${pos.x - 32.5}px, ${pos.y - 32.5}px) rotate(${finalAngle}deg)`;
+                // FPS ARTIRICI: translate3d ile Hardware Acceleration (GPU) kullanımı
+                p.element.style.transform = `translate3d(${pos.x - 32.5}px, ${pos.y - 32.5}px, 0) rotate(${finalAngle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { flashFinishLine(); popMoneyFixed(getPlaneIncome(p.level) * currentIncomeMult); }
@@ -930,6 +984,13 @@
             const container = document.getElementById("activeBoosts"); container.innerHTML = ""; let now = Date.now();
             if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
             if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
+            
+            // Botları saniye başı güncelle
+            if(bots.length > 0) {
+                bots.forEach(b => { b.money += b.cps; });
+                const lbModal = document.getElementById("leaderboardModal");
+                if(lbModal && lbModal.style.display === "flex") { openLeaderboard(); }
+            }
             updateRewardsUI();
         }
 
