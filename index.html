@@ -11,12 +11,11 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Plane Tycoon">
     
-    <!-- TÜM CİHAZLAR İÇİN ZORUNLU LOGO ETİKETLERİ -->
-    <!-- Kral, resminin adının tam olarak "logo.png" (küçük harflerle) olduğundan emin ol -->
-    <link rel="apple-touch-icon" sizes="180x180" href="logo.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="logo.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="logo.png">
-    <link rel="shortcut icon" href="logo.png">
+    <!-- LOGO BURADA: Kendi fotoğrafının adını icon.jpg yapıp dosyaların arasına atman yeterli -->
+    <link rel="apple-touch-icon" sizes="180x180" href="icon.jpg">
+    <link rel="icon" type="image/jpeg" sizes="192x192" href="icon.jpg">
+    <link rel="icon" type="image/jpeg" sizes="512x512" href="icon.jpg">
+    <link rel="shortcut icon" href="icon.jpg">
 
     <style>
         * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
@@ -31,6 +30,41 @@
             background: radial-gradient(circle at center, #3498db 0%, #1a4b8c 70%, #0d2140 100%);
             display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
         }
+
+        /* ------------------ EFSANEVİ YÜKLEME EKRANI ------------------ */
+        #loadingOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center;
+            overflow: hidden; background: #0d2140; transition: opacity 0.5s ease;
+        }
+        .loading-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('icon.jpg') center/cover; filter: blur(15px) brightness(0.3); z-index: 0; transform: scale(1.1);
+        }
+        .loading-content {
+            z-index: 1; display: flex; flex-direction: column; align-items: center; width: 85%;
+        }
+        .loading-logo {
+            width: 140px; height: 140px; border-radius: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+            border: 4px solid #f1c40f; margin-bottom: 25px; object-fit: cover;
+        }
+        .loading-title {
+            font-size: 34px; background: linear-gradient(to right, #f1c40f, #e74c3c);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; 
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5); font-weight: 900; font-style: italic; text-align: center;
+        }
+        .loading-bar-container {
+            width: 100%; height: 10px; background: rgba(0,0,0,0.6); border-radius: 10px; overflow: hidden; border: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+        }
+        .loading-bar-fill {
+            width: 0%; height: 100%; background: linear-gradient(90deg, #3498db, #2ecc71, #f1c40f);
+            background-size: 200% 200%; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards, pulseGradient 2s infinite;
+            box-shadow: 0 0 15px #2ecc71;
+        }
+        .loading-text { margin-top: 15px; font-size: 15px; color: #a4c8ff; animation: pulseText 1s infinite alternate; font-weight: bold; letter-spacing: 1px;}
+        @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes pulseText { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        @keyframes pulseGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         /* ÖZEL ANİMASYONLU UYARI SİSTEMİ (TOAST) */
         #toastContainer {
@@ -49,37 +83,9 @@
         .custom-toast.info { border-color: #3498db; }
         .custom-toast.info .toast-icon { font-size: 20px; color: #3498db; text-shadow: 0 0 10px rgba(52,152,219,0.5); }
         .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
-        
         @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
-
-        /* GİRİŞ EKRANI */
-        #loginOverlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, rgba(26, 75, 140, 0.95), rgba(13, 33, 64, 0.98));
-            display: flex; justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(10px);
-        }
-        .login-box {
-            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 40px 25px; border-radius: 20px; text-align: center; width: 85%; box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-        }
-        .login-box h1 {
-            margin: 0 0 5px 0; font-size: 36px; background: linear-gradient(to right, #f1c40f, #f39c12);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-        .slogan { font-size: 13px; color: #a4c8ff; font-style: italic; margin-bottom: 30px; font-weight: bold; line-height: 1.4; }
-        .login-box input, .login-box select {
-            width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.3); border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 10px; color: white; font-size: 16px; outline: none; transition: border 0.3s;
-        }
-        .login-box input:focus, .login-box select:focus { border-color: #f1c40f; }
-        .login-btn {
-            width: 100%; padding: 15px; background: linear-gradient(45deg, #f1c40f, #e67e22);
-            border: none; border-radius: 10px; color: black; font-size: 18px; font-weight: 900;
-            cursor: pointer; margin-top: 10px; box-shadow: 0 5px 15px rgba(241, 196, 15, 0.4); transition: transform 0.1s;
-        }
-        .login-btn:active { transform: scale(0.95); }
 
         /* MODALLAR */
         .modal-overlay {
@@ -101,26 +107,33 @@
         .btn-save { background: #2ecc71; }
         .btn-close { background: #e74c3c; }
 
-        /* ÇERÇEVELER (PROFILE FRAMES) */
+        /* BENZERSİZ ÇERÇEVELER (PROFILE FRAMES) */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
-        .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 2px solid #444; cursor: pointer; position: relative; transition: 0.2s; }
+        .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 2px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
         .frame-card:active { transform: scale(0.95); }
         .frame-card.owned { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
         .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.2); box-shadow: 0 0 15px rgba(241,196,15,0.4); }
         
-        .profile-pic-container { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; background: #2a9df4; text-shadow: 1px 1px 2px black; position: relative; box-sizing: border-box; }
+        .profile-pic-container { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; background: #2a9df4; text-shadow: 1px 1px 2px black; position: relative; z-index: 2; }
         
+        /* Çerçeve Görsel Efektleri */
         .f-default { border: 2px solid white; }
         .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; }
-        .f-fire { border: 3px dashed #e74c3c; box-shadow: 0 0 15px #e74c3c; animation: fireGlow 0.8s infinite alternate; }
-        .f-neon { border: 3px solid #0f0; box-shadow: 0 0 15px #0f0, inset 0 0 10px #0f0; animation: neonPulse 1.5s infinite; }
-        .f-void { border: 3px solid #8e44ad; box-shadow: 0 0 20px #8e44ad; filter: drop-shadow(0 0 5px black); }
-        .f-god { background: linear-gradient(45deg, #f1c40f, #e74c3c, #9b59b6, #3498db, #f1c40f); background-size: 400% 400%; animation: godGradient 3s ease infinite; padding: 3px; border: none !important; }
-        .f-god .inner { background: #2a9df4; width: 100%; height: 100%; border-radius: 50%; display:flex; align-items:center; justify-content:center; }
-
-        @keyframes fireGlow { 0% { box-shadow: 0 0 10px #e74c3c, inset 0 0 5px #e74c3c; border-color: #e74c3c; } 100% { box-shadow: 0 0 25px #f39c12, inset 0 0 10px #f39c12; border-color: #f39c12; } }
-        @keyframes neonPulse { 0% { border-color: #0f0; box-shadow: 0 0 5px #0f0; } 50% { border-color: #afffaf; box-shadow: 0 0 20px #0f0; } 100% { border-color: #0f0; box-shadow: 0 0 5px #0f0; } }
-        @keyframes godGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        .f-fire { border: 2px solid #e74c3c; box-shadow: 0 0 15px #e74c3c, 0 0 5px #f39c12 inset; animation: fireGlow 0.5s infinite alternate; background: #c0392b; }
+        @keyframes fireGlow { 0% { box-shadow: 0 0 10px #e74c3c, 0 -5px 10px #f39c12; } 100% { box-shadow: 0 0 25px #f39c12, 0 -10px 15px #e74c3c; } }
+        
+        .f-neon { border: 3px solid #0ff; box-shadow: 0 0 15px #0ff, inset 0 0 15px #0ff; border-radius: 10px; animation: neonPulse 1s infinite alternate; }
+        @keyframes neonPulse { 0% { filter: drop-shadow(0 0 5px #0ff); } 100% { filter: drop-shadow(0 0 20px #0ff) drop-shadow(0 0 10px #f0f); border-color: #f0f; } }
+        
+        .f-void { border: 3px dashed #8e44ad; box-shadow: 0 0 20px #8e44ad, inset 0 0 20px black; background: #111; animation: voidSpin 4s linear infinite; }
+        @keyframes voidSpin { 0% { transform: rotate(0deg) scale(0.95); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(0.95); } }
+        
+        .f-god { background: #2a9df4; border: none; }
+        .f-god::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #f1c40f; border-bottom-color: #e74c3c; animation: godSpin 2s linear infinite; z-index: -1; }
+        .f-god::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 2px solid transparent; border-left-color: #9b59b6; border-right-color: #3498db; animation: godSpinReverse 1.5s linear infinite; z-index: -1; }
+        @keyframes godSpin { 100% { transform: rotate(360deg); } }
+        @keyframes godSpinReverse { 100% { transform: rotate(-360deg); } }
 
         /* HIZLANMA KADEMELERİ (TIER BAR) */
         .tier-container { display: flex; gap: 4px; justify-content: center; margin: 20px 0; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 10px; }
@@ -129,54 +142,42 @@
 
         /* KASA SİSTEMİ */
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .case-item {
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.5));
-            border: 2px solid; border-radius: 12px; padding: 15px 5px; cursor: pointer;
-            transition: transform 0.1s; display: flex; flex-direction: column; align-items: center;
-        }
+        .case-item { background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(0,0,0,0.5)); border: 2px solid; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: transform 0.1s; display: flex; flex-direction: column; align-items: center; }
         .case-item:active { transform: scale(0.95); }
         .case-icon { font-size: 30px; margin-bottom: 5px; }
         .case-name { font-size: 12px; font-weight: bold; margin-bottom: 5px; }
         .case-price { font-size: 11px; color: #f1c40f; font-weight: bold; }
         
         #rouletteContainer { display: none; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
-        .roulette-window {
-            width: 100%; height: 110px; background: #000; border: 3px solid #f1c40f; border-radius: 8px;
-            overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
+        .roulette-window { width: 100%; height: 110px; background: #000; border: 3px solid #f1c40f; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); }
         .roulette-strip { display: flex; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .roulette-item {
-            width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-right: 2px solid rgba(255,255,255,0.1); background: #1a1a2e; flex-shrink: 0; margin: 5px;
-            border-radius: 10px; position: relative; box-sizing: border-box;
-        }
-        .roulette-center-line {
-            position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: red;
-            transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px red;
-        }
+        .roulette-item { width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 2px solid rgba(255,255,255,0.1); background: #1a1a2e; flex-shrink: 0; margin: 5px; border-radius: 10px; position: relative; box-sizing: border-box; }
+        .roulette-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: red; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px red; }
 
         /* ÜST BAR VE MENÜ */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 8px; }
-        .username { font-size: 13px; font-style: italic; font-weight: bold; }
-        .currencies { display: flex; gap: 10px; }
-        .currency {
-            background: white; color: black; border-radius: 8px; padding: 4px 10px;
-            font-weight: 900; display: flex; align-items: center; gap: 5px; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        
+        /* SAĞ ÜST AYARLAR YERİ (Tıklanabilir Profil) */
+        .user-info { 
+            display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); 
+            padding: 5px 15px 5px 5px; border-radius: 25px; border: 1px solid rgba(255,255,255,0.2); 
+            cursor: pointer; transition: 0.2s; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
         }
-        .currency.money span { color: #f1c40f; font-size: 16px; }
-        .currency.gem span { color: #9b59b6; font-size: 16px; }
+        .user-info:active { transform: scale(0.95); }
+        .username { font-size: 14px; font-style: italic; font-weight: bold; }
+        .settings-icon { font-size: 16px; margin-left: 2px; }
+
+        .currencies { display: flex; gap: 8px; }
+        .currency { background: white; color: black; border-radius: 8px; padding: 4px 8px; font-weight: 900; display: flex; align-items: center; gap: 4px; font-size: 13px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .currency.money span { color: #f1c40f; font-size: 15px; }
+        .currency.gem span { color: #9b59b6; font-size: 15px; }
 
         .side-menu { position: absolute; top: 70px; display: flex; flex-direction: column; gap: 12px; z-index: 10; }
         .side-menu.left { left: 10px; }
         .side-menu.right { right: 10px; align-items: center; }
         .menu-btn { display: flex; flex-direction: column; align-items: center; font-size: 10px; font-weight: bold; cursor: pointer; }
-        .menu-btn .icon {
-            background: radial-gradient(circle, #fff, #ddd); border-radius: 50%;
-            width: 42px; height: 42px; display: flex; justify-content: center; align-items: center;
-            font-size: 20px; margin-bottom: 3px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-        }
+        .menu-btn .icon { background: radial-gradient(circle, #fff, #ddd); border-radius: 50%; width: 42px; height: 42px; display: flex; justify-content: center; align-items: center; font-size: 20px; margin-bottom: 3px; border: 2px solid rgba(255,255,255,0.8); box-shadow: 0 4px 6px rgba(0,0,0,0.4); transition: transform 0.1s; }
+        .menu-btn:active .icon { transform: scale(0.9); }
 
         .center-stats { position: absolute; top: 8%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
         .center-stats h1 { margin: 0; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; gap: 5px; }
@@ -187,7 +188,7 @@
         .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
         @keyframes pulseBoost { 0% { opacity: 0.8; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
 
-        /* SİMETRİK STADYUM PİSTİ */
+        /* SİMETRİK STADYUM PİSTİ VE UÇAKLAR */
         #trackContainer {
             position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
             width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; 
@@ -207,7 +208,6 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
-        /* UÇAK VE TURBO EFEKTLERİ */
         .flying-plane { 
             position: absolute; width: 65px; height: 65px; 
             transform-origin: center center; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; 
@@ -215,81 +215,41 @@
         }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
-        .turbo-base {
-            transform-origin: 50px 95px;
-            animation: turboFlicker 0.08s infinite alternate;
-        }
-        @keyframes turboFlicker {
-            0% { transform: scaleY(0.8) scaleX(0.9); opacity: 0.8; }
-            100% { transform: scaleY(1.3) scaleX(1.1); opacity: 1; }
-        }
+        .turbo-base { transform-origin: 50px 95px; animation: turboFlicker 0.08s infinite alternate; }
+        @keyframes turboFlicker { 0% { transform: scaleY(0.8) scaleX(0.9); opacity: 0.8; } 100% { transform: scaleY(1.3) scaleX(1.1); opacity: 1; } }
         
-        /* UZATILMIŞ PARA EFEKTİ */
-        .floating-money {
-            position: absolute; color: #f1c40f; font-weight: 900; font-size: 24px;
-            text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; 
-            pointer-events: none; z-index: 10; animation: popUpMoney 1.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards;
-        }
-        @keyframes popUpMoney { 
-            0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 
-            20% { transform: translate(-30px, -60px) scale(1.4); opacity: 1; } 
-            80% { opacity: 1; transform: translate(-30px, -90px) scale(1); } 
-            100% { opacity: 0; transform: translate(-30px, -120px) scale(0.8); } 
-        }
+        .floating-money { position: absolute; color: #f1c40f; font-weight: 900; font-size: 24px; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; pointer-events: none; z-index: 10; animation: popUpMoney 1.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
+        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-30px, -60px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-30px, -90px) scale(1); } 100% { opacity: 0; transform: translate(-30px, -120px) scale(0.8); } }
 
         /* HANGAR ALANI */
         .grid-container {
             position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%);
             display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px);
             gap: 10px; z-index: 20; padding: 12px; background: rgba(0, 0, 0, 0.25); border-radius: 24px;
-            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4);
-            border: 3px solid rgba(255,255,255,0.1);
+            box-shadow: inset 0 0 25px rgba(0,0,0,0.6), 0 8px 20px rgba(0,0,0,0.4); border: 3px solid rgba(255,255,255,0.1);
         }
-        .slot {
-            width: 100%; height: 100%; 
-            background: linear-gradient(to bottom, #27ae60, #1e8449);
-            border-radius: 16px; display: flex; justify-content: center; align-items: center;
-            border: 3px solid #2ecc71; position: relative;
-            box-shadow: 0 6px 0 #145a32, inset 0 4px 6px rgba(255,255,255,0.3);
-        }
+        .slot { width: 100%; height: 100%; background: linear-gradient(to bottom, #27ae60, #1e8449); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 3px solid #2ecc71; position: relative; box-shadow: 0 6px 0 #145a32, inset 0 4px 6px rgba(255,255,255,0.3); }
         .slot.drag-over { background: linear-gradient(to bottom, #f1c40f, #d35400); border-color: #f39c12; transform: scale(1.05); }
 
         .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 3s ease-in-out infinite; }
         .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
         .plane-item.ghost { opacity: 0.35; filter: grayscale(80%); animation: none; cursor: pointer; transition: all 0.2s; }
         .plane-item.ghost:hover { opacity: 0.7; filter: grayscale(30%); transform: scale(1.1); }
-        .plane-item.ghost:active { transform: scale(0.9); }
-
+        
         @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .level-tag { position: absolute; bottom: -6px; right: -6px; background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 900; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.6); }
+        .level-tag { position: absolute; bottom: -6px; right: -6px; background: #e74c3c; color: white; padding: 2px 8px; border-radius: 10px; font-size: 12px; font-weight: 900; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.6); z-index: 10; }
         @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3) drop-shadow(0 0 20px white); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 30px #f1c40f); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
         .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
 
         /* ÇÖP KUTUSU */
-        #trashBin {
-            position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%);
-            background: rgba(231, 76, 60, 0.95); border: 3px dashed white; border-radius: 14px;
-            padding: 15px 30px; color: white; font-weight: bold; font-size: 18px; display: none; z-index: 50;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6); backdrop-filter: blur(5px); pointer-events: auto;
-        }
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(231, 76, 60, 0.95); border: 3px dashed white; border-radius: 14px; padding: 15px 30px; color: white; font-weight: bold; font-size: 18px; display: none; z-index: 50; box-shadow: 0 8px 20px rgba(0,0,0,0.6); backdrop-filter: blur(5px); pointer-events: auto; }
         #trashBin.drag-over { transform: translateX(-50%) scale(1.1); background: red; border-color: #f1c40f; color: #f1c40f; }
 
-        /* MOBİL SÜRÜKLEME İÇİN HAYALET ÖĞE */
-        #dragGhost {
-            position: fixed; pointer-events: none; z-index: 10000;
-            width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2);
-            display: none; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-        }
+        #dragGhost { position: fixed; pointer-events: none; z-index: 10000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); }
 
         /* ALT BAR */
         .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
-        .bottom-btn {
-            flex: 1; background: linear-gradient(to bottom, #2ecc71, #27ae60);
-            border: 2px solid white; border-radius: 12px; padding: 8px;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: white; font-weight: 900; font-size: 13px; text-shadow: 1px 1px 2px black;
-            cursor: pointer; box-shadow: 0 5px 0 #1e8449; transition: transform 0.1s, box-shadow 0.1s;
-        }
+        .bottom-btn { flex: 1; background: linear-gradient(to bottom, #2ecc71, #27ae60); border: 2px solid white; border-radius: 12px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 13px; text-shadow: 1px 1px 2px black; cursor: pointer; box-shadow: 0 5px 0 #1e8449; transition: transform 0.1s, box-shadow 0.1s; }
         .bottom-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #1e8449; }
         .bottom-btn.shop { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #732d91; }
         .bottom-btn.shop:active { box-shadow: 0 0 0 #732d91; }
@@ -316,32 +276,30 @@
         <!-- TOAST BİLDİRİM ALANI -->
         <div id="toastContainer"></div>
         
-        <div id="loginOverlay">
-            <div class="login-box">
-                <h1>Plane Simulator</h1>
-                <div class="slogan">"Gökyüzü fatihi, çerçeveleri topla!"</div>
-                <button class="login-btn" id="btnLoadGame" style="display:none; background: linear-gradient(45deg, #2ecc71, #27ae60); margin-bottom: 15px;" onclick="loadGame()">💾 Kaldığın Yerden Devam Et</button>
-                <input type="text" id="usernameInput" placeholder="Pilot Adı" autocomplete="off">
-                <select id="countrySelect">
-                    <option value="🇹🇷">Türkiye 🇹🇷</option><option value="🇦🇿">Azerbaycan 🇦🇿</option>
-                    <option value="🇺🇸">ABD 🇺🇸</option><option value="🇩🇪">Almanya 🇩🇪</option>
-                    <option value="🇬🇧">İngiltere 🇬🇧</option><option value="🇯🇵">Japonya 🇯🇵</option>
-                </select>
-                <input type="password" id="passwordInput" placeholder="Şifre (İsteğe Bağlı)">
-                <button class="login-btn" onclick="login()">Yeni Oyuna Başla</button>
+        <!-- YENİ YÜKLEME EKRANI (KAYIT EKRANI YERİNE) -->
+        <div id="loadingOverlay">
+            <div class="loading-bg"></div>
+            <div class="loading-content">
+                <img src="icon.jpg" alt="Logo" class="loading-logo" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+                <h1 class="loading-title">Plane Tycoon</h1>
+                <div class="loading-bar-container">
+                    <div class="loading-bar-fill"></div>
+                </div>
+                <p class="loading-text">Hangara Bağlanılıyor...</p>
             </div>
         </div>
 
+        <!-- SAĞ ÜST İÇİN AYARLAR MENÜSÜ -->
         <div id="settingsModal" class="modal-overlay">
             <div class="modal-content">
-                <h2>⚙️ Ayarlar</h2>
+                <h2>⚙️ Profil Ayarları</h2>
                 <input type="text" id="settingNameInput" placeholder="Yeni Pilot Adı" autocomplete="off">
                 <select id="settingCountrySelect">
                     <option value="🇹🇷">Türkiye 🇹🇷</option><option value="🇦🇿">Azerbaycan 🇦🇿</option>
                     <option value="🇺🇸">ABD 🇺🇸</option><option value="🇩🇪">Almanya 🇩🇪</option>
                     <option value="🇬🇧">İngiltere 🇬🇧</option><option value="🇯🇵">Japonya 🇯🇵</option>
                 </select>
-                <button class="modal-btn btn-save" onclick="saveSettings()">Kaydet</button>
+                <button class="modal-btn btn-save" onclick="saveSettings()">Değişiklikleri Kaydet</button>
                 <button class="modal-btn btn-close" onclick="closeSettings()">Kapat</button>
             </div>
         </div>
@@ -364,9 +322,7 @@
             <div class="modal-content">
                 <h2>💎 Elmas Dükkanı</h2>
                 <p style="font-size:12px; color:#aaa;">Profillerine hava katacak efsanevi çerçeveler satın al!</p>
-                <div class="frame-grid" id="frameShopGrid">
-                    <!-- Çerçeveler JS ile dolacak -->
-                </div>
+                <div class="frame-grid" id="frameShopGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeDiamondShop()">Kapat</button>
             </div>
         </div>
@@ -376,7 +332,6 @@
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
                 <h2 style="margin-bottom: 15px; color: #3498db;">🏪 Dükkan</h2>
                 
-                <!-- Hızlanma Bölümü -->
                 <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e74c3c;">
                     <h3 style="margin: 0 0 10px 0; color: #e74c3c;">⚡ 2x Hızlanma</h3>
                     <p style="font-size:11px; color:#aaa; margin-bottom:5px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
@@ -389,12 +344,9 @@
                     <button class="modal-btn" style="background:#e67e22; font-size:14px; padding:10px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
 
-                <!-- Uçak Galerisi -->
                 <h3 style="color:#f1c40f; margin-bottom:5px;">✈️ Uçak Galerisi</h3>
                 <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Ulaştığın seviyeye kadar tüm uçaklar burada.</p>
-                <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 10px; padding-right: 5px;">
-                    <!-- JS ile dinamik uçaklar buraya gelecek -->
-                </div>
+                <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 10px; padding-right: 5px;"></div>
 
                 <button class="modal-btn btn-close" style="margin-top:15px;" onclick="closeGeneralShop()">Kapat</button>
             </div>
@@ -418,13 +370,15 @@
             </div>
         </div>
 
+        <!-- ÜST BAR -->
         <div class="top-bar">
-            <div class="user-info">
-                <!-- PROFİL ÇERÇEVESİ BURADA -->
+            <div class="user-info" onclick="openSettings()">
+                <!-- PROFİL ÇERÇEVESİ -->
                 <div class="profile-pic-container f-default" id="userProfileFrame">
                     <span id="playerLvl">1</span>
                 </div>
-                <div class="username" id="displayUsername">Pilot</div>
+                <div class="username" id="displayUsername">🇹🇷 Pilot</div>
+                <div class="settings-icon">⚙️</div>
             </div>
             <div class="currencies">
                 <div class="currency money"><span>❂</span> <div id="moneyDisplay">0</div></div>
@@ -433,7 +387,6 @@
         </div>
 
         <div class="side-menu left">
-            <div class="menu-btn" onclick="openSettings()"><div class="icon">⚙️</div>Ayarlar</div>
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
         </div>
 
@@ -458,7 +411,6 @@
         <div id="trashBin">🗑️ Uçağı Sil</div>
 
         <div class="bottom-bar">
-            <!-- GENEL DÜKKAN BUTONU (Eski Hızlanma) -->
             <div class="bottom-btn speed" onclick="openGeneralShop()">
                 <span class="big" id="speedBtnText">🏪 Dükkan</span>
             </div>
@@ -466,7 +418,6 @@
                 <span class="big">✈️ Al Lvl. <span id="buyLvlDisplay">1</span></span>
                 <span class="price">❂ <span id="buyPriceDisplay">80</span></span>
             </div>
-            <!-- ELMAS DÜKKANI BUTONU -->
             <div class="bottom-btn shop" onclick="openDiamondShop()">
                 <span class="big">💎</span> Elmas Dükkanı
             </div>
@@ -500,28 +451,57 @@
         let gameStarted = false; 
 
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
-        
-        // HIZ VE ÇERÇEVE SİSTEMLERİ
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
+        
+        // ÇERÇEVE SİSTEMLERİ
         let ownedFrames = ['default']; let activeFrame = 'default';
         const framesData = [
             { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
-            { id: 'gold', name: 'Altın Çerçeve', price: 15, cssClass: 'f-gold' },
-            { id: 'fire', name: 'Ateş Çerçevesi', price: 40, cssClass: 'f-fire' },
-            { id: 'neon', name: 'Neon Çerçeve', price: 80, cssClass: 'f-neon' },
-            { id: 'void', name: 'Void Çerçeve', price: 150, cssClass: 'f-void' },
-            { id: 'god', name: 'Tanrısal Çerçeve', price: 300, cssClass: 'f-god' }
+            { id: 'gold', name: 'Altın', price: 15, cssClass: 'f-gold' },
+            { id: 'fire', name: 'Ateş', price: 40, cssClass: 'f-fire' },
+            { id: 'neon', name: 'Neon', price: 80, cssClass: 'f-neon' },
+            { id: 'void', name: 'Void', price: 150, cssClass: 'f-void' },
+            { id: 'god', name: 'Tanrısal', price: 300, cssClass: 'f-god' }
         ];
 
         let nextRewardTime = 0; let currentMinuteReward = null;
 
+        // YÜKLEME EKRANI BAŞLANGICI
         window.onload = () => {
-            if(localStorage.getItem("planeTycoonSave")) {
-                document.getElementById("btnLoadGame").style.display = "block";
+            setTimeout(() => {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; initGameSession(); }, 500);
+            }, 4000);
+        };
+
+        function initGameSession() {
+            const saved = localStorage.getItem("planeTycoonSave");
+            if (saved) {
+                const data = JSON.parse(saved);
+                money = data.money || 0; gems = data.gems || 0; 
+                playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; currentCountry = data.currentCountry || "🇹🇷";
+                boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
+                boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
+                ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
+                nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
+                gridSlots = data.gridSlots || new Array(10).fill(null);
+                
+                gameStarted = true;
+                const savedFlying = data.flying || [];
+                savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
+                initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
+            } else {
+                money = 0; gems = 50; playerLevel = 1; currentName = "Pilot"; currentCountry = "🇹🇷";
+                gameStarted = true;
+                setTimeout(() => { flashFinishLine(); popMoney(318, 252, 100); }, 500); 
+                initGrid(); updateFrameUI();
+                showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
+            document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
             setInterval(updateTickers, 1000); 
             requestAnimationFrame(gameLoop);
-        };
+        }
 
         function formatNumber(num) {
             if (num < 1000) return Math.floor(num).toString();
@@ -534,7 +514,6 @@
         }
 
         function getPlaneIncome(level) { return Math.floor(10 * Math.pow(1.15, level)); }
-        
         function getMarketLevel() { return Math.max(1, playerLevel - 2); }
         function getMarketPrice() { return Math.floor(50 * Math.pow(1.6, getMarketLevel())); }
 
@@ -543,62 +522,11 @@
             const data = {
                 money, gems, playerLevel, currentName, currentCountry,
                 boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
-                ownedFrames, activeFrame,
-                nextRewardTime, currentMinuteReward,
+                ownedFrames, activeFrame, nextRewardTime, currentMinuteReward,
                 gridSlots: gridSlots,
                 flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress }))
             };
             localStorage.setItem("planeTycoonSave", JSON.stringify(data));
-        }
-        setInterval(saveGame, 2000); 
-
-        function loadGame() {
-            const saved = localStorage.getItem("planeTycoonSave");
-            if (!saved) return;
-            const data = JSON.parse(saved);
-            money = data.money || 0; gems = data.gems || 0; 
-            playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; currentCountry = data.currentCountry || "🇹🇷";
-            boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
-            boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
-            
-            ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
-            
-            nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
-            gridSlots = data.gridSlots || new Array(10).fill(null);
-            
-            document.getElementById('loginOverlay').style.display = 'none';
-            if (currentName.toLowerCase() === "cinar" && money > 999999999) {
-                document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
-            } else { document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`; }
-            
-            gameStarted = true;
-            const savedFlying = data.flying || [];
-            savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
-            initGrid(); updateFrameUI(); showToast("Oyun başarıyla yüklendi!", "info");
-        }
-
-        function login() {
-            const user = document.getElementById('usernameInput').value.trim();
-            const pass = document.getElementById('passwordInput').value.trim();
-            const country = document.getElementById('countrySelect').value;
-            if(user === "") { showToast("Pilot adını gir!", "error"); return; }
-
-            currentName = user; currentCountry = country;
-            if(user.toLowerCase() === "cinar" && pass === "1234") {
-                money = 999999999999999; gems = 999999; playerLevel = 200;
-                document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
-                showToast("VIP Girişi Başarılı!", "info");
-            } else {
-                money = 0; gems = 50; 
-                localStorage.removeItem("planeTycoonSave"); 
-                document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
-            }
-            
-            nextRewardTime = Date.now();
-            document.getElementById('loginOverlay').style.display = 'none';
-            gameStarted = true;
-            if(money === 0) { setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); showToast("Sana 50 Elmas Hediye Ettik!", "info"); }
-            initGrid(); updateFrameUI();
         }
 
         function openSettings() {
@@ -659,13 +587,9 @@
             let now = Date.now();
             let leftMs = Math.max(0, boostSpeedEnd - now);
             let totalMins = Math.ceil(leftMs / 60000);
-            
             let boxesFilled = Math.min(10, Math.ceil(totalMins / 3));
             const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot');
-            slots.forEach((s, idx) => {
-                if(idx < boxesFilled) s.classList.add('filled');
-                else s.classList.remove('filled');
-            });
+            slots.forEach((s, idx) => { if(idx < boxesFilled) s.classList.add('filled'); else s.classList.remove('filled'); });
 
             let displayEl = document.getElementById("shopSpeedBoostTimeLeft");
             if(leftMs > 0) {
@@ -680,32 +604,21 @@
             if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; }
             if(gems < 5) { showToast("Yetersiz bakiye (5 💎 Elmas gerekli)!", "error"); return; }
             
-            gems -= 5;
-            boostSpeedMult = 2;
-            let addTime = 3 * 60 * 1000; // 3 dk
-            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime;
-            else boostSpeedEnd += addTime;
-            
+            gems -= 5; boostSpeedMult = 2; let addTime = 3 * 60 * 1000;
+            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime; else boostSpeedEnd += addTime;
             if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
             
             saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
         }
 
         function openGeneralShop() {
-            updateSpeedModalUI(); 
-            const grid = document.getElementById("planeShopGrid");
-            grid.innerHTML = "";
-            
+            updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
             for(let i = 1; i <= playerLevel; i++) {
                 let price = Math.floor(50 * Math.pow(1.6, i));
                 let planeSVG = getJetSVG(i, false); 
-                
                 grid.innerHTML += `
                     <div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border-color:#3498db; padding: 10px;">
-                        <div style="width:55px; height:55px; position:relative; margin-bottom:5px;">
-                            ${planeSVG}
-                            <div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div>
-                        </div>
+                        <div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div>
                         <div style="font-size:11px; color:#f1c40f; font-weight:bold; margin: 8px 0;">❂ ${formatNumber(price)}</div>
                         <button class="modal-btn btn-save" style="padding:6px; font-size:12px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button>
                     </div>
@@ -713,130 +626,65 @@
             }
             document.getElementById("generalShopModal").style.display = "flex";
         }
-        
         function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
-        
         function buySpecificPlane(level, price) {
             if(money >= price) {
                 const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) {
-                    money -= price; 
-                    gridSlots[emptyIndex] = { level: level, isFlying: false }; 
-                    initGrid(); saveGame(); updateUI();
-                    showToast(`Lv.${level} uçak satın alındı!`, "info");
-                } else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
+                if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } 
+                else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
             } else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
-        // Uçak Çizim Fonksiyonu
+        // --- GÜÇLENDİRİLMİŞ DETAYLI UÇAK ÇİZİM MOTORU ---
         function getJetSVG(level, isFlying = true) {
             let l = ((level - 1) % 200) + 1;
             let hueBase = (l * 37) % 360;
-            let bodyColor = `hsl(${hueBase}, 85%, 55%)`;
-            let wingColor = `hsl(${(hueBase + 60) % 360}, 90%, 45%)`;
-            let accentColor = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`;
-            let glassColor = `#74b9ff`;
-
-            let turboColorOuter = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; 
-            let turboColorInner = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
-
-            let noseType = l % 5; 
-            let wingStyle = l % 6; 
-            let engineCount = (l % 3) + 1; 
-            let tailStyle = l % 4; 
+            let bodyColor = `hsl(${hueBase}, 85%, 55%)`; let wingColor = `hsl(${(hueBase + 60) % 360}, 90%, 45%)`;
+            let accentColor = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; let glassColor = `#74b9ff`;
+            let turboColorOuter = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; let turboColorInner = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
 
             let svgParts = '';
-
-            let turboLength = isFlying ? 150 : 110;
-            let turboOuterOpacity = isFlying ? 0.7 : 0.3;
             let turboAnimation = isFlying ? '' : 'animation-duration: 0.3s; transform: scaleY(0.7); opacity: 0.8;';
             
-            let turboHTML = `
+            // Ekzoz Ateşi
+            svgParts += `
                 <g class="turbo-base" style="${turboAnimation}">
-                    <polygon points="35,90 50,${turboLength} 65,90" fill="${turboColorOuter}" opacity="${turboOuterOpacity}" filter="blur(3px)"/>
+                    <polygon points="35,90 50,${isFlying ? 150 : 110} 65,90" fill="${turboColorOuter}" opacity="${isFlying ? 0.7 : 0.3}" filter="blur(3px)"/>
                     <polygon points="40,90 50,${isFlying ? 130 : 105} 60,90" fill="${turboColorInner}" opacity="0.9" filter="blur(1px)"/>
                     <polygon points="45,90 50,${isFlying ? 110 : 98} 55,90" fill="#fff"/>
                 </g>
             `;
             
-            svgParts += turboHTML;
+            // Temel Gövde ve Kanatlar
+            svgParts += `<polygon points="50,40 10,75 18,90 45,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            svgParts += `<polygon points="50,40 90,75 82,90 55,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            
+            // Kanat Detayları (Panel Çizgileri)
+            svgParts += `<line x1="25" y1="70" x2="35" y2="70" stroke="rgba(0,0,0,0.4)" stroke-width="2"/>`;
+            svgParts += `<line x1="65" y1="70" x2="75" y2="70" stroke="rgba(0,0,0,0.4)" stroke-width="2"/>`;
+            svgParts += `<line x1="20" y1="78" x2="40" y2="78" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>`;
+            svgParts += `<line x1="60" y1="78" x2="80" y2="78" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/>`;
 
-            if (noseType === 0) {
-                svgParts += `<polygon points="50,5 38,45 38,85 50,95 62,85 62,45" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-            } else if (noseType === 1) {
-                svgParts += `<path d="M 40,20 L 60,20 L 65,80 L 50,95 L 35,80 Z" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-            } else if (noseType === 2) {
-                svgParts += `<ellipse cx="50" cy="50" rx="16" ry="42" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
-            } else if (noseType === 3) {
-                svgParts += `<polygon points="50,10 42,40 36,85 50,95 64,85 58,40" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<circle cx="50" cy="25" r="4" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
-            } else {
-                svgParts += `<path d="M 50,2 L 62,30 C 65,60 58,85 50,95 C 42,85 35,60 38,30 Z" fill="${bodyColor}" stroke="#111" stroke-width="3"/>`;
-            }
+            // Motor ve Gövde
+            svgParts += `<path d="M 40,20 L 60,20 L 65,80 L 50,95 L 35,80 Z" fill="${bodyColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
+            svgParts += `<polygon points="50,75 42,98 58,98" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
+            
+            // Ortadan geçen parlak metalik omurga
+            svgParts += `<line x1="50" y1="50" x2="50" y2="90" stroke="rgba(0,0,0,0.5)" stroke-width="4"/>`;
+            svgParts += `<line x1="50" y1="52" x2="50" y2="88" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>`;
 
-            if (wingStyle === 0) {
-                svgParts += `<polygon points="50,40 10,75 18,90 45,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-                svgParts += `<polygon points="50,40 90,75 82,90 55,75" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-            } else if (wingStyle === 1) {
-                svgParts += `<polygon points="45,30 5,50 15,85 45,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-                svgParts += `<polygon points="55,30 95,50 85,85 55,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-            } else if (wingStyle === 2) {
-                svgParts += `<path d="M 42,30 L 8,50 L 15,70 L 42,60 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<path d="M 58,30 L 92,50 L 85,70 L 58,60 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<path d="M 42,50 L 20,65 L 25,80 L 42,70 Z" fill="${accentColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<path d="M 58,50 L 80,65 L 75,80 L 58,70 Z" fill="${accentColor}" stroke="#111" stroke-width="3"/>`;
-            } else if (wingStyle === 3) {
-                svgParts += `<polygon points="45,35 90,20 85,55 45,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-                svgParts += `<polygon points="55,35 10,20 15,55 55,70" fill="${wingColor}" stroke="#111" stroke-width="3" stroke-linejoin="round"/>`;
-            } else if (wingStyle === 4) {
-                svgParts += `<path d="M 42,40 C 20,35 5,60 15,80 C 30,85 42,70 42,40 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<path d="M 58,40 C 80,35 95,60 85,80 C 70,85 58,70 58,40 Z" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-            } else {
-                svgParts += `<polygon points="50,45 12,65 22,88 45,70" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<polygon points="50,45 88,65 78,88 55,70" fill="${wingColor}" stroke="#111" stroke-width="3"/>`;
-                svgParts += `<circle cx="22" cy="76" r="7" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
-                svgParts += `<circle cx="78" cy="76" r="7" fill="${accentColor}" stroke="#111" stroke-width="2"/>`;
-            }
-
-            if (engineCount === 1) {
-                svgParts += `<ellipse cx="50" cy="75" rx="7" ry="12" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            } else if (engineCount === 2) {
-                svgParts += `<ellipse cx="32" cy="65" rx="6" ry="10" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-                svgParts += `<ellipse cx="68" cy="65" rx="6" ry="10" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            } else {
-                svgParts += `<ellipse cx="50" cy="80" rx="5" ry="9" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-                svgParts += `<ellipse cx="28" cy="60" rx="5" ry="8" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-                svgParts += `<ellipse cx="72" cy="60" rx="5" ry="8" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            }
-
-            if (tailStyle === 0) {
-                svgParts += `<polygon points="50,75 42,98 58,98" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            } else if (tailStyle === 1) {
-                svgParts += `<polygon points="42,78 30,96 40,96" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-                svgParts += `<polygon points="58,78 70,96 60,96" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            } else if (tailStyle === 2) {
-                svgParts += `<path d="M 45,75 L 50,55 L 55,75 Z" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            } else {
-                svgParts += `<polygon points="35,80 50,95 65,80" fill="${accentColor}" stroke="#111" stroke-width="2.5"/>`;
-            }
-
+            // Cam (Kokpit)
             svgParts += `<path d="M 50,22 C 45,22 43,35 43,45 C 43,52 57,52 57,45 C 57,35 55,22 50,22 Z" fill="${glassColor}" stroke="#111" stroke-width="2.5"/>`;
-            svgParts += `<path d="M 47,28 C 47,28 49,35 47,40" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+            // Kokpit Cam Parlaması (Gerçekçi detay)
+            svgParts += `<path d="M 47,26 C 45,30 46,38 50,42" stroke="rgba(255,255,255,0.8)" stroke-width="2" fill="none" stroke-linecap="round"/>`;
 
-            return `
-                <svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;">
-                    <g filter="url(#planeShadow)">
-                        ${svgParts}
-                    </g>
-                </svg>
-            `;
+            return `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;"><g filter="url(#planeShadow)">${svgParts}</g></svg>`;
         }
 
         function updateUI() {
             document.getElementById("moneyDisplay").innerText = formatNumber(money);
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
             document.getElementById("centerMoney").innerText = formatNumber(money);
-            
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
             
@@ -1063,12 +911,14 @@
             setTimeout(() => pop.remove(), 1800); 
         }
 
+        // --- MİLİMETRİK UÇUŞ ROTASI VE KUSURSUZ YÖNELİM SİSTEMİ ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
-            const trackWidth = 332; const trackHeight = 532; 
-            const R = trackWidth / 2; const L = trackHeight - trackWidth; const P = 2 * L + 2 * Math.PI * R; 
-            const centerX = 152; const centerY = 252; 
+            const L = 200; // Düzlüğün Uzunluğu
+            const R = 166; // Oval Köşenin Yarıçapı
+            const P = 2 * L + 2 * Math.PI * R; // Tüm Pistin Toplam Uzunluğu
+            const cx = 180; const cy = 280; // Pist Merkez Koordinatları
 
             let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
@@ -1079,17 +929,34 @@
                 let d = p.progress % P; if (d < 0) d += P; 
                 let x = 0, y = 0, angle = 0;
 
-                if (d < L / 2) { x = R; y = d; angle = 180; } 
-                else if (d < L / 2 + Math.PI * R) { let theta = (d - L/2) / R; x = R * Math.cos(theta); y = L/2 + R * Math.sin(theta); angle = 180 + (theta * 180 / Math.PI); } 
-                else if (d < L / 2 + Math.PI * R + L) { let localD = d - (L/2 + Math.PI * R); x = -R; y = L/2 - localD; angle = 0; } 
-                else if (d < L / 2 + 2 * Math.PI * R + L) { let theta = (d - (L/2 + Math.PI * R + L)) / R; x = -R * Math.cos(theta); y = -L/2 - R * Math.sin(theta); angle = 0 + (theta * 180 / Math.PI); } 
-                else { let localD = d - (L/2 + 2 * Math.PI * R + L); x = R; y = -L/2 + localD; angle = 180; }
+                if (d < L/2) {
+                    x = cx + R; y = cy + d; angle = 90;
+                }
+                else if (d < L/2 + Math.PI * R) {
+                    let dist = d - L/2; let theta = dist / R;
+                    x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
+                    angle = 90 + (theta * 180 / Math.PI);
+                }
+                else if (d < L/2 + Math.PI * R + L) {
+                    let dist = d - (L/2 + Math.PI * R);
+                    x = cx - R; y = (cy + L/2) - dist; angle = 270;
+                }
+                else if (d < L/2 + 2 * Math.PI * R + L) {
+                    let dist = d - (L/2 + Math.PI * R + L); let theta = Math.PI + dist / R;
+                    x = cx + R * Math.cos(theta); y = (cy - L/2) + R * Math.sin(theta);
+                    angle = 90 + (theta * 180 / Math.PI);
+                }
+                else {
+                    let dist = d - (L/2 + 2 * Math.PI * R + L);
+                    x = cx + R; y = (cy - L/2) + dist; angle = 90;
+                }
 
-                p.element.style.transform = `translate(${centerX + x - 25}px, ${centerY + y - 25}px) rotate(${angle}deg)`;
+                // 32.5 Uçağın tam merkez noktası (65/2)
+                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${angle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
-                    flashFinishLine(); popMoney(centerX + R, centerY, getPlaneIncome(p.level) * currentIncomeMult); 
+                    flashFinishLine(); popMoney(cx + R, cy, getPlaneIncome(p.level) * currentIncomeMult); 
                 }
             });
 
@@ -1105,18 +972,11 @@
                 container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
             } else { boostMoneyMult = 1; }
 
-            // Üst bar ve ana menü hız ikonu güncellemeleri
             if (now < boostSpeedEnd) {
                 let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                
-                // Dükkan Modal'ı açıksa güncellesin
                 let shopEl = document.getElementById("generalShopModal");
-                if(shopEl && shopEl.style.display === "flex") {
-                    updateSpeedModalUI();
-                }
-            } else { 
-                boostSpeedMult = 1; 
-            }
+                if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); }
+            } else { boostSpeedMult = 1; }
             updateRewardsUI();
         }
 
@@ -1203,16 +1063,12 @@
         ];
 
         function getRandomRarity(crateId) {
-            let roll = Math.random() * 100; 
-            let tier = Math.ceil(crateId / 4); 
-            let chances = [];
-            
+            let roll = Math.random() * 100; let tier = Math.ceil(crateId / 4); let chances = [];
             if (tier === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; 
             if (tier === 2) chances = [40, 35, 15, 7, 2.5, 0.5];
             if (tier === 3) chances = [25, 35, 20, 12, 6, 2]; 
             if (tier === 4) chances = [15, 30, 25, 16, 10, 4];
             if (tier >= 5) chances = [5, 15, 25, 25, 18, 12];
-            
             let acc = 0; for (let i=0; i<6; i++) { acc += chances[i]; if (roll <= acc) return rarities[i]; } return rarities[0];
         }
 
@@ -1233,11 +1089,8 @@
                 value = 5 * crate.id * (rarity.id + 1); title = `${formatNumber(value)} Elmas`;
             } else if (type === 'boost') {
                 if (rarity.id <= 1) rarity = rarities[2]; 
-                if (rarity.id === 2 || rarity.id === 3) {
-                    let isMoney = Math.random() > 0.5; value = isMoney ? '2xMoney' : '2xSpeed'; title = isMoney ? '2x Para (3Dk)' : '2x Hız (3Dk)';
-                } else {
-                    let isMoney = Math.random() > 0.5; value = isMoney ? '5xMoney' : '5xSpeed'; title = isMoney ? '5x Para (3Dk)' : '5x Hız (3Dk)';
-                }
+                if (rarity.id === 2 || rarity.id === 3) { let isMoney = Math.random() > 0.5; value = isMoney ? '2xMoney' : '2xSpeed'; title = isMoney ? '2x Para (3Dk)' : '2x Hız (3Dk)'; } 
+                else { let isMoney = Math.random() > 0.5; value = isMoney ? '5xMoney' : '5xSpeed'; title = isMoney ? '5x Para (3Dk)' : '5x Hız (3Dk)'; }
             }
             return { type, value, rarity, title };
         }
@@ -1252,9 +1105,7 @@
             });
             document.getElementById("caseModal").style.display = "flex"; document.getElementById("caseContent").style.display = "block"; document.getElementById("rouletteContainer").style.display = "none";
         }
-        
         function closeCaseMenu() { document.getElementById("caseModal").style.display = "none"; }
-        
         function buyCase(c) {
             const emptyIndex = gridSlots.indexOf(null);
             if (emptyIndex === -1) { showToast("Hangarda yer yok!", "error"); return; }
@@ -1287,15 +1138,14 @@
                 }, 4000);
             }, 50);
         }
-        
         function takeCaseReward() {
             document.getElementById("btnTakeReward").style.display = "none";
             if (currentWonReward.type === 'plane') {
                 const emptyIndex = gridSlots.indexOf(null);
                 if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) { playerLevel = currentWonReward.value; updateFrameUI(); } }
-            } else if (currentWonReward.type === 'money') { money += currentWonReward.value;
-            } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value;
-            } else if (currentWonReward.type === 'boost') {
+            } else if (currentWonReward.type === 'money') { money += currentWonReward.value; } 
+            else if (currentWonReward.type === 'gem') { gems += currentWonReward.value; } 
+            else if (currentWonReward.type === 'boost') {
                 let duration = 3 * 60 * 1000; let now = Date.now();
                 if(currentWonReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
                 if(currentWonReward.value === '5xMoney') { boostMoneyMult = 5; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
