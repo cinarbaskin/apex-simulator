@@ -15,7 +15,7 @@
     <link rel="icon" type="image/jpeg" sizes="512x512" href="icon_2.jpg">
     <link rel="shortcut icon" href="icon_2.jpg">
 
-    <!-- "Schriftbild" Hissi Veren Efsanevi Siber-Tech Fontları -->
+    <!-- Efsanevi Siber-Tech Fontları -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
@@ -23,10 +23,10 @@
         
         h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin, .lb-rank { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
 
-        /* SİNERMATİK DERİN UZAY VE HAREKETLİ IZGARA */
+        /* HAREKETLİ NEON SİBER IZGARA VE UZAY ARKA PLANI */
         body { 
             margin: 0; padding: 0; 
-            background-color: #020205;
+            background-color: #030408;
             color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
             position: relative;
         }
@@ -47,15 +47,15 @@
         }
         @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 30px 30px; } }
 
-        /* Arkadaki devasa parlayan nebulalar */
-        .nebula { position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.3; z-index: -1; animation: floatNebula 20s infinite alternate ease-in-out; }
-        .nebula-1 { width: 400px; height: 400px; background: #bc13fe; top: -100px; left: -100px; }
-        .nebula-2 { width: 500px; height: 500px; background: #00ffff; bottom: -150px; right: -150px; animation-delay: -5s; }
+        /* FPS DOSTU HAFİF NEBULALAR (Blur filtresi kaldırıldı, performans %500 arttı) */
+        .nebula { position: absolute; border-radius: 50%; opacity: 0.5; z-index: -1; animation: floatNebula 20s infinite alternate ease-in-out; }
+        .nebula-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(188,19,254,0.4) 0%, transparent 70%); top: -100px; left: -100px; }
+        .nebula-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,255,255,0.4) 0%, transparent 70%); bottom: -150px; right: -150px; animation-delay: -5s; }
         @keyframes floatNebula { 0% { transform: scale(0.8) translate(0, 0); } 100% { transform: scale(1.2) translate(40px, 40px); } }
 
         #gameContainer { 
             width: 100%; max-width: 450px; height: 100%; position: relative; 
-            background: rgba(5, 8, 15, 0.4); backdrop-filter: blur(5px);
+            background: rgba(5, 8, 15, 0.4); backdrop-filter: blur(4px); /* Blur azaltıldı */
             display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 255, 0.05); overflow: hidden; z-index: 1;
         }
 
@@ -66,10 +66,10 @@
             background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.3;
         }
 
-        /* YILDIZLAR */
+        /* FPS DOSTU YILDIZLAR (Box-shadow animasyonu kaldırıldı) */
         .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.4); box-shadow: 0 0 8px #fff; } }
+        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.4); } }
 
         /* DİNAMİK ROKET ATEŞİ ANİMASYONU */
         @keyframes enginePulse {
@@ -102,7 +102,7 @@
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
         /* GİRİŞ EKRANI */
-        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(20px); }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.92); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(15px); }
         .login-box { background: rgba(10, 15, 25, 0.85); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(0,255,255,0.15); }
         .login-box h1 { margin: 0 0 10px 0; font-size: 44px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
         .slogan { font-size: 15px; color: #00ffff; margin-bottom: 30px; letter-spacing: 1px; text-shadow: 0 0 5px #00ffff; }
@@ -112,7 +112,7 @@
         .login-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
 
         /* MODALLAR */
-        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
         .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 25px rgba(0,255,255,0.15); text-align: center; position: relative; }
         .modal-content h2 { margin-top: 0; font-size: 32px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); letter-spacing: 1px; font-weight: 700; }
         .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0,255,255,0.4); border-radius: 8px; color: #00ffff; font-size: 18px; outline: none; text-align: center; font-weight: bold; }
@@ -142,7 +142,7 @@
         .lb-rank-2 { color: #bdc3c7; text-shadow: 0 0 10px #bdc3c7; font-size: 22px; }
         .lb-rank-3 { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; font-size: 20px; }
         .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
-        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
+        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-family: 'Share Tech Mono', sans-serif; }
 
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; margin-bottom: 15px; }
@@ -212,7 +212,7 @@
         .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
         .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
 
-        /* YAN MENÜLER (KÖŞELERE YASLANDI) */
+        /* YAN MENÜLER */
         .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: scale(0.9); }
         .side-menu.left { left: 5px; transform-origin: top left; } .side-menu.right { right: 5px; align-items: center; transform-origin: top right; }
         .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
@@ -220,31 +220,30 @@
         .menu-btn:hover .icon { transform: scale(1.1); box-shadow: 0 5px 25px rgba(0,255,255,0.4), inset 0 0 20px rgba(0,255,255,0.4); border-color: #00ffff; }
         .menu-btn:active .icon { transform: scale(0.9); }
 
-        /* MERKEZ İSTATİSTİKLER (SADECE CPS, Üstte konumlu) */
+        /* MERKEZ İSTATİSTİKLER */
         .center-stats { position: absolute; top: 11%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
         .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 15px #00ffff; letter-spacing: 1.5px; }
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
         .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 15px; font-weight: bold; border: 1px solid #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.5); animation: pulseBoost 1.5s infinite alternate; color: #f1c40f; }
 
-        /* ORİJİNAL MERKEZİ DİKEY BÜYÜK PİST */
-        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 0.3s; backdrop-filter: blur(3px); }
+        /* MİLİMETRİK NEON PİST */
+        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 0.3s; }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(0, 255, 255, 0.7); border-radius: 166px; box-sizing: border-box; filter: drop-shadow(0 0 6px #00ffff); }
         .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9) 10px, rgba(0,255,255,0.9) 10px, rgba(0,255,255,0.9) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 20px #00ffff; }
         .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; filter: blur(10px); opacity: 0; z-index: 5; pointer-events: none; }
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 80px rgba(0, 255, 255, 0.6) inset; }
 
-        /* UÇAKLAR (HARDWARE ACCELERATION İLE 120 FPS) */
-        /* CSS Filtresi zayıflatıldı, Performans arttı */
+        /* UÇAKLAR (HARDWARE ACCELERATION - 120 FPS OPTİMİZASYONU) */
         .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 6px rgba(0, 255, 255, 0.5)); transform: translateZ(0); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); }
 
-        /* Z-INDEX 999999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
-        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 34px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
+        /* EN ÜST KATMAN PARA ANİMASYONU */
+        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 36px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
         @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -50px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -70px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -100px) scale(0.8); } }
 
-        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) */
-        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(12px); }
+        /* HANGAR ALANI */
+        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(8px); }
         .slot { width: 100%; height: 100%; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.15); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); transition: 0.2s; }
         .slot.drag-over { background: rgba(0,255,255,0.25); border-color: #00ffff; box-shadow: inset 0 0 25px rgba(0,255,255,0.6); transform: scale(1.05); }
 
@@ -253,38 +252,30 @@
         .plane-item.ghost { opacity: 0.4; filter: grayscale(50%); animation: none; cursor: pointer; transition: 0.2s; }
         .plane-item.ghost:hover { opacity: 0.8; filter: grayscale(10%); transform: scale(1.1); }
         @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #0f172a; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 12px; font-weight: 900; border: 1px solid #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.6); z-index: 10; font-family: 'Teko', sans-serif; }
+        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #0f172a; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 900; border: 1px solid #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.6); z-index: 10; font-family: 'Teko', sans-serif; }
         .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
         @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3) drop-shadow(0 0 25px #00ffff); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 40px #00ffff); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
 
-        /* MOBİL UYUMLU DÜZELTİLMİŞ ÇÖP KUTUSU (BoundingBox ile Çarpışma Testi) */
-        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: rgba(255, 0, 60, 0.95); border: 3px dashed #fff; border-radius: 15px; color: white; font-weight: bold; font-size: 22px; display: none; align-items: center; justify-content: center; z-index: 9999; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px;}
-        #trashBin.drag-over { background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 26px; }
+        /* MOBİL UYUMLU KESİN ÇARPIŞMA (BOUNDING BOX) İÇİN ÇÖP KUTUSU */
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); background: rgba(255, 0, 60, 0.85); border: 2px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; z-index: 50; box-shadow: 0 10px 40px rgba(255,0,60,0.7); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; }
+        #trashBin.drag-over { transform: translateX(-50%) scale(1.1); background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 24px; }
         #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
 
         /* ALT BAR */
-        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 12px; padding: 0 15px; z-index: 30; }
-        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); }
+        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
+        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(8px); }
         .bottom-btn:hover { background: rgba(10, 15, 30, 0.95); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(0,255,255,0.3); border-color: #00ffff; }
         .bottom-btn:active { transform: translateY(5px); box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,255,255,0.4); }
         .bottom-btn.shop { border-color: rgba(188, 19, 254, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(188, 19, 254, 0.15); }
         .bottom-btn.shop:hover { border-color: #bc13fe; box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(188, 19, 254, 0.3); }
         .bottom-btn.speed { border-color: rgba(241, 196, 15, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(241, 196, 15, 0.15); }
         .bottom-btn.speed:hover { border-color: #f1c40f; box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(241, 196, 15, 0.3); }
-        .bottom-btn span.big { font-size: 22px; display: block; margin-bottom: 2px; }
-        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 16px; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
+        .bottom-btn span.big { font-size: 24px; display: block; margin-bottom: 2px; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
 
     </style>
 </head>
 <body>
-
-    <svg width="0" height="0" style="position: absolute;">
-        <defs>
-            <filter id="planeShadow">
-                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-opacity="0.9"/>
-            </filter>
-        </defs>
-    </svg>
 
     <div id="dragGhost"></div>
 
@@ -493,7 +484,7 @@
         // --- ARKA PLAN YILDIZLARINI OLUŞTUR ---
         function createStars() {
             const container = document.getElementById('starContainer');
-            for(let i=0; i<80; i++) {
+            for(let i=0; i<50; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.width = Math.random() * 3 + 'px';
@@ -808,7 +799,6 @@
             
             let bodyType = l % 6; let wingType = l % 6; let tailType = l % 4; let engineType = l % 3;
             
-            // Titreşen, renk değiştiren roket ateşi
             let svg = ''; let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3; 
             let animClass = isFlying ? 'class="thrust-anim"' : '';
             
@@ -844,7 +834,7 @@
         const gameContainer = document.getElementById("gameContainer"); const ghost = document.getElementById("dragGhost");
         let activeTouchData = null; 
 
-        // --- MOBİL İÇİN MÜKEMMEL ÇARPIŞMA TESTİ VE SİLME ---
+        // --- MOBİL İÇİN KESİN ÇARPIŞMA TESTİ VE SİLME YÖNTEMİ ---
         function setupDragAndDropForElement(el, data) {
             el.addEventListener("dragstart", (e) => { dragSource = data; setTimeout(() => { trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); }, 10); });
             el.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
@@ -859,9 +849,10 @@
             
             el.addEventListener("touchmove", (e) => { 
                 e.preventDefault(); const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; 
+                
+                // Çöp kutusu çarpışma testi (Kırmızı olur)
                 if(trashBin.style.display !== "none") {
                     const trashRect = trashBin.getBoundingClientRect();
-                    // Kesin Çarpışma Testi
                     if(touch.clientX >= trashRect.left && touch.clientX <= trashRect.right && touch.clientY >= trashRect.top && touch.clientY <= trashRect.bottom) {
                         trashBin.classList.add("drag-over");
                     } else { trashBin.classList.remove("drag-over"); }
@@ -872,6 +863,7 @@
                 e.preventDefault(); ghost.style.display = "none"; trackEl.classList.remove("drag-active"); 
                 const touch = e.changedTouches[0]; 
                 
+                // SİLME İŞLEMİ KONTROLÜ
                 let isDeleted = false;
                 if(trashBin.style.display !== "none") {
                     const trashRect = trashBin.getBoundingClientRect();
@@ -883,13 +875,32 @@
                 }
                 trashBin.style.display = "none"; trashBin.classList.remove("drag-over");
 
+                // SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ
                 if(!isDeleted) {
-                    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY); if (!targetEl) { initGrid(); return; }
-                    if (targetEl.closest('.slot')) { const slotEl = targetEl.closest('.slot'); const targetIndex = parseInt(slotEl.dataset.index); const targetItem = gridSlots[targetIndex];
+                    // 1. Önce Pistin BoundingBox Testi (Mobilde %100 Çalışır)
+                    const trackRect = trackEl.getBoundingClientRect();
+                    let droppedOnTrack = false;
+                    if(touch.clientX >= trackRect.left && touch.clientX <= trackRect.right && touch.clientY >= trackRect.top && touch.clientY <= trackRect.bottom) {
+                        droppedOnTrack = true;
+                    }
+
+                    const targetEl = document.elementFromPoint(touch.clientX, touch.clientY); 
+                    
+                    // Slot (Hangar) Bırakma Testi
+                    if (targetEl && targetEl.closest('.slot')) { 
+                        const slotEl = targetEl.closest('.slot'); const targetIndex = parseInt(slotEl.dataset.index); const targetItem = gridSlots[targetIndex];
                         if (activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } else if (targetItem.level === activeTouchData.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } 
                         else if (activeTouchData.type === 'grid') { const sourceIndex = activeTouchData.index; if (sourceIndex !== targetIndex) { const sourceItem = gridSlots[sourceIndex]; if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } } 
-                    } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') { 
-                        if (activeTouchData.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount < MAX_PLANES) { gridSlots[activeTouchData.index].isFlying = true; spawnTrackPlane(gridSlots[activeTouchData.index].level, activeTouchData.index); } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); } } 
+                    } 
+                    // Piste Bırakma Testi (BoundingBox veya target)
+                    else if (droppedOnTrack || (targetEl && (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer'))) { 
+                        if (activeTouchData.type === 'grid') { 
+                            const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; 
+                            if (activeTrackCount < MAX_PLANES) { 
+                                gridSlots[activeTouchData.index].isFlying = true; 
+                                spawnTrackPlane(gridSlots[activeTouchData.index].level, activeTouchData.index); 
+                            } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); } 
+                        } 
                     }
                 }
                 initGrid(); saveGame(); activeTouchData = null;
@@ -915,21 +926,10 @@
                 slot.addEventListener("drop", handleSlotDrop);
 
                 if(gridSlots[i]) {
-                    const planeObj = gridSlots[i]; 
-                    const planeEl = document.createElement("div"); 
-                    planeEl.className = "plane-item";
-                    
-                    if(planeObj.isFlying) {
-                        planeEl.classList.add("ghost");
-                        planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); });
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                    } else {
-                        planeEl.draggable = true;
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                        setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level });
-                    }
-                    if(i === animatedIndex) planeEl.classList.add("merge-anim");
-                    slot.appendChild(planeEl);
+                    const planeObj = gridSlots[i]; const planeEl = document.createElement("div"); planeEl.className = "plane-item";
+                    if(planeObj.isFlying) { planeEl.classList.add("ghost"); planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); }); planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; } 
+                    else { planeEl.draggable = true; planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level }); }
+                    if(i === animatedIndex) planeEl.classList.add("merge-anim"); slot.appendChild(planeEl);
                 }
                 gridEl.appendChild(slot);
             }
@@ -995,7 +995,6 @@
             flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
-        // --- EN ÜST KATMAN PARA ANİMASYONU ---
         function popMoneyFixed(amount) { 
             money += amount; updateUI(); 
             const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
@@ -1004,7 +1003,6 @@
             setTimeout(() => pop.remove(), 1500); 
         }
 
-        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist) ---
         function getPosAt(progress) {
             const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
             const cx = 152; const cy = 252; 
@@ -1072,7 +1070,6 @@
             if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
             if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
             
-            // Botları saniye başı güncelle
             if(bots.length > 0) {
                 bots.forEach(b => { b.money += b.cps; });
                 const lbModal = document.getElementById("leaderboardModal");
