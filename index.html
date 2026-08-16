@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Plane Simulator 3D Style</title>
+    
+    <!-- ANA EKRAN İKONU VE TAM EKRAN (PWA) AYARLARI -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Plane Tycoon">
+    <!-- Kaliteli bir uçak ikonu bağlantısı -->
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+
     <style>
         * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
         body {
@@ -17,6 +26,28 @@
             background: radial-gradient(circle at center, #3498db 0%, #1a4b8c 70%, #0d2140 100%);
             display: flex; flex-direction: column; box-shadow: 0 0 30px rgba(0,0,0,0.8); overflow: hidden;
         }
+
+        /* ÖZEL ANİMASYONLU UYARI SİSTEMİ (TOAST) */
+        #toastContainer {
+            position: absolute; top: 15px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; width: 90%;
+        }
+        .custom-toast {
+            background: rgba(15, 23, 42, 0.9); border-left: 6px solid;
+            color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 14px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6); backdrop-filter: blur(8px);
+            display: flex; align-items: center; gap: 12px;
+            animation: toastEnter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        .custom-toast.error { border-color: #e74c3c; animation: toastEnter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards, shakeToast 0.4s ease-in-out 0.5s; }
+        .custom-toast.error .toast-icon { font-size: 20px; color: #e74c3c; text-shadow: 0 0 10px rgba(231,76,60,0.5); }
+        .custom-toast.info { border-color: #3498db; }
+        .custom-toast.info .toast-icon { font-size: 20px; color: #3498db; text-shadow: 0 0 10px rgba(52,152,219,0.5); }
+        .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
+        
+        @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
+        @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
         /* GİRİŞ EKRANI */
         #loginOverlay {
@@ -158,7 +189,6 @@
         }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
-        /* Turbo alev animasyonu */
         .turbo-base {
             transform-origin: 50px 95px;
             animation: turboFlicker 0.08s infinite alternate;
@@ -255,6 +285,8 @@
     <div id="dragGhost"></div>
 
     <div id="gameContainer">
+        <!-- TOAST BİLDİRİM ALANI -->
+        <div id="toastContainer"></div>
         
         <div id="loginOverlay">
             <div class="login-box">
@@ -368,6 +400,21 @@
     </div>
 
     <script>
+        // --- ÖZEL TOAST BİLDİRİM FONKSİYONU ---
+        function showToast(message, type = "error") {
+            const container = document.getElementById("toastContainer");
+            const toast = document.createElement("div");
+            toast.className = `custom-toast ${type}`;
+            const icon = type === "error" ? "⚠️" : "ℹ️";
+            toast.innerHTML = `<span class="toast-icon">${icon}</span> <span>${message}</span>`;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add("leaving");
+                setTimeout(() => toast.remove(), 400); 
+            }, 3000);
+        }
+
         let money = 0; let gems = 0; let playerLevel = 1;
         let currentName = "Pilot"; let currentCountry = "🇹🇷";
         const MAX_PLANES = 5; 
@@ -400,10 +447,8 @@
             return num.toExponential(2);
         }
 
-        // --- DENGELENMİŞ EKONOMİ SİSTEMİ ---
         function getPlaneIncome(level) { return Math.floor(10 * Math.pow(1.15, level)); }
         
-        // --- DİNAMİK MARKET SİSTEMİ ---
         function getMarketLevel() { return Math.max(1, playerLevel - 2); }
         function getMarketPrice() { return Math.floor(50 * Math.pow(1.6, getMarketLevel())); }
 
@@ -440,18 +485,20 @@
             const savedFlying = data.flying || [];
             savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
             initGrid(); updateBoostUI();
+            showToast("Oyun başarıyla yüklendi!", "info");
         }
 
         function login() {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
             const country = document.getElementById('countrySelect').value;
-            if(user === "") { alert("Pilot adını gir!"); return; }
+            if(user === "") { showToast("Pilot adını gir!", "error"); return; }
 
             currentName = user; currentCountry = country;
             if(user.toLowerCase() === "cinar" && pass === "1234") {
                 money = 999999999999999; gems = 999999; playerLevel = 200;
                 document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
+                showToast("VIP Girişi Başarılı!", "info");
             } else {
                 money = 0; gems = 0; localStorage.removeItem("planeTycoonSave"); 
                 document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
@@ -460,7 +507,6 @@
             nextRewardTime = Date.now();
             document.getElementById('loginOverlay').style.display = 'none';
             gameStarted = true;
-            // İlk uçağı alabilmesi için başlangıç sermayesi (Dinamiğe göre 80 tutuyor, biz garanti olsun 100 verelim)
             if(money === 0) { setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); }
             initGrid(); 
         }
@@ -478,9 +524,10 @@
                 document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
             } else { document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`; }
             closeSettings(); saveGame(); 
+            showToast("Ayarlar kaydedildi", "info");
         }
 
-        // --- UÇAK VE TURBO SVG MOTORU ---
+        // Uçak Çizim Fonksiyonu
         function getJetSVG(level, isFlying = true) {
             let l = ((level - 1) % 200) + 1;
             let hueBase = (l * 37) % 360;
@@ -589,7 +636,6 @@
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
             document.getElementById("centerMoney").innerText = formatNumber(money);
             
-            // Dinamik Market Ekranı
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
             
@@ -683,7 +729,7 @@
                         if (activeTrackCount < MAX_PLANES) {
                             gridSlots[activeTouchData.index].isFlying = true;
                             spawnTrackPlane(activeTouchData.level, activeTouchData.index);
-                        } else { alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`); }
+                        } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); }
                     }
                     initGrid(); saveGame();
                 }
@@ -697,7 +743,7 @@
             if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
             if (dragSource && dragSource.type === 'grid') {
                 const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
-                if (activeTrackCount >= MAX_PLANES) { alert(`Pist dolu! Aynı anda en fazla ${MAX_PLANES} uçak uçabilir.`); return; }
+                if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; }
                 gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame();
             }
             if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
@@ -783,8 +829,8 @@
                     gridSlots[emptyIndex] = { level: lvl, isFlying: false }; 
                     initGrid(); 
                     saveGame();
-                } else { alert("Hangarda yer yok! Uçakları piste sürükle veya birleştir."); }
-            } else { alert("Yeterli paran yok!"); }
+                } else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
+            } else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
         function spawnTrackPlane(level, slotIndex, savedProgress = 0) {
@@ -906,16 +952,16 @@
             else if (currentMinuteReward.type === 'plane') {
                 const emptyIndex = gridSlots.indexOf(null);
                 if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentMinuteReward.value, isFlying: false }; animatedIndex = emptyIndex; initGrid(); } 
-                else { alert("Hangarda yer yok!"); return; }
+                else { showToast("Hangarda yer yok!", "error"); return; }
             } else if (currentMinuteReward.type === 'boost') {
                 let duration = 30 * 1000;
                 if(currentMinuteReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
                 if(currentMinuteReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
             }
             updateUI(); currentMinuteReward = null; nextRewardTime = now + 60000; saveGame(); updateRewardsUI();
+            showToast("Ödül alındı!", "info");
         }
 
-        // --- 20 KADEMELİ DEV KASA SİSTEMİ ---
         const caseData = [
             { id: 1, name: "Tahta Kasa", price: 500, min: 1, max: 3, color: "#a0522d", icon: "📦" },
             { id: 2, name: "Paslı Kasa", price: 1500, min: 3, max: 6, color: "#95a5a6", icon: "🗑️" },
@@ -950,7 +996,6 @@
             let tier = Math.ceil(crateId / 4); 
             let chances = [];
             
-            // Kasa seviyesi arttıkça efsanevi çıkma şansları artar
             if (tier === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; 
             if (tier === 2) chances = [40, 35, 15, 7, 2.5, 0.5];
             if (tier === 3) chances = [25, 35, 20, 12, 6, 2]; 
@@ -1001,8 +1046,8 @@
         
         function buyCase(c) {
             const emptyIndex = gridSlots.indexOf(null);
-            if (emptyIndex === -1) { alert("Hangarda yer yok!"); return; }
-            if (money < c.price) { alert("Yetersiz bakiye!"); return; }
+            if (emptyIndex === -1) { showToast("Hangarda yer yok!", "error"); return; }
+            if (money < c.price) { showToast("Yetersiz bakiye!", "error"); return; }
             money -= c.price; updateUI(); saveGame(); 
             document.getElementById("caseContent").style.display = "none"; document.getElementById("rouletteContainer").style.display = "flex";
             document.getElementById("openingCaseName").innerText = c.name + " Açılıyor..."; 
