@@ -136,7 +136,7 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
-        /* Uçaklar dümdüz (0deg) ilerleyecek şekilde kilitlendi */
+        /* Uçaklar dümdüz ilerleyecek (0deg) */
         .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
@@ -195,7 +195,7 @@
             </div>
         </div>
 
-        <!-- YENİ SADE GİRİŞ EKRANI -->
+        <!-- GİRİŞ EKRANI -->
         <div id="loginOverlay" style="display: none;">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
@@ -229,7 +229,7 @@
             </div>
         </div>
 
-        <!-- ÇERÇEVELER (10 TANE EFSANEVİ) -->
+        <!-- ÇERÇEVELER -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>💎 Elmas Dükkanı</h2>
@@ -239,7 +239,7 @@
             </div>
         </div>
 
-        <!-- DÜKKAN (Hızlanma ve Uçak Market) -->
+        <!-- DÜKKAN -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
                 <h2 style="margin-bottom: 15px; color: #3498db;">🏪 Dükkan</h2>
@@ -264,7 +264,7 @@
             </div>
         </div>
 
-        <!-- ELMASLI KASA SİSTEMİ -->
+        <!-- KASALAR -->
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
                 <h2>📦 Kasalar</h2>
@@ -286,7 +286,6 @@
         <!-- ÜST BAR -->
         <div class="top-bar">
             <div class="user-info" onclick="openSettings()">
-                <!-- PROFİL ÇERÇEVESİ -->
                 <div class="profile-pic-container f-default" id="userProfileFrame">
                     <span id="playerLvl">1</span>
                 </div>
@@ -299,7 +298,6 @@
             </div>
         </div>
 
-        <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
         </div>
@@ -314,7 +312,7 @@
             <div id="activeBoosts"></div>
         </div>
 
-        <!-- MİLİMETRİK PİST -->
+        <!-- PİST -->
         <div id="trackContainer">
             <div id="dashedLine"></div>
             <div class="finish-line"></div>
@@ -363,7 +361,6 @@
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
         
-        // 10 EFSANEVİ ÇERÇEVE
         let ownedFrames = ['default']; let activeFrame = 'default';
         const framesData = [
             { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
@@ -380,7 +377,6 @@
 
         let nextRewardTime = 0; let currentMinuteReward = null;
 
-        // YÜKLEME EKRANI VE OYUN BAŞLANGICI
         window.onload = () => {
             setTimeout(() => {
                 const overlay = document.getElementById('loadingOverlay');
@@ -409,10 +405,8 @@
             
             document.getElementById('loginOverlay').style.display = 'none';
             checkAndSetUsernameDisplay();
-            
             gameStarted = true;
-            const savedFlying = data.flying || [];
-            savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
+            (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
             initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
             startGameLoops();
         }
@@ -420,7 +414,6 @@
         function login() {
             const user = document.getElementById('usernameInput').value.trim();
             if(user === "") { showToast("Pilot adını gir!", "error"); return; }
-
             currentName = user;
             
             if(user.toLowerCase() === "test") {
@@ -436,7 +429,6 @@
             
             checkAndSetUsernameDisplay();
             document.getElementById('settingNameInput').value = currentName;
-            
             nextRewardTime = Date.now();
             document.getElementById('loginOverlay').style.display = 'none';
             gameStarted = true;
@@ -445,18 +437,13 @@
                 setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); 
                 showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
-            initGrid(); updateFrameUI();
-            startGameLoops();
+            initGrid(); updateFrameUI(); startGameLoops();
         }
         
         function checkAndSetUsernameDisplay() {
-            if(currentName.toLowerCase() === "test") {
-                document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`;
-            } else if (currentName.toLowerCase() === "cinar") {
-                document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`;
-            } else { 
-                document.getElementById('displayUsername').innerText = `${currentName}`; 
-            }
+            if(currentName.toLowerCase() === "test") document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`;
+            else if (currentName.toLowerCase() === "cinar") document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`;
+            else document.getElementById('displayUsername').innerText = `${currentName}`; 
         }
 
         function startGameLoops() {
@@ -490,19 +477,15 @@
             localStorage.setItem("planeTycoonSave", JSON.stringify(data));
         }
 
-        // --- AYARLAR MENÜSÜ ---
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
         function saveSettings() {
             const newName = document.getElementById('settingNameInput').value.trim();
             if(newName !== "") currentName = newName; 
-            
             if(currentName.toLowerCase() === "test") { money = 999999999999999; gems = 999999999; playerLevel = 1; showToast("Test Modu Aktif!", "info"); }
-            
             checkAndSetUsernameDisplay(); closeSettings(); saveGame(); updateUI();
         }
 
-        // --- ÇERÇEVE SİSTEMİ (ELMAS DÜKKANI) ---
         function openDiamondShop() {
             const grid = document.getElementById("frameShopGrid"); grid.innerHTML = "";
             framesData.forEach(frame => {
@@ -539,7 +522,6 @@
             else container.innerHTML = `<span id="playerLvl">${playerLevel}</span>`;
         }
 
-        // --- NORMAL DÜKKAN (HIZLANMA & UÇAK) SİSTEMİ ---
         function updateSpeedModalUI() {
             let now = Date.now();
             let leftMs = Math.max(0, boostSpeedEnd - now);
@@ -927,7 +909,7 @@
             setTimeout(() => pop.remove(), 1800); 
         }
 
-        // --- UÇAKLARIN DÜMDÜZ (AÇISIZ, KİLİTLİ) GİTMESİNİ SAĞLAYAN MOTOR ---
+        // --- UÇAKLARIN DÜMDÜZ (0 AÇI) GİTMESİNİ SAĞLAYAN MOTOR ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
