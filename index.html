@@ -80,6 +80,16 @@
         .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
         .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); color: white; box-shadow: 0 0 10px rgba(255,0,60,0.3); }
 
+        /* GÖREVLER (MISSIONS) TASARIMI */
+        .mission-item { background: rgba(0,0,0,0.6); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 10px rgba(52,152,219,0.2); }
+        .mission-info { text-align: left; }
+        .mission-title { font-size: 14px; font-weight: bold; color: #00ffff; margin-bottom: 5px; }
+        .mission-reward { font-size: 12px; color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-weight: bold; }
+        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: none; border-radius: 8px; color: white; padding: 8px 15px; font-weight: bold; cursor: pointer; box-shadow: 0 0 10px rgba(46,204,113,0.5); transition: 0.2s; }
+        .btn-claim-mission:active { transform: scale(0.9); }
+        .btn-claim-mission:disabled { background: rgba(255,255,255,0.1); box-shadow: none; cursor: not-allowed; color: #555; }
+        .mission-badge { position: absolute; top: -5px; right: -5px; background: #e74c3c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 10px red; z-index: 20; }
+
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
         .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
@@ -105,7 +115,7 @@
         @keyframes cosmicPulse { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
         .f-void { border: 3px dashed #bc13fe; box-shadow: 0 0 20px #bc13fe, inset 0 0 20px black; background: #111; animation: voidSpin 4s linear infinite; }
         @keyframes voidSpin { 0% { transform: rotate(0deg) scale(0.95); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(0.95); } }
-        .f-god { background: #2a9df4; border: none; }
+        .f-god { background: #102a43; border: none; }
         .f-god::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #00ffff; border-bottom-color: #bc13fe; animation: godSpin 2s linear infinite; z-index: -1; }
         .f-god::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 2px solid transparent; border-left-color: #f1c40f; border-right-color: #e74c3c; animation: godSpinReverse 1.5s linear infinite; z-index: -1; }
         @keyframes godSpin { 100% { transform: rotate(360deg); } } @keyframes godSpinReverse { 100% { transform: rotate(-360deg); } }
@@ -143,7 +153,7 @@
 
         .side-menu { position: absolute; top: 80px; display: flex; flex-direction: column; gap: 15px; z-index: 10; }
         .side-menu.left { left: 15px; } .side-menu.right { right: 15px; align-items: center; }
-        .menu-btn { display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 5px rgba(0,0,0,0.8); }
+        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 5px rgba(0,0,0,0.8); }
         .menu-btn .icon { background: rgba(10, 15, 30, 0.8); border-radius: 50%; width: 46px; height: 46px; display: flex; justify-content: center; align-items: center; font-size: 22px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.4); box-shadow: 0 5px 15px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,255,255,0.2); transition: 0.2s; backdrop-filter: blur(5px); }
         .menu-btn:active .icon { transform: scale(0.9); box-shadow: 0 2px 5px rgba(0,0,0,0.6); border-color: #00ffff; }
 
@@ -162,8 +172,8 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.5); box-shadow: 0 0 60px rgba(0, 255, 255, 0.5) inset; }
 
-        /* UÇAKLAR (MİLİMETRİK HİZALI, TERS DÖNMEZ) */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transition: transform 0.05s linear; }
+        /* UÇAKLAR */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transition: transform 0.05s linear; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
         /* Z-INDEX DÜZELTİLDİ: PARALAR EKRANIN EN ÖNÜNDE (Z-INDEX 999999) */
@@ -203,7 +213,6 @@
 
     <svg width="0" height="0" style="position: absolute;">
         <defs>
-            <!-- UÇAKLAR İÇİN NEON GÖLGE EFEKTİ -->
             <filter id="planeShadow">
                 <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00ffff" flood-opacity="0.8"/>
             </filter>
@@ -216,7 +225,7 @@
         <!-- TOAST BİLDİRİM ALANI -->
         <div id="toastContainer"></div>
         
-        <!-- YENİ YÜKLEME EKRANI -->
+        <!-- YÜKLEME EKRANI -->
         <div id="loadingOverlay">
             <div class="loading-bg"></div>
             <div class="loading-content">
@@ -227,7 +236,7 @@
             </div>
         </div>
 
-        <!-- YENİ SADE GİRİŞ EKRANI -->
+        <!-- SADE GİRİŞ EKRANI -->
         <div id="loginOverlay" style="display: none;">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
@@ -248,6 +257,7 @@
             </div>
         </div>
 
+        <!-- SÜPRİZ ÖDÜL MENÜSÜ -->
         <div id="rewardsModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>🎁 Süpriz Ödül</h2>
@@ -258,6 +268,18 @@
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
+            </div>
+        </div>
+
+        <!-- GÖREVLER (MISSIONS) MENÜSÜ -->
+        <div id="missionsModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2 style="color: #3498db; text-shadow: 0 0 10px #3498db;">📜 Görevler</h2>
+                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Her yeni uçak keşfinde 5 Elmas kazan!</p>
+                <div id="missionsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;">
+                    <!-- Görevler buraya JavaScript ile eklenecek -->
+                </div>
+                <button class="modal-btn btn-close" onclick="closeMissionsMenu()">Kapat</button>
             </div>
         </div>
 
@@ -333,6 +355,10 @@
         <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
+            <div class="menu-btn" onclick="openMissionsMenu()" style="position: relative;">
+                <div class="icon" style="border-color:#3498db; color: #3498db; text-shadow: 0 0 5px #3498db;">📜</div>Görevler
+                <div id="missionBadge" class="mission-badge" style="display: none;">0</div>
+            </div>
         </div>
         <div class="side-menu right">
             <div class="menu-btn" onclick="alert('Sıralama yakında!')"><div class="icon" style="color: #f1c40f;">🏆</div>Sıralama</div>
@@ -355,6 +381,7 @@
         <div class="grid-container" id="grid"></div>
         <div id="trashBin">🗑️ Uçağı Sil</div>
 
+        <!-- ALT BUTONLAR -->
         <div class="bottom-bar">
             <div class="bottom-btn speed" onclick="openGeneralShop()">
                 <span class="big" id="speedBtnText">🏪 Dükkan</span>
@@ -393,6 +420,8 @@
 
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
+        
+        let claimedLevels = []; // Görevlerden alınan levelleri tutar
         
         // 10 EFSANEVİ ÇERÇEVE
         let ownedFrames = ['default']; let activeFrame = 'default';
@@ -440,6 +469,7 @@
                 ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
                 nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
                 gridSlots = data.gridSlots || new Array(10).fill(null);
+                claimedLevels = data.claimedLevels || [];
                 
                 document.getElementById('loginOverlay').style.display = 'none';
                 checkAndSetUsernameDisplay();
@@ -459,6 +489,8 @@
             if(user === "") { showToast("Pilot adını gir!", "error"); return; }
             currentName = user;
             
+            claimedLevels = []; // Yeni hesapta görevler sıfırlanır
+            
             if(user.toLowerCase() === "test") {
                 money = 999999999999999; gems = 999999999; playerLevel = 1; 
                 showToast("Test Modu: Sınırsız Kaynak Aktif!", "info");
@@ -477,8 +509,7 @@
             gameStarted = true;
             
             if(money === 0) { 
-                // Yeni başlayan oyuncu için ekranın orta-sağına hediye animasyonu
-                setTimeout(() => { flashFinishLine(); popMoney(cx + R, cy, 100); }, 500); 
+                setTimeout(() => { flashFinishLine(); popMoneyFixed(100); }, 500); 
                 showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
             initGrid(); updateFrameUI(); startGameLoops();
@@ -519,10 +550,87 @@
                 money, gems, playerLevel, currentName,
                 boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
                 ownedFrames, activeFrame, nextRewardTime, currentMinuteReward,
-                gridSlots: gridSlots,
+                gridSlots: gridSlots, claimedLevels: claimedLevels,
                 flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress }))
             };
             localStorage.setItem("planeTycoonSave", JSON.stringify(data));
+        }
+
+        // --- GÖREVLER (MISSIONS) SİSTEMİ ---
+        function updateMissionsBadge() {
+            let claimableCount = 0;
+            for(let i = 2; i <= playerLevel; i++) {
+                if(!claimedLevels.includes(i)) claimableCount++;
+            }
+            const badge = document.getElementById("missionBadge");
+            if(claimableCount > 0) {
+                badge.style.display = "flex";
+                badge.innerText = claimableCount;
+            } else {
+                badge.style.display = "none";
+            }
+        }
+
+        function openMissionsMenu() {
+            const list = document.getElementById("missionsList");
+            list.innerHTML = "";
+            
+            let highestToShow = playerLevel + 1;
+            if(highestToShow > 200) highestToShow = 200;
+            
+            let html = "";
+            for(let i = 2; i <= highestToShow; i++) {
+                let isClaimed = claimedLevels.includes(i);
+                let isUnlocked = i <= playerLevel;
+                
+                if(isClaimed) {
+                    html += `
+                        <div class="mission-item" style="opacity:0.5; border-color:#555; box-shadow:none;">
+                            <div class="mission-info">
+                                <div class="mission-title" style="color:#aaa;">Lv.${i} Uçak Aç</div>
+                                <div class="mission-reward" style="color:#777; text-shadow:none;">Alındı</div>
+                            </div>
+                            <button class="btn-claim-mission" disabled>✓</button>
+                        </div>
+                    `;
+                } else if(isUnlocked) {
+                    html += `
+                        <div class="mission-item">
+                            <div class="mission-info">
+                                <div class="mission-title">Lv.${i} Uçak Aç</div>
+                                <div class="mission-reward">💎 5 Elmas</div>
+                            </div>
+                            <button class="btn-claim-mission" onclick="claimMissionReward(${i})">Al</button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="mission-item" style="border-color:#e74c3c; box-shadow: inset 0 0 10px rgba(231,76,60,0.2);">
+                            <div class="mission-info">
+                                <div class="mission-title" style="color:#e74c3c;">Lv.${i} Uçak Aç</div>
+                                <div class="mission-reward" style="color:#e74c3c; text-shadow:none;">Kilitli</div>
+                            </div>
+                            <button class="btn-claim-mission" style="background:rgba(231,76,60,0.2); box-shadow:none;" disabled>🔒</button>
+                        </div>
+                    `;
+                }
+            }
+            list.innerHTML = html;
+            document.getElementById("missionsModal").style.display = "flex";
+            updateMissionsBadge();
+        }
+
+        function closeMissionsMenu() { document.getElementById("missionsModal").style.display = "none"; }
+
+        function claimMissionReward(level) {
+            if(level <= playerLevel && !claimedLevels.includes(level)) {
+                gems += 5;
+                claimedLevels.push(level);
+                saveGame();
+                updateUI();
+                openMissionsMenu(); 
+                showToast(`Seviye ${level} Görevi: 5 Elmas Kazandın!`, "info");
+            }
         }
 
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
@@ -643,7 +751,6 @@
             } else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
-        // --- MİLYONLARCA KOMBİNASYON ÜRETEN ALGORİTMİK UÇAK MOTORU ---
         function getJetSVG(level, isFlying = true) {
             let l = level; 
             let hueBase = (l * 37) % 360;
@@ -654,14 +761,10 @@
             let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; 
             let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
 
-            let bodyType = l % 6; 
-            let wingType = l % 6; 
-            let tailType = l % 4; 
-            let engineType = l % 3;
+            let bodyType = l % 6; let wingType = l % 6; let tailType = l % 4; let engineType = l % 3;
 
             let svg = '';
-            let tL = isFlying ? 150 : 110; 
-            let tO = isFlying ? 0.8 : 0.3;
+            let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3;
             let anim = isFlying ? '' : 'animation-duration: 0.3s; transform: scaleY(0.7); opacity: 0.8;';
 
             let engineFire = (x, y) => `
@@ -722,6 +825,7 @@
             let totalCps = 0; let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
             flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
+            updateMissionsBadge();
         }
 
         const trashBin = document.getElementById("trashBin");
@@ -929,21 +1033,19 @@
             const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
-        const cx = 152; const cy = 252; const R = 166;
-
         // --- Z-INDEX VE KISITLAMAYI AŞAN MÜKEMMEL PARA ANİMASYONU ---
-        function popMoney(x, y, amount) {
+        function popMoneyFixed(amount) {
             money += amount; updateUI();
             const pop = document.createElement("div"); 
             pop.className = "floating-money"; 
             pop.innerText = "+" + formatNumber(amount);
             
             // Parayı Hangarın (Pistin) Arkasında Kalmaması İçin En Dış Katmana Ekliyoruz
-            pop.style.left = `calc(50% - 152px + ${x - 20}px)`; 
-            pop.style.top = `calc(48% - 252px + ${y - 10}px)`; 
+            pop.style.right = "15%"; 
+            pop.style.top = "35%"; 
             
             document.getElementById("gameContainer").appendChild(pop);
-            setTimeout(() => pop.remove(), 1800); 
+            setTimeout(() => pop.remove(), 1500); 
         }
 
         // --- MİLİMETRİK UÇUŞ ROTASI VE KUSURSUZ YÖNELİM (TERSTEN DÖNMEYİ ENGELLEYEN MOTOR) ---
@@ -951,7 +1053,9 @@
             const dt = timestamp - lastTime; lastTime = timestamp;
 
             const L = 200; // Düz Yol Uzunluğu
+            const R = 166; // Dönüş Yarıçapı
             const P = 2 * L + 2 * Math.PI * R; // Toplam Yol Çevresi
+            const cx = 152; const cy = 252; // Tam Merkez Koordinatları
 
             let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
@@ -1001,7 +1105,7 @@
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
-                    flashFinishLine(); popMoney(cx + R, cy - L/2 + 20, getPlaneIncome(p.level) * currentIncomeMult); 
+                    flashFinishLine(); popMoneyFixed(getPlaneIncome(p.level) * currentIncomeMult); 
                 }
             });
 
@@ -1014,7 +1118,7 @@
             container.innerHTML = ""; let now = Date.now();
             if (now < boostMoneyEnd) {
                 let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
+                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f; text-shadow: 0 0 5px #f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
             } else { boostMoneyMult = 1; }
 
             if (now < boostSpeedEnd) {
