@@ -16,27 +16,16 @@
     <link rel="shortcut icon" href="icon_2.jpg">
 
     <style>
-        * { 
-            box-sizing: border-box; 
-            user-select: none; 
-            font-family: 'Segoe UI', Tahoma, sans-serif; 
-            -webkit-touch-callout: none; 
-        }
+        * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
         
         /* HAREKETLİ NEON ARKA PLAN */
         body { 
-            margin: 0; 
-            padding: 0; 
+            margin: 0; padding: 0; 
             background: linear-gradient(45deg, #090a0f, #102a43, #1a0b2e, #0f2027); 
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            color: white; 
-            display: flex; 
-            justify-content: center; 
-            height: 100vh; 
-            overflow: hidden; 
+            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
         }
-        
         @keyframes gradientBG {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
@@ -44,180 +33,50 @@
         }
 
         #gameContainer { 
-            width: 100%; 
-            max-width: 450px; 
-            height: 100%; 
-            position: relative; 
-            background: rgba(0, 0, 0, 0.4); 
-            backdrop-filter: blur(5px);
-            display: flex; 
-            flex-direction: column; 
-            box-shadow: 0 0 50px rgba(0, 255, 255, 0.1); 
-            overflow: hidden; 
+            width: 100%; max-width: 450px; height: 100%; position: relative; 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(5px);
+            display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 255, 0.1); overflow: hidden; 
         }
 
         /* YÜKLEME EKRANI */
-        #loadingOverlay { 
-            position: absolute; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            z-index: 99999; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
-            align-items: center; 
-            background: #0d2140; 
-            transition: opacity 0.5s ease; 
-        }
-        .loading-bg { 
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: url('icon_2.jpg') center/cover; 
-            filter: blur(20px) brightness(0.4); 
-            z-index: 0; 
-            transform: scale(1.1); 
-        }
-        .loading-content { 
-            z-index: 1; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 85%; 
-        }
-        .loading-logo { 
-            width: 140px; height: 140px; 
-            border-radius: 30px; 
-            box-shadow: 0 0 30px #00ffff; 
-            border: 3px solid #00ffff; 
-            margin-bottom: 25px; 
-            object-fit: cover; 
-            animation: floatLogo 3s ease-in-out infinite; 
-        }
-        @keyframes floatLogo { 
-            0%, 100% { transform: translateY(0); box-shadow: 0 0 30px #00ffff; } 
-            50% { transform: translateY(-10px); box-shadow: 0 0 50px #00ffff; } 
-        }
-        .loading-title { 
-            font-size: 34px; 
-            background: linear-gradient(to right, #00ffff, #bc13fe); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            margin: 0 0 40px 0; 
-            text-shadow: 0 0 20px rgba(0,255,255,0.4); 
-            font-weight: 900; 
-            font-style: italic; 
-            text-align: center; 
-        }
-        .loading-bar-container { 
-            width: 100%; height: 8px; 
-            background: rgba(0,0,0,0.8); 
-            border-radius: 10px; 
-            overflow: hidden; 
-            border: 1px solid rgba(0,255,255,0.3); 
-            box-shadow: 0 0 15px rgba(0,255,255,0.2); 
-        }
-        .loading-bar-fill { 
-            width: 0%; height: 100%; 
-            background: linear-gradient(90deg, #00ffff, #bc13fe); 
-            box-shadow: 0 0 20px #00ffff; 
-            animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
-        }
-        .loading-text { 
-            margin-top: 15px; 
-            font-size: 15px; 
-            color: #00ffff; 
-            animation: pulseText 1s infinite alternate; 
-            font-weight: bold; 
-            letter-spacing: 2px;
-        }
+        #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; background: #0d2140; transition: opacity 0.5s ease; }
+        .loading-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('icon_2.jpg') center/cover; filter: blur(20px) brightness(0.4); z-index: 0; transform: scale(1.1); }
+        .loading-content { z-index: 1; display: flex; flex-direction: column; align-items: center; width: 85%; }
+        .loading-logo { width: 140px; height: 140px; border-radius: 30px; box-shadow: 0 0 30px #00ffff; border: 3px solid #00ffff; margin-bottom: 25px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 30px #00ffff; } 50% { transform: translateY(-10px); box-shadow: 0 0 50px #00ffff; } }
+        .loading-title { font-size: 34px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; text-shadow: 0 0 20px rgba(0,255,255,0.4); font-weight: 900; font-style: italic; text-align: center; }
+        .loading-bar-container { width: 100%; height: 8px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 1px solid rgba(0,255,255,0.3); box-shadow: 0 0 15px rgba(0,255,255,0.2); }
+        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 20px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .loading-text { margin-top: 15px; font-size: 15px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold; letter-spacing: 2px;}
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
         @keyframes pulseText { 0% { opacity: 0.3; text-shadow: 0 0 0px #00ffff; } 100% { opacity: 1; text-shadow: 0 0 10px #00ffff; } }
 
         /* BİLDİRİMLER (TOAST) */
-        #toastContainer { 
-            position: absolute; 
-            top: 15px; left: 50%; 
-            transform: translateX(-50%); 
-            display: flex; flex-direction: column; gap: 10px; 
-            z-index: 10000; pointer-events: none; width: 90%; 
-        }
-        .custom-toast { 
-            background: rgba(10, 15, 30, 0.95); 
-            border-left: 6px solid; 
-            color: white; padding: 14px 20px; border-radius: 12px; 
-            font-weight: bold; font-size: 14px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); 
-            display: flex; align-items: center; gap: 12px; 
-            animation: toastEnter 0.5s forwards; 
-        }
-        .custom-toast.error { 
-            border-color: #ff003c; 
-            box-shadow: 0 0 20px rgba(255,0,60,0.4); 
-            animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; 
-        }
-        .custom-toast.info { 
-            border-color: #00ffff; 
-            box-shadow: 0 0 20px rgba(0,255,255,0.4); 
-        }
+        #toastContainer { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 10000; pointer-events: none; width: 90%; }
+        .custom-toast { background: rgba(10, 15, 30, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 14px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
+        .custom-toast.error { border-color: #ff003c; box-shadow: 0 0 20px rgba(255,0,60,0.4); animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
+        .custom-toast.info { border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
         .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
-        
         @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
         /* GİRİŞ EKRANI */
-        #loginOverlay { 
-            display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(9, 10, 15, 0.9); justify-content: center; align-items: center; 
-            z-index: 999; backdrop-filter: blur(15px); 
-        }
-        .login-box { 
-            background: rgba(15, 20, 35, 0.8); padding: 40px 25px; border-radius: 20px; 
-            text-align: center; width: 85%; border: 2px solid #00ffff; 
-            box-shadow: 0 0 40px rgba(0,255,255,0.2), inset 0 0 20px rgba(0,255,255,0.1); 
-        }
-        .login-box h1 { 
-            margin: 0 0 5px 0; font-size: 36px; 
-            background: linear-gradient(to right, #00ffff, #bc13fe); 
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent; 
-            filter: drop-shadow(0 0 5px rgba(0,255,255,0.5)); 
-        }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 10, 15, 0.9); justify-content: center; align-items: center; z-index: 999; backdrop-filter: blur(15px); }
+        .login-box { background: rgba(15, 20, 35, 0.8); padding: 40px 25px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.2), inset 0 0 20px rgba(0,255,255,0.1); }
+        .login-box h1 { margin: 0 0 5px 0; font-size: 36px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 5px rgba(0,255,255,0.5)); }
         .slogan { font-size: 13px; color: #a4c8ff; font-style: italic; margin-bottom: 30px; font-weight: bold; }
-        .login-box input { 
-            width: 100%; padding: 15px; margin-bottom: 15px; 
-            background: rgba(0, 0, 0, 0.6); border: 2px solid #3498db; border-radius: 10px; 
-            color: #00ffff; font-size: 20px; font-weight: bold; text-align: center; 
-            outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,255,255,0.1); 
-        }
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.6); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 20px; font-weight: bold; text-align: center; outline: none; transition: 0.3s; box-shadow: inset 0 0 10px rgba(0,255,255,0.1); }
         .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4), inset 0 0 10px rgba(0,255,255,0.2); }
-        .login-btn { 
-            width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #3498db); 
-            border: none; border-radius: 10px; color: #090a0f; font-size: 18px; font-weight: 900; 
-            cursor: pointer; margin-top: 10px; box-shadow: 0 0 20px rgba(0,255,255,0.4); transition: 0.2s; 
-        }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #3498db); border: none; border-radius: 10px; color: #090a0f; font-size: 18px; font-weight: 900; cursor: pointer; margin-top: 10px; box-shadow: 0 0 20px rgba(0,255,255,0.4); transition: 0.2s; }
         .login-btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(0,255,255,0.4); }
 
         /* MODALLAR */
-        .modal-overlay { 
-            display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; 
-            align-items: center; justify-content: center; backdrop-filter: blur(10px); 
-        }
-        .modal-content { 
-            background: rgba(15, 20, 35, 0.95); border: 2px solid #00ffff; border-radius: 15px; 
-            padding: 25px; width: 90%; max-height: 85%; overflow-y: auto; 
-            box-shadow: 0 0 40px rgba(0,255,255,0.2), inset 0 0 20px rgba(0,255,255,0.1); 
-            text-align: center; position: relative; 
-        }
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px); }
+        .modal-content { background: rgba(15, 20, 35, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 90%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 40px rgba(0,255,255,0.2), inset 0 0 20px rgba(0,255,255,0.1); text-align: center; position: relative; }
         .modal-content h2 { margin-top: 0; color: #00ffff; text-shadow: 0 0 10px rgba(0,255,255,0.5); }
-        .modal-content input, .modal-content select { 
-            width: 100%; padding: 12px; margin-bottom: 15px; 
-            background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0,255,255,0.3); border-radius: 8px; 
-            color: #00ffff; font-size: 16px; outline: none; text-align: center; font-weight: bold; 
-        }
-        .modal-btn { 
-            width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; 
-            font-weight: bold; cursor: pointer; margin-bottom: 10px; color: #090a0f; transition: 0.2s; 
-            box-shadow: 0 0 10px rgba(0,255,255,0.2); 
-        }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(0,255,255,0.3); border-radius: 8px; color: #00ffff; font-size: 16px; outline: none; text-align: center; font-weight: bold; }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: #090a0f; transition: 0.2s; box-shadow: 0 0 10px rgba(0,255,255,0.2); }
         .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
         .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); color: white; box-shadow: 0 0 10px rgba(255,0,60,0.3); }
 
@@ -226,7 +85,7 @@
         .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
         .frame-card:active { transform: scale(0.95); }
         .frame-card.owned { border-color: #00ffff; background: rgba(0,255,255,0.05); }
-        .frame-card.equipped { border-color: #f1c40f; background: rgba(241,196,15,0.1); box-shadow: 0 0 20px rgba(241,196,15,0.3); }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); box-shadow: 0 0 20px rgba(241,196,15,0.3); }
         .profile-pic-container { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; background: #102a43; color: white; text-shadow: 1px 1px 2px black; position: relative; z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         
         .f-default { border: 2px solid rgba(255,255,255,0.5); }
@@ -246,7 +105,7 @@
         @keyframes cosmicPulse { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
         .f-void { border: 3px dashed #bc13fe; box-shadow: 0 0 20px #bc13fe, inset 0 0 20px black; background: #111; animation: voidSpin 4s linear infinite; }
         @keyframes voidSpin { 0% { transform: rotate(0deg) scale(0.95); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(0.95); } }
-        .f-god { background: #102a43; border: none; }
+        .f-god { background: #2a9df4; border: none; }
         .f-god::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #00ffff; border-bottom-color: #bc13fe; animation: godSpin 2s linear infinite; z-index: -1; }
         .f-god::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 2px solid transparent; border-left-color: #f1c40f; border-right-color: #e74c3c; animation: godSpinReverse 1.5s linear infinite; z-index: -1; }
         @keyframes godSpin { 100% { transform: rotate(360deg); } } @keyframes godSpinReverse { 100% { transform: rotate(-360deg); } }
@@ -295,7 +154,7 @@
         #activeBoosts { margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
         .boost-tag { background: rgba(0, 0, 0, 0.8); padding: 5px 12px; border-radius: 15px; font-size: 13px; font-weight: bold; border: 1px solid #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.4); animation: pulseBoost 1.5s infinite alternate; color: #f1c40f; }
 
-        /* SİMETRİK NEON PİST */
+        /* SİMETRİK NEON PİST (IŞIL IŞIL) */
         #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 22px solid rgba(16, 42, 67, 0.8); border-radius: 180px; background-color: transparent; box-shadow: 0 0 50px rgba(0, 255, 255, 0.2), inset 0 0 40px rgba(0, 255, 255, 0.1); pointer-events: none; z-index: 2; transition: all 0.3s; backdrop-filter: blur(2px); }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 336px; height: 536px; border: 3px dashed rgba(0, 255, 255, 0.6); border-radius: 168px; box-sizing: border-box; filter: drop-shadow(0 0 5px #00ffff); }
         .finish-line { position: absolute; top: 50%; right: -22px; transform: translateY(-50%); width: 22px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.8), rgba(255,255,255,0.8) 10px, rgba(0,255,255,0.8) 10px, rgba(0,255,255,0.8) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 15px #00ffff; }
@@ -303,11 +162,11 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.5); box-shadow: 0 0 60px rgba(0, 255, 255, 0.5) inset; }
 
-        /* UÇAKLAR (ROTASYON DÜZELTİLDİ VE AKICI DÖNÜŞ EKLENDİ) */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transition: transform 0.05s linear; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
+        /* UÇAKLAR (MİLİMETRİK HİZALI, TERS DÖNMEZ) */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transition: transform 0.05s linear; }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
-        /* Z-INDEX 99999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
+        /* Z-INDEX DÜZELTİLDİ: PARALAR EKRANIN EN ÖNÜNDE (Z-INDEX 999999) */
         .floating-money { position: absolute; color: #f1c40f; font-weight: 900; font-size: 28px; text-shadow: 0 0 10px #f39c12, 0 0 20px #e67e22, 2px 2px 0 #000; pointer-events: none; z-index: 999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
         @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -40px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -60px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -80px) scale(0.8); } }
 
@@ -471,6 +330,7 @@
             </div>
         </div>
 
+        <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
         </div>
@@ -617,7 +477,8 @@
             gameStarted = true;
             
             if(money === 0) { 
-                setTimeout(() => { flashFinishLine(); popMoneyFixed(100); }, 500); 
+                // Yeni başlayan oyuncu için ekranın orta-sağına hediye animasyonu
+                setTimeout(() => { flashFinishLine(); popMoney(cx + R, cy, 100); }, 500); 
                 showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
             initGrid(); updateFrameUI(); startGameLoops();
@@ -778,14 +639,14 @@
                     gridSlots[emptyIndex] = { level: level, isFlying: false }; 
                     initGrid(); saveGame(); updateUI();
                     showToast(`Lv.${level} uçak satın alındı!`, "info");
-                } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); }
+                } else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
             } else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
         // --- MİLYONLARCA KOMBİNASYON ÜRETEN ALGORİTMİK UÇAK MOTORU ---
         function getJetSVG(level, isFlying = true) {
-            let tier = Math.min(5, Math.floor((level - 1) / 40)); 
-            let hueBase = (level * 37) % 360;
+            let l = level; 
+            let hueBase = (l * 37) % 360;
             let c1 = `hsl(${hueBase}, 85%, 55%)`; 
             let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; 
             let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
@@ -793,10 +654,10 @@
             let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; 
             let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
 
-            let bodyType = level % 6; 
-            let wingType = level % 6; 
-            let tailType = level % 4; 
-            let engineType = level % 3;
+            let bodyType = l % 6; 
+            let wingType = l % 6; 
+            let tailType = l % 4; 
+            let engineType = l % 3;
 
             let svg = '';
             let tL = isFlying ? 150 : 110; 
@@ -833,31 +694,17 @@
                 svg += `<circle cx="50" cy="55" r="40" fill="none" stroke="${c2}" stroke-width="6"/>`;
             }
 
-            if (bodyType === 0) {
-                svg += `<path d="M 45,20 L 55,20 L 60,80 L 50,95 L 40,80 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 1) {
-                svg += `<polygon points="50,5 35,45 40,90 60,90 65,45" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 2) {
-                svg += `<rect x="35" y="15" width="30" height="75" rx="15" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 3) {
-                svg += `<polygon points="50,10 25,60 50,90 75,60" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 4) {
-                svg += `<path d="M 50,5 C 30,30 30,70 50,95 C 70,70 70,30 50,5 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else {
-                svg += `<polygon points="50,15 15,80 85,80" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            }
+            if (bodyType === 0) { svg += `<path d="M 45,20 L 55,20 L 60,80 L 50,95 L 40,80 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 1) { svg += `<polygon points="50,5 35,45 40,90 60,90 65,45" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 2) { svg += `<rect x="35" y="15" width="30" height="75" rx="15" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 3) { svg += `<polygon points="50,10 25,60 50,90 75,60" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 4) { svg += `<path d="M 50,5 C 30,30 30,70 50,95 C 70,70 70,30 50,5 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else { svg += `<polygon points="50,15 15,80 85,80" fill="${c1}" stroke="#111" stroke-width="2"/>`; }
 
-            if (tailType === 0) {
-                svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else if (tailType === 1) {
-                svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-                svg += `<polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else if (tailType === 2) {
-                svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-                svg += `<rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else {
-                svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            }
+            if (tailType === 0) { svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else if (tailType === 1) { svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/><polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else if (tailType === 2) { svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/><rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else { svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`; }
 
             svg += `<ellipse cx="50" cy="35" rx="6" ry="14" fill="${cG}" stroke="#111" stroke-width="2"/>`;
             svg += `<path d="M 47,26 C 46,30 46,38 50,42" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
@@ -1082,68 +929,79 @@
             const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
-        // --- SABİT EKRAN LOKASYONLU PARA ANİMASYONU (Z-INDEX 999999) ---
-        function popMoneyFixed(amount) {
+        const cx = 152; const cy = 252; const R = 166;
+
+        // --- Z-INDEX VE KISITLAMAYI AŞAN MÜKEMMEL PARA ANİMASYONU ---
+        function popMoney(x, y, amount) {
             money += amount; updateUI();
             const pop = document.createElement("div"); 
             pop.className = "floating-money"; 
             pop.innerText = "+" + formatNumber(amount);
             
-            // Ekranın sağ-orta üst kısmından fışkırır (Hangarın Arkasında Kalmaz)
-            pop.style.left = "65%"; 
-            pop.style.top = "40%"; 
+            // Parayı Hangarın (Pistin) Arkasında Kalmaması İçin En Dış Katmana Ekliyoruz
+            pop.style.left = `calc(50% - 152px + ${x - 20}px)`; 
+            pop.style.top = `calc(48% - 252px + ${y - 10}px)`; 
             
             document.getElementById("gameContainer").appendChild(pop);
-            setTimeout(() => pop.remove(), 1500); 
+            setTimeout(() => pop.remove(), 1800); 
         }
 
-        // --- AKICI ROTASYONLU MİLİMETRİK UÇUŞ MOTORU ---
+        // --- MİLİMETRİK UÇUŞ ROTASI VE KUSURSUZ YÖNELİM (TERSTEN DÖNMEYİ ENGELLEYEN MOTOR) ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
             const L = 200; // Düz Yol Uzunluğu
-            const R = 166; // Dönüş Yarıçapı
             const P = 2 * L + 2 * Math.PI * R; // Toplam Yol Çevresi
-            const cx = 152; const cy = 252; // Tam Merkez Koordinatları
 
-            let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedEnd : 1;
+            let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
 
             flyingPlanes.forEach(p => {
                 let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
                 const oldProgress = p.progress; p.progress += speed; 
                 let d = p.progress % P; if (d < 0) d += P; 
-                let x = 0, y = 0, baseAngle = 0, tilt = 0;
+                let x = 0, y = 0, baseAngle = 0;
 
-                // TOPLAM TUR AÇISI (Ters dönmeyi / fırıldak etkisini engeller)
+                // TERS DÖNMEYİ ENGELLEYEN SONSUZ TUR AÇISI EKLENDİ
                 let lapAngle = Math.floor(p.progress / P) * 360;
 
-                if (d < L) { 
-                    x = cx + R; y = (cy - L/2) + d; 
-                    baseAngle = 180; tilt = 0; // Sağ Düzlük
+                if (d < L) {
+                    // SAĞ DÜZLÜK
+                    x = cx + R; 
+                    y = (cy - L/2) + d; 
+                    baseAngle = 180;
                 }
-                else if (d < L + Math.PI * R) { 
+                else if (d < L + Math.PI * R) {
+                    // ALT VİRAJ (Kıvrılarak Döner)
                     let dist = d - L; let theta = dist / R; 
-                    x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
-                    baseAngle = 180 + (theta * 180 / Math.PI); tilt = 15; // Alt Viraj
+                    x = cx + R * Math.cos(theta); 
+                    y = (cy + L/2) + R * Math.sin(theta);
+                    baseAngle = 180 + (theta * 180 / Math.PI); 
                 }
-                else if (d < 2 * L + Math.PI * R) { 
+                else if (d < 2 * L + Math.PI * R) {
+                    // SOL DÜZLÜK
                     let dist = d - (L + Math.PI * R);
-                    x = cx - R; y = (cy + L/2) - dist; 
-                    baseAngle = 360; tilt = 0; // Sol Düzlük
+                    x = cx - R; 
+                    y = (cy + L/2) - dist; 
+                    baseAngle = 360; 
                 }
-                else { 
-                    let dist = d - (2 * L + Math.PI * R); let theta = dist / R; 
-                    x = cx - R * Math.cos(theta); y = (cy - L/2) - R * Math.sin(theta);
-                    baseAngle = 360 + (theta * 180 / Math.PI); tilt = 15; // Üst Viraj
+                else {
+                    // ÜST VİRAJ (Kıvrılarak Döner)
+                    let dist = d - (2 * L + Math.PI * R); let theta = Math.PI + (dist / R); 
+                    x = cx + R * Math.cos(theta); 
+                    y = (cy - L/2) + R * Math.sin(theta);
+                    baseAngle = 360 + (dist / R) * 180 / Math.PI; 
                 }
 
-                let finalAngle = lapAngle + baseAngle + tilt;
+                // Tur açısı + o anki açı (Açının geri sıfırlanıp uçağı ters döndürmesini engeller)
+                let finalAngle = lapAngle + baseAngle;
+
+                // Uçağın tam merkez noktası olan 32.5 baz alındı
                 p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${finalAngle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
-                    flashFinishLine(); popMoneyFixed(getPlaneIncome(p.level) * currentIncomeMult); 
+                    flashFinishLine(); popMoney(cx + R, cy - L/2 + 20, getPlaneIncome(p.level) * currentIncomeMult); 
                 }
             });
 
@@ -1156,7 +1014,7 @@
             container.innerHTML = ""; let now = Date.now();
             if (now < boostMoneyEnd) {
                 let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f; text-shadow: 0 0 5px #f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
+                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
             } else { boostMoneyMult = 1; }
 
             if (now < boostSpeedEnd) {
