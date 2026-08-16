@@ -9,9 +9,9 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Plane Tycoon">
-    <!-- Kaliteli bir uçak ikonu bağlantısı -->
-    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
-    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135715.png">
+    <!-- LOGO BURADA: Kendi fotoğrafının adını logo.png yapıp dosyaların arasına atman yeterli -->
+    <link rel="apple-touch-icon" href="logo.png">
+    <link rel="icon" href="logo.png">
 
     <style>
         * { box-sizing: border-box; user-select: none; font-family: 'Segoe UI', Tahoma, sans-serif; -webkit-touch-callout: none; }
@@ -96,6 +96,32 @@
         .btn-save { background: #2ecc71; }
         .btn-close { background: #e74c3c; }
 
+        /* ÇERÇEVELER (PROFILE FRAMES) */
+        .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
+        .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 2px solid #444; cursor: pointer; position: relative; transition: 0.2s; }
+        .frame-card:active { transform: scale(0.95); }
+        .frame-card.owned { border-color: #2ecc71; background: rgba(46, 204, 113, 0.1); }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.2); box-shadow: 0 0 15px rgba(241,196,15,0.4); }
+        
+        .profile-pic-container { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; background: #2a9df4; text-shadow: 1px 1px 2px black; position: relative; box-sizing: border-box; }
+        
+        .f-default { border: 2px solid white; }
+        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; }
+        .f-fire { border: 3px dashed #e74c3c; box-shadow: 0 0 15px #e74c3c; animation: fireGlow 0.8s infinite alternate; }
+        .f-neon { border: 3px solid #0f0; box-shadow: 0 0 15px #0f0, inset 0 0 10px #0f0; animation: neonPulse 1.5s infinite; }
+        .f-void { border: 3px solid #8e44ad; box-shadow: 0 0 20px #8e44ad; filter: drop-shadow(0 0 5px black); }
+        .f-god { background: linear-gradient(45deg, #f1c40f, #e74c3c, #9b59b6, #3498db, #f1c40f); background-size: 400% 400%; animation: godGradient 3s ease infinite; padding: 3px; border: none !important; }
+        .f-god .inner { background: #2a9df4; width: 100%; height: 100%; border-radius: 50%; display:flex; align-items:center; justify-content:center; }
+
+        @keyframes fireGlow { 0% { box-shadow: 0 0 10px #e74c3c, inset 0 0 5px #e74c3c; border-color: #e74c3c; } 100% { box-shadow: 0 0 25px #f39c12, inset 0 0 10px #f39c12; border-color: #f39c12; } }
+        @keyframes neonPulse { 0% { border-color: #0f0; box-shadow: 0 0 5px #0f0; } 50% { border-color: #afffaf; box-shadow: 0 0 20px #0f0; } 100% { border-color: #0f0; box-shadow: 0 0 5px #0f0; } }
+        @keyframes godGradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* HIZLANMA KADEMELERİ (TIER BAR) */
+        .tier-container { display: flex; gap: 4px; justify-content: center; margin: 20px 0; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 10px; }
+        .tier-slot { flex: 1; height: 12px; background: rgba(255,255,255,0.1); border-radius: 3px; border: 1px solid #333; transition: 0.3s; }
+        .tier-slot.filled { background: #e74c3c; border-color: #c0392b; box-shadow: 0 0 10px #e74c3c; }
+
         /* KASA SİSTEMİ */
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .case-item {
@@ -127,12 +153,7 @@
 
         /* ÜST BAR VE MENÜ */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 5px; }
-        .level-badge {
-            background: #2a9df4; border: 2px solid white; border-radius: 50%;
-            width: 36px; height: 36px; display: flex; justify-content: center; align-items: center;
-            font-weight: 900; font-size: 14px; text-shadow: 1px 1px 2px black;
-        }
+        .user-info { display: flex; align-items: center; gap: 8px; }
         .username { font-size: 13px; font-style: italic; font-weight: bold; }
         .currencies { display: flex; gap: 10px; }
         .currency {
@@ -265,8 +286,10 @@
             cursor: pointer; box-shadow: 0 5px 0 #1e8449; transition: transform 0.1s, box-shadow 0.1s;
         }
         .bottom-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #1e8449; }
-        .bottom-btn.shop { background: linear-gradient(to bottom, #ff4757, #ff6b81); box-shadow: 0 5px 0 #c0392b; }
-        .bottom-btn.shop:active { box-shadow: 0 0 0 #c0392b; }
+        .bottom-btn.shop { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #732d91; }
+        .bottom-btn.shop:active { box-shadow: 0 0 0 #732d91; }
+        .bottom-btn.speed { background: linear-gradient(to bottom, #e67e22, #d35400); box-shadow: 0 5px 0 #a04000; }
+        .bottom-btn.speed:active { box-shadow: 0 0 0 #a04000; }
         .bottom-btn span.big { font-size: 16px; display: block; margin-bottom: 2px; }
         .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 3px; }
 
@@ -291,7 +314,7 @@
         <div id="loginOverlay">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
-                <div class="slogan">"Uçakları birleştir, paraları katla,<br>göklerin hakimi ol, rakipleri atla!"</div>
+                <div class="slogan">"Gökyüzü fatihi, çerçeveleri topla!"</div>
                 <button class="login-btn" id="btnLoadGame" style="display:none; background: linear-gradient(45deg, #2ecc71, #27ae60); margin-bottom: 15px;" onclick="loadGame()">💾 Kaldığın Yerden Devam Et</button>
                 <input type="text" id="usernameInput" placeholder="Pilot Adı" autocomplete="off">
                 <select id="countrySelect">
@@ -331,6 +354,35 @@
             </div>
         </div>
 
+        <!-- ELMAS DÜKKANI (ÇERÇEVELER) -->
+        <div id="diamondShopModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>💎 Elmas Dükkanı</h2>
+                <p style="font-size:12px; color:#aaa;">Profillerine hava katacak efsanevi çerçeveler satın al!</p>
+                <div class="frame-grid" id="frameShopGrid">
+                    <!-- Çerçeveler JS ile dolacak -->
+                </div>
+                <button class="modal-btn btn-close" onclick="closeDiamondShop()">Kapat</button>
+            </div>
+        </div>
+
+        <!-- HIZLANMA MODALI (10 KADEMELİ) -->
+        <div id="speedBoostModal" class="modal-overlay">
+            <div class="modal-content">
+                <h2>⚡ 2x Hızlanma</h2>
+                <p style="font-size:13px; color:#a4c8ff;">Her alım +3 Dakika kazandırır. Maksimum limit 30 Dakika!</p>
+                <div class="tier-container" id="speedTierBar">
+                    <!-- 10 Tane kutu -->
+                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                </div>
+                <h3 id="speedBoostTimeLeft" style="color:white; margin-bottom:15px;">Aktif Süre: 00:00</h3>
+                <button class="modal-btn btn-save" onclick="buySpeedBoost()">+3 Dk Hızlanma Al (5000 ❂)</button>
+                <button class="modal-btn btn-close" onclick="closeSpeedMenu()">Kapat</button>
+            </div>
+        </div>
+
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
                 <h2>📦 Kasalar</h2>
@@ -351,7 +403,10 @@
 
         <div class="top-bar">
             <div class="user-info">
-                <div class="level-badge" id="playerLvl">1</div>
+                <!-- PROFİL ÇERÇEVESİ BURADA -->
+                <div class="profile-pic-container f-default" id="userProfileFrame">
+                    <span id="playerLvl">1</span>
+                </div>
                 <div class="username" id="displayUsername">Pilot</div>
             </div>
             <div class="currencies">
@@ -366,7 +421,7 @@
         </div>
 
         <div class="side-menu right">
-            <div class="menu-btn"><div class="icon" style="border-color:#f1c40f;">🏆</div>Sıralama</div>
+            <div class="menu-btn" onclick="alert('Sıralama yakında!')"><div class="icon" style="border-color:#f1c40f;">🏆</div>Sıralama</div>
             <div class="menu-btn" onclick="openCaseMenu()"><div class="icon">📦</div>Kasa</div> 
         </div>
 
@@ -386,15 +441,17 @@
         <div id="trashBin">🗑️ Uçağı Sil</div>
 
         <div class="bottom-bar">
-            <div class="bottom-btn">
-                <span class="big">⏱️ 03:00</span> HIZx2
+            <!-- HIZLANMA BUTONU -->
+            <div class="bottom-btn speed" onclick="openSpeedMenu()">
+                <span class="big" id="speedBtnText">⚡ Hızlanma</span>
             </div>
             <div class="bottom-btn" onclick="buyPlane()">
                 <span class="big">✈️ Al Lvl. <span id="buyLvlDisplay">1</span></span>
                 <span class="price">❂ <span id="buyPriceDisplay">80</span></span>
             </div>
-            <div class="bottom-btn shop">
-                <span class="big">🏪</span> Dükkan
+            <!-- ELMAS DÜKKANI BUTONU -->
+            <div class="bottom-btn shop" onclick="openDiamondShop()">
+                <span class="big">💎</span> Elmas Dükkanı
             </div>
         </div>
     </div>
@@ -426,7 +483,19 @@
         let gameStarted = false; 
 
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
+        
+        // HIZ VE ÇERÇEVE SİSTEMLERİ
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
+        let ownedFrames = ['default']; let activeFrame = 'default';
+        const framesData = [
+            { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
+            { id: 'gold', name: 'Altın Çerçeve', price: 15, cssClass: 'f-gold' },
+            { id: 'fire', name: 'Ateş Çerçevesi', price: 40, cssClass: 'f-fire' },
+            { id: 'neon', name: 'Neon Çerçeve', price: 80, cssClass: 'f-neon' },
+            { id: 'void', name: 'Void Çerçeve', price: 150, cssClass: 'f-void' },
+            { id: 'god', name: 'Tanrısal Çerçeve', price: 300, cssClass: 'f-god' }
+        ];
+
         let nextRewardTime = 0; let currentMinuteReward = null;
 
         window.onload = () => {
@@ -457,6 +526,7 @@
             const data = {
                 money, gems, playerLevel, currentName, currentCountry,
                 boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
+                ownedFrames, activeFrame,
                 nextRewardTime, currentMinuteReward,
                 gridSlots: gridSlots,
                 flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress }))
@@ -473,6 +543,9 @@
             playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; currentCountry = data.currentCountry || "🇹🇷";
             boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
             boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
+            
+            ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
+            
             nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
             gridSlots = data.gridSlots || new Array(10).fill(null);
             
@@ -484,8 +557,7 @@
             gameStarted = true;
             const savedFlying = data.flying || [];
             savedFlying.forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
-            initGrid(); updateBoostUI();
-            showToast("Oyun başarıyla yüklendi!", "info");
+            initGrid(); updateFrameUI(); showToast("Oyun başarıyla yüklendi!", "info");
         }
 
         function login() {
@@ -500,15 +572,16 @@
                 document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
                 showToast("VIP Girişi Başarılı!", "info");
             } else {
-                money = 0; gems = 0; localStorage.removeItem("planeTycoonSave"); 
+                money = 0; gems = 50; // Başlangıçta test etmesi için 50 elmas hediye
+                localStorage.removeItem("planeTycoonSave"); 
                 document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
             }
             
             nextRewardTime = Date.now();
             document.getElementById('loginOverlay').style.display = 'none';
             gameStarted = true;
-            if(money === 0) { setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); }
-            initGrid(); 
+            if(money === 0) { setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); showToast("Sana 50 Elmas Hediye Ettik!", "info"); }
+            initGrid(); updateFrameUI();
         }
 
         function openSettings() {
@@ -525,6 +598,86 @@
             } else { document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`; }
             closeSettings(); saveGame(); 
             showToast("Ayarlar kaydedildi", "info");
+        }
+
+        // --- ÇERÇEVE SİSTEMİ (ELMAS DÜKKANI) ---
+        function openDiamondShop() {
+            const grid = document.getElementById("frameShopGrid"); grid.innerHTML = "";
+            framesData.forEach(frame => {
+                const isOwned = ownedFrames.includes(frame.id);
+                const isEquipped = activeFrame === frame.id;
+                let btnHtml = "";
+                if(isEquipped) btnHtml = `<div style="color:#f1c40f; font-weight:bold; font-size:12px;">Kuşanıldı</div>`;
+                else if(isOwned) btnHtml = `<button style="padding:5px 10px; background:#2ecc71; border:none; border-radius:5px; color:white; cursor:pointer;" onclick="equipFrame('${frame.id}')">Kuşan</button>`;
+                else btnHtml = `<button style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;" onclick="buyFrame('${frame.id}', ${frame.price})">Satın Al (💎 ${frame.price})</button>`;
+                
+                let innerHTML = frame.id === 'god' ? '<div class="inner">?</div>' : '?';
+                
+                grid.innerHTML += `
+                    <div class="frame-card ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}">
+                        <div class="profile-pic-container ${frame.cssClass}" style="margin: 0 auto 10px auto;">${innerHTML}</div>
+                        <div style="font-size:13px; font-weight:bold; margin-bottom:10px;">${frame.name}</div>
+                        ${btnHtml}
+                    </div>
+                `;
+            });
+            document.getElementById("diamondShopModal").style.display = "flex";
+        }
+        function closeDiamondShop() { document.getElementById("diamondShopModal").style.display = "none"; }
+        function buyFrame(id, price) {
+            if(gems >= price) { gems -= price; ownedFrames.push(id); saveGame(); openDiamondShop(); updateUI(); showToast("Çerçeve satın alındı!", "info"); }
+            else { showToast("Yeterli elmasın yok!", "error"); }
+        }
+        function equipFrame(id) { activeFrame = id; saveGame(); updateFrameUI(); openDiamondShop(); showToast("Çerçeve kuşanıldı!", "info"); }
+        function updateFrameUI() {
+            const fData = framesData.find(f => f.id === activeFrame);
+            const container = document.getElementById("userProfileFrame");
+            container.className = `profile-pic-container ${fData.cssClass}`;
+            if(activeFrame === 'god') container.innerHTML = `<div class="inner"><span id="playerLvl">${playerLevel}</span></div>`;
+            else container.innerHTML = `<span id="playerLvl">${playerLevel}</span>`;
+        }
+
+        // --- HIZLANMA SİSTEMİ ---
+        function openSpeedMenu() {
+            document.getElementById("speedBoostModal").style.display = "flex";
+            updateSpeedModalUI();
+        }
+        function closeSpeedMenu() { document.getElementById("speedBoostModal").style.display = "none"; }
+        function updateSpeedModalUI() {
+            let now = Date.now();
+            let leftMs = Math.max(0, boostSpeedEnd - now);
+            let totalMins = Math.ceil(leftMs / 60000);
+            
+            // Tier bar doldurma (Her 3 dk = 1 Kutu)
+            let boxesFilled = Math.min(10, Math.ceil(totalMins / 3));
+            const slots = document.querySelectorAll('.tier-slot');
+            slots.forEach((s, idx) => {
+                if(idx < boxesFilled) s.classList.add('filled');
+                else s.classList.remove('filled');
+            });
+
+            // Metin güncelleme
+            if(leftMs > 0) {
+                let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000);
+                document.getElementById("speedBoostTimeLeft").innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`;
+            } else { document.getElementById("speedBoostTimeLeft").innerText = "Aktif Süre: Yok"; }
+        }
+        function buySpeedBoost() {
+            let now = Date.now();
+            let leftMs = Math.max(0, boostSpeedEnd - now);
+            if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; }
+            if(money < 5000) { showToast("Yetersiz bakiye (5000 ❂ gerekli)!", "error"); return; }
+            
+            money -= 5000;
+            boostSpeedMult = 2;
+            let addTime = 3 * 60 * 1000; // 3 dk
+            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime;
+            else boostSpeedEnd += addTime;
+            
+            // Sınır 30dk
+            if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
+            
+            saveGame(); updateUI(); updateSpeedModalUI(); showToast("Hızlanma eklendi!", "info");
         }
 
         // Uçak Çizim Fonksiyonu
@@ -639,7 +792,9 @@
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
             
-            document.getElementById("playerLvl").innerText = playerLevel;
+            let lvlSpan = document.getElementById("playerLvl");
+            if(lvlSpan) lvlSpan.innerText = playerLevel;
+            
             let totalCps = 0; 
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
             flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
@@ -709,7 +864,7 @@
                         if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } 
                         else if (targetItem.level === activeTouchData.level) {
                             gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex;
-                            if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                            if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
                         }
                     } else if (activeTouchData.type === 'grid') {
                         const sourceIndex = activeTouchData.index;
@@ -718,7 +873,7 @@
                             if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
                             else if (targetItem.level === sourceItem.level && !targetItem.isFlying) {
                                 gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                                if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                                if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
                             }
                         }
                     }
@@ -813,7 +968,7 @@
                     gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null;
                 } else if (targetItem.level === sourceItem.level) {
                     gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) playerLevel = targetItem.level + 1;
+                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
                 }
             } 
             initGrid(); saveGame();
@@ -902,10 +1057,19 @@
                 container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
             } else { boostMoneyMult = 1; }
 
+            // Üst bar ve ana menü hız ikonu güncellemeleri
             if (now < boostSpeedEnd) {
                 let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                container.innerHTML += `<div class="boost-tag" style="color:#e74c3c; border-color:#e74c3c;">⚡ ${boostSpeedMult}x Hız (${m}:${s < 10 ? '0'+s : s})</div>`;
-            } else { boostSpeedMult = 1; }
+                document.getElementById("speedBtnText").innerText = `⚡ ${m}:${s < 10 ? '0'+s : s}`;
+                
+                // Eğer Modal Açıksa Güncelle
+                if(document.getElementById("speedBoostModal").style.display === "flex") {
+                    updateSpeedModalUI();
+                }
+            } else { 
+                boostSpeedMult = 1; 
+                document.getElementById("speedBtnText").innerText = "⚡ Hızlanma"; 
+            }
             updateRewardsUI();
         }
 
@@ -1081,7 +1245,7 @@
             document.getElementById("btnTakeReward").style.display = "none";
             if (currentWonReward.type === 'plane') {
                 const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) playerLevel = currentWonReward.value; }
+                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) { playerLevel = currentWonReward.value; updateFrameUI(); } }
             } else if (currentWonReward.type === 'money') { money += currentWonReward.value;
             } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value;
             } else if (currentWonReward.type === 'boost') {
