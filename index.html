@@ -82,10 +82,10 @@
 
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
-        .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
+        .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 1px solid rgba(0,255,255,0.2); cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
         .frame-card:active { transform: scale(0.95); }
         .frame-card.owned { border-color: #00ffff; background: rgba(0,255,255,0.05); }
-        .frame-card.equipped { border-color: #f1c40f; background: rgba(241,196,15,0.1); box-shadow: 0 0 20px rgba(241,196,15,0.3); }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); box-shadow: 0 0 20px rgba(241,196,15,0.3); }
         .profile-pic-container { width: 36px; height: 36px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 14px; background: #102a43; color: white; text-shadow: 1px 1px 2px black; position: relative; z-index: 2; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         
         .f-default { border: 2px solid rgba(255,255,255,0.5); }
@@ -116,7 +116,7 @@
         .tier-slot.filled { background: #00ffff; border-color: #fff; box-shadow: 0 0 10px #00ffff; }
 
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .case-item { background: rgba(0,0,0,0.6); border: 1px solid; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
+        .case-item { background: rgba(0,0,0,0.6); border: 1px solid rgba(0,255,255,0.3); border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.8); }
         .case-item:hover { box-shadow: inset 0 0 25px rgba(255,255,255,0.1); transform: translateY(-2px); }
         .case-item:active { transform: scale(0.95); }
         .case-icon { font-size: 30px; margin-bottom: 5px; filter: drop-shadow(0 0 5px rgba(255,255,255,0.3)); } 
@@ -162,12 +162,13 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.5); box-shadow: 0 0 60px rgba(0, 255, 255, 0.5) inset; }
 
-        /* UÇAKLAR (NEON GÖLGELİ) */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transition: transform 0.05s linear; }
+        /* UÇAKLAR (ROTASYON DÜZELTİLDİ VE AKICI DÖNÜŞ EKLENDİ) */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
-        .floating-money { position: absolute; color: #f1c40f; font-weight: 900; font-size: 26px; text-shadow: 0 0 10px #f39c12, 0 0 20px #e67e22, 2px 2px 0 #000; pointer-events: none; z-index: 10; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
-        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-30px, -60px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-30px, -90px) scale(1); } 100% { opacity: 0; transform: translate(-30px, -120px) scale(0.8); } }
+        /* Z-INDEX 99999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
+        .floating-money { position: absolute; right: 15%; top: 35%; color: #f1c40f; font-weight: 900; font-size: 26px; text-shadow: 0 0 10px #f39c12, 0 0 20px #e67e22, 2px 2px 0 #000; pointer-events: none; z-index: 99999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
+        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -40px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -60px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -80px) scale(0.8); } }
 
         /* HANGAR ALANI (CAM EFEKTİ) */
         .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 12px; z-index: 20; padding: 15px; background: rgba(9, 10, 15, 0.6); border-radius: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 0 20px rgba(0, 255, 255, 0.1); border: 2px solid rgba(0, 255, 255, 0.2); backdrop-filter: blur(10px); }
@@ -202,7 +203,6 @@
 
     <svg width="0" height="0" style="position: absolute;">
         <defs>
-            <!-- UÇAKLAR İÇİN NEON GÖLGE EFEKTİ -->
             <filter id="planeShadow">
                 <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#00ffff" flood-opacity="0.8"/>
             </filter>
@@ -212,8 +212,10 @@
     <div id="dragGhost"></div>
 
     <div id="gameContainer">
+        <!-- TOAST BİLDİRİM ALANI -->
         <div id="toastContainer"></div>
         
+        <!-- YENİ YÜKLEME EKRANI -->
         <div id="loadingOverlay">
             <div class="loading-bg"></div>
             <div class="loading-content">
@@ -224,6 +226,7 @@
             </div>
         </div>
 
+        <!-- YENİ SADE GİRİŞ EKRANI -->
         <div id="loginOverlay" style="display: none;">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
@@ -234,6 +237,7 @@
             </div>
         </div>
 
+        <!-- İSİM DEĞİŞTİRME AYARLARI -->
         <div id="settingsModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>⚙️ Profil Ayarları</h2>
@@ -256,6 +260,7 @@
             </div>
         </div>
 
+        <!-- ELMAS DÜKKANI (ÇERÇEVELER) -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>💎 Elmas Dükkanı</h2>
@@ -265,6 +270,7 @@
             </div>
         </div>
 
+        <!-- NORMAL DÜKKAN (Hızlanma ve Uçak Market) -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
                 <h2 style="margin-bottom: 15px; color: #00ffff;">🏪 Dükkan</h2>
@@ -289,6 +295,7 @@
             </div>
         </div>
 
+        <!-- KASA SİSTEMİ -->
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
                 <h2 style="color: #bc13fe; text-shadow: 0 0 10px #bc13fe;">📦 Kasalar</h2>
@@ -307,6 +314,7 @@
             </div>
         </div>
 
+        <!-- ÜST BAR -->
         <div class="top-bar">
             <div class="user-info" onclick="openSettings()">
                 <div class="profile-pic-container f-default" id="userProfileFrame">
@@ -321,6 +329,7 @@
             </div>
         </div>
 
+        <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
         </div>
@@ -345,6 +354,7 @@
         <div class="grid-container" id="grid"></div>
         <div id="trashBin">🗑️ Uçağı Sil</div>
 
+        <!-- ALT BUTONLAR -->
         <div class="bottom-bar">
             <div class="bottom-btn speed" onclick="openGeneralShop()">
                 <span class="big" id="speedBtnText">🏪 Dükkan</span>
@@ -383,7 +393,6 @@
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
         
-        // 10 EFSANEVİ ÇERÇEVE
         let ownedFrames = ['default']; let activeFrame = 'default';
         const framesData = [
             { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
@@ -406,39 +415,47 @@
                 overlay.style.opacity = '0';
                 setTimeout(() => { 
                     overlay.style.display = 'none'; 
-                    if(localStorage.getItem("planeTycoonSave")) {
-                        document.getElementById("btnLoadGame").style.display = "block";
-                    }
+                    try {
+                        if(localStorage.getItem("planeTycoonSave")) {
+                            document.getElementById("btnLoadGame").style.display = "block";
+                        }
+                    } catch(e) {}
                     document.getElementById('loginOverlay').style.display = 'flex';
                 }, 500);
             }, 4000); 
         };
 
         function loadGame() {
-            const saved = localStorage.getItem("planeTycoonSave");
-            if (!saved) return;
-            const data = JSON.parse(saved);
-            money = data.money || 0; gems = data.gems || 0; 
-            playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; 
-            boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
-            boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
-            ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
-            nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
-            gridSlots = data.gridSlots || new Array(10).fill(null);
-            
-            document.getElementById('loginOverlay').style.display = 'none';
-            checkAndSetUsernameDisplay();
-            gameStarted = true;
-            (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
-            initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
-            startGameLoops();
+            try {
+                const saved = localStorage.getItem("planeTycoonSave");
+                if (!saved) return;
+                const data = JSON.parse(saved);
+                money = data.money || 0; gems = data.gems || 0; 
+                playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; 
+                boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
+                boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
+                ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
+                nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
+                gridSlots = data.gridSlots || new Array(10).fill(null);
+                
+                document.getElementById('loginOverlay').style.display = 'none';
+                checkAndSetUsernameDisplay();
+                gameStarted = true;
+                (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
+                initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
+                startGameLoops();
+            } catch(e) {
+                console.error(e);
+                showToast("Kayıt dosyası bozuk, yeni oyun başlatılıyor.", "error");
+                login();
+            }
         }
 
         function login() {
             const user = document.getElementById('usernameInput').value.trim();
             if(user === "") { showToast("Pilot adını gir!", "error"); return; }
-
             currentName = user;
+            
             if(user.toLowerCase() === "test") {
                 money = 999999999999999; gems = 999999999; playerLevel = 1; 
                 showToast("Test Modu: Sınırsız Kaynak Aktif!", "info");
@@ -457,7 +474,7 @@
             gameStarted = true;
             
             if(money === 0) { 
-                setTimeout(() => { flashFinishLine(); popMoney(152+166, 252, 100); }, 500); 
+                setTimeout(() => { flashFinishLine(); popMoney(getMoneyPopX(), getMoneyPopY(), 100); }, 500); 
                 showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
             }
             initGrid(); updateFrameUI(); startGameLoops();
@@ -546,81 +563,42 @@
         }
 
         function updateSpeedModalUI() {
-            let now = Date.now();
-            let leftMs = Math.max(0, boostSpeedEnd - now);
-            let totalMins = Math.ceil(leftMs / 60000);
-            
-            let boxesFilled = Math.min(10, Math.ceil(totalMins / 3));
-            const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot');
-            slots.forEach((s, idx) => {
-                if(idx < boxesFilled) s.classList.add('filled');
-                else s.classList.remove('filled');
-            });
-
+            let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now); let totalMins = Math.ceil(leftMs / 60000);
+            let boxesFilled = Math.min(10, Math.ceil(totalMins / 3)); const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot');
+            slots.forEach((s, idx) => { if(idx < boxesFilled) s.classList.add('filled'); else s.classList.remove('filled'); });
             let displayEl = document.getElementById("shopSpeedBoostTimeLeft");
-            if(leftMs > 0) {
-                let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000);
-                if(displayEl) displayEl.innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`;
-            } else { if(displayEl) displayEl.innerText = "Aktif Süre: Yok"; }
+            if(leftMs > 0) { let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000); if(displayEl) displayEl.innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`; } 
+            else { if(displayEl) displayEl.innerText = "Aktif Süre: Yok"; }
         }
 
         function buySpeedBoost() {
-            let now = Date.now();
-            let leftMs = Math.max(0, boostSpeedEnd - now);
+            let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now);
             if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; }
             if(gems < 5) { showToast("Yetersiz bakiye (5 💎 Elmas gerekli)!", "error"); return; }
-            
-            gems -= 5;
-            boostSpeedMult = 2;
-            let addTime = 3 * 60 * 1000; // 3 dk
-            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime;
-            else boostSpeedEnd += addTime;
-            
+            gems -= 5; boostSpeedMult = 2; let addTime = 3 * 60 * 1000;
+            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime; else boostSpeedEnd += addTime;
             if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
             saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
         }
 
         function openGeneralShop() {
-            updateSpeedModalUI(); 
-            const grid = document.getElementById("planeShopGrid");
-            grid.innerHTML = "";
-            
+            updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
             for(let i = 1; i <= playerLevel; i++) {
-                let price = Math.floor(50 * Math.pow(1.6, i));
-                let planeSVG = getJetSVG(i, false); 
-                
-                grid.innerHTML += `
-                    <div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.4); padding: 10px;">
-                        <div style="width:55px; height:55px; position:relative; margin-bottom:5px;">
-                            ${planeSVG}
-                            <div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div>
-                        </div>
-                        <div style="font-size:11px; color:#f1c40f; font-weight:bold; margin: 8px 0; text-shadow: 0 0 5px #f1c40f;">❂ ${formatNumber(price)}</div>
-                        <button class="modal-btn btn-save" style="padding:6px; font-size:12px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button>
-                    </div>
-                `;
+                let price = Math.floor(50 * Math.pow(1.6, i)); let planeSVG = getJetSVG(i, false); 
+                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.4); padding: 10px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:11px; color:#f1c40f; font-weight:bold; margin: 8px 0; text-shadow: 0 0 5px #f1c40f;">❂ ${formatNumber(price)}</div><button class="modal-btn btn-save" style="padding:6px; font-size:12px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
             }
             document.getElementById("generalShopModal").style.display = "flex";
         }
-        
         function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
-        
         function buySpecificPlane(level, price) {
-            if(money >= price) {
-                const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) {
-                    money -= price; 
-                    gridSlots[emptyIndex] = { level: level, isFlying: false }; 
-                    initGrid(); saveGame(); updateUI();
-                    showToast(`Lv.${level} uçak satın alındı!`, "info");
-                } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); }
-            } else { showToast("Yetersiz bakiye kral!", "error"); }
+            if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); } } 
+            else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
-        // --- MİLYONLARCA KOMBİNASYON ÜRETEN ALGORİTMİK UÇAK MOTORU ---
+        // --- TAMAMEN FARKLI 6 UÇAK SINIFI (SVG ÇİZİMLERİ) ---
         function getJetSVG(level, isFlying = true) {
-            let l = level; 
-            let hueBase = (l * 37) % 360;
+            let tier = Math.min(5, Math.floor((level - 1) / 40)); 
+            let hueBase = (level * 37) % 360;
             let c1 = `hsl(${hueBase}, 85%, 55%)`; 
             let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; 
             let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
@@ -628,14 +606,8 @@
             let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; 
             let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
 
-            let bodyType = l % 6; 
-            let wingType = l % 6; 
-            let tailType = l % 4; 
-            let engineType = l % 3;
-
-            let svg = '';
-            let tL = isFlying ? 150 : 110; 
-            let tO = isFlying ? 0.8 : 0.3;
+            let bodyType = level % 6; let wingType = level % 6; let tailType = level % 4; let engineType = level % 3;
+            let svg = ''; let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3;
             let anim = isFlying ? '' : 'animation-duration: 0.3s; transform: scaleY(0.7); opacity: 0.8;';
 
             let engineFire = (x, y) => `
@@ -683,7 +655,6 @@
             svg += `<ellipse cx="50" cy="35" rx="6" ry="14" fill="${cG}" stroke="#111" stroke-width="2"/>`;
             svg += `<path d="M 47,26 C 46,30 46,38 50,42" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
 
-            // Neon Gölgeli Çizim
             return `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;"><g filter="url(#planeShadow)">${svg}</g></svg>`;
         }
 
@@ -699,292 +670,140 @@
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
         }
 
-        const trashBin = document.getElementById("trashBin");
-        const trackEl = document.getElementById("trackContainer");
-        const gameContainer = document.getElementById("gameContainer");
-        const ghost = document.getElementById("dragGhost");
-
+        const trashBin = document.getElementById("trashBin"); const trackEl = document.getElementById("trackContainer");
+        const gameContainer = document.getElementById("gameContainer"); const ghost = document.getElementById("dragGhost");
         let activeTouchData = null; 
 
         function setupDragAndDropForElement(el, data) {
-            el.addEventListener("dragstart", (e) => {
-                dragSource = data;
-                setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10);
-            });
-            el.addEventListener("dragend", () => {
-                trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
-            });
-
-            el.addEventListener("touchstart", (e) => {
-                e.preventDefault();
-                activeTouchData = data;
-                ghost.innerHTML = el.innerHTML;
-                ghost.style.display = "block";
-                const touch = e.touches[0];
-                ghost.style.left = touch.clientX + "px";
-                ghost.style.top = touch.clientY + "px";
-                
-                if(data.type === 'grid') { el.style.opacity = "0.3"; } 
-                else if(data.type === 'track') { el.style.display = "none"; }
-                trashBin.style.display = "block"; trackEl.classList.add("drag-active");
-            }, {passive: false});
-
-            el.addEventListener("touchmove", (e) => {
-                e.preventDefault();
-                const touch = e.touches[0];
-                ghost.style.left = touch.clientX + "px";
-                ghost.style.top = touch.clientY + "px";
-            }, {passive: false});
-
-            el.addEventListener("touchend", (e) => {
-                e.preventDefault();
-                ghost.style.display = "none"; trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
-                const touch = e.changedTouches[0];
-                const targetEl = document.elementFromPoint(touch.clientX, touch.clientY);
-
-                if (!targetEl) { initGrid(); return; }
-
-                if (targetEl.closest('#trashBin')) {
-                    if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null;
-                    if(activeTouchData.type === 'track') {
-                        gridSlots[activeTouchData.sourceSlotIndex].isFlying = false;
-                        removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
-                    }
-                    initGrid(); saveGame();
-                } else if (targetEl.closest('.slot')) {
-                    const slotEl = targetEl.closest('.slot');
-                    const targetIndex = parseInt(slotEl.dataset.index);
-                    const targetItem = gridSlots[targetIndex];
-
-                    if (activeTouchData.type === 'track') {
-                        gridSlots[activeTouchData.sourceSlotIndex].isFlying = false;
-                        removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex);
-                        if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } 
-                        else if (targetItem.level === activeTouchData.level) {
-                            gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex;
-                            if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
-                        }
-                    } else if (activeTouchData.type === 'grid') {
-                        const sourceIndex = activeTouchData.index;
-                        if (sourceIndex !== targetIndex) {
-                            const sourceItem = gridSlots[sourceIndex];
-                            if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
-                            else if (targetItem.level === sourceItem.level && !targetItem.isFlying) {
-                                gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                                if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
-                            }
-                        }
-                    }
-                    initGrid(); saveGame();
-                } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') {
-                    if (activeTouchData.type === 'grid') {
-                        const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
-                        if (activeTrackCount < MAX_PLANES) {
-                            gridSlots[activeTouchData.index].isFlying = true;
-                            spawnTrackPlane(activeTouchData.level, activeTouchData.index);
-                        } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); }
-                    }
-                    initGrid(); saveGame();
-                }
-                activeTouchData = null;
+            el.addEventListener("dragstart", (e) => { dragSource = data; setTimeout(() => { trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, 10); });
+            el.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
+            el.addEventListener("touchstart", (e) => { e.preventDefault(); activeTouchData = data; ghost.innerHTML = el.innerHTML; ghost.style.display = "block"; const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; if(data.type === 'grid') { el.style.opacity = "0.3"; } else if(data.type === 'track') { el.style.display = "none"; } trashBin.style.display = "block"; trackEl.classList.add("drag-active"); }, {passive: false});
+            el.addEventListener("touchmove", (e) => { e.preventDefault(); const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; }, {passive: false});
+            el.addEventListener("touchend", (e) => { e.preventDefault(); ghost.style.display = "none"; trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); const touch = e.changedTouches[0]; const targetEl = document.elementFromPoint(touch.clientX, touch.clientY); if (!targetEl) { initGrid(); return; }
+                if (targetEl.closest('#trashBin')) { if(activeTouchData.type === 'grid') gridSlots[activeTouchData.index] = null; if(activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); } initGrid(); saveGame(); } 
+                else if (targetEl.closest('.slot')) { const slotEl = targetEl.closest('.slot'); const targetIndex = parseInt(slotEl.dataset.index); const targetItem = gridSlots[targetIndex];
+                    if (activeTouchData.type === 'track') { gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } else if (targetItem.level === activeTouchData.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } 
+                    else if (activeTouchData.type === 'grid') { const sourceIndex = activeTouchData.index; if (sourceIndex !== targetIndex) { const sourceItem = gridSlots[sourceIndex]; if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } else if (targetItem.level === sourceItem.level && !targetItem.isFlying) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } } } initGrid(); saveGame();
+                } else if (targetEl.closest('#trackContainer') || targetEl.id === 'gameContainer') { if (activeTouchData.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount < MAX_PLANES) { gridSlots[activeTouchData.index].isFlying = true; spawnTrackPlane(activeTouchData.level, activeTouchData.index); } else { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); } } initGrid(); saveGame(); } activeTouchData = null;
             });
         }
 
         gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
-        gameContainer.addEventListener("drop", e => {
-            e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
-            if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
-            if (dragSource && dragSource.type === 'grid') {
-                const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
-                if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; }
-                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(dragSource.index, dragSource.index); initGrid(); saveGame();
-            }
-            if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
-                gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame();
-            }
+        gameContainer.addEventListener("drop", e => { e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
+            if (dragSource && dragSource.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; } gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame(); }
+            if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) { gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); }
         });
 
         trashBin.addEventListener("dragover", e => { e.preventDefault(); trashBin.classList.add("drag-over"); });
         trashBin.addEventListener("dragleave", e => trashBin.classList.remove("drag-over"));
-        trashBin.addEventListener("drop", e => {
-            e.preventDefault(); e.stopPropagation(); trashBin.classList.remove("drag-over");
-            if(dragSource) {
-                if(dragSource.type === 'grid') gridSlots[dragSource.index] = null;
-                else if (dragSource.type === 'track') { gridSlots[dragSource.sourceSlotIndex] = null; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); }
-                initGrid(); saveGame();
-            }
-            trashBin.style.display = "none";
-        });
+        trashBin.addEventListener("drop", e => { e.preventDefault(); e.stopPropagation(); trashBin.classList.remove("drag-over"); if(dragSource) { if(dragSource.type === 'grid') gridSlots[dragSource.index] = null; else if (dragSource.type === 'track') { gridSlots[dragSource.sourceSlotIndex] = null; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); } initGrid(); saveGame(); } trashBin.style.display = "none"; });
 
         function initGrid() {
             const gridEl = document.getElementById("grid"); gridEl.innerHTML = "";
             for(let i = 0; i < 10; i++) {
                 const slot = document.createElement("div"); slot.className = "slot"; slot.dataset.index = i;
-                slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); });
-                slot.addEventListener("dragleave", e => slot.classList.remove("drag-over"));
-                slot.addEventListener("drop", handleSlotDrop);
-
+                slot.addEventListener("dragover", e => { e.preventDefault(); slot.classList.add("drag-over"); }); slot.addEventListener("dragleave", e => slot.classList.remove("drag-over")); slot.addEventListener("drop", handleSlotDrop);
                 if(gridSlots[i]) {
-                    const planeObj = gridSlots[i]; 
-                    const planeEl = document.createElement("div"); 
-                    planeEl.className = "plane-item";
-                    
-                    if(planeObj.isFlying) {
-                        planeEl.classList.add("ghost");
-                        planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); });
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                    } else {
-                        planeEl.draggable = true;
-                        planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`;
-                        setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level });
-                    }
-                    if(i === animatedIndex) planeEl.classList.add("merge-anim");
-                    slot.appendChild(planeEl);
-                }
-                gridEl.appendChild(slot);
-            }
-            animatedIndex = null; updateUI();
+                    const planeObj = gridSlots[i]; const planeEl = document.createElement("div"); planeEl.className = "plane-item";
+                    if(planeObj.isFlying) { planeEl.classList.add("ghost"); planeEl.addEventListener("click", () => { gridSlots[i].isFlying = false; removeFlyingPlaneBySlot(i); initGrid(); saveGame(); }); planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; } 
+                    else { planeEl.draggable = true; planeEl.innerHTML = getJetSVG(planeObj.level, false) + `<div class="level-tag">Lv.${planeObj.level}</div>`; setupDragAndDropForElement(planeEl, { type: 'grid', index: i, level: planeObj.level }); }
+                    if(i === animatedIndex) planeEl.classList.add("merge-anim"); slot.appendChild(planeEl);
+                } gridEl.appendChild(slot);
+            } animatedIndex = null; updateUI();
         }
 
         function handleSlotDrop(e) {
-            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("drag-over"); 
-            trashBin.style.display = "none"; trackEl.classList.remove("drag-active");
-            if(!dragSource) return;
-
-            const targetIndex = parseInt(e.currentTarget.dataset.index); 
-            const targetItem = gridSlots[targetIndex];
-
-            if (dragSource.type === 'track') { 
-                gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); return; 
-            }
+            e.preventDefault(); e.stopPropagation(); e.currentTarget.classList.remove("drag-over"); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if(!dragSource) return;
+            const targetIndex = parseInt(e.currentTarget.dataset.index); const targetItem = gridSlots[targetIndex];
+            if (dragSource.type === 'track') { gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame(); return; }
             if(dragSource.type === 'grid') {
-                const sourceIndex = dragSource.index; 
-                if(sourceIndex === targetIndex || (targetItem && targetItem.isFlying)) return;
-                const sourceItem = gridSlots[sourceIndex];
-
-                if(!targetItem) { 
-                    gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null;
-                } else if (targetItem.level === sourceItem.level) {
-                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
-                }
-            } 
-            initGrid(); saveGame();
+                const sourceIndex = dragSource.index; if(sourceIndex === targetIndex || (targetItem && targetItem.isFlying)) return; const sourceItem = gridSlots[sourceIndex];
+                if(!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
+                else if (targetItem.level === sourceItem.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } }
+            } initGrid(); saveGame();
         }
 
         function buyPlane() {
-            let lvl = getMarketLevel();
-            let cost = getMarketPrice();
-            if(money >= cost) {
-                const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) {
-                    money -= cost; 
-                    gridSlots[emptyIndex] = { level: lvl, isFlying: false }; 
-                    initGrid(); 
-                    saveGame();
-                } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); }
-            } else { showToast("Yetersiz bakiye kral!", "error"); }
+            let lvl = getMarketLevel(); let cost = getMarketPrice();
+            if(money >= cost) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= cost; gridSlots[emptyIndex] = { level: lvl, isFlying: false }; initGrid(); saveGame(); } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); } } 
+            else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
         function spawnTrackPlane(level, slotIndex, savedProgress = 0) {
-            const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; 
-            visual.innerHTML = getJetSVG(level, true); 
-            trackEl.appendChild(visual);
+            const visual = document.createElement("div"); visual.className = "flying-plane"; visual.draggable = true; visual.innerHTML = getJetSVG(level, true); trackEl.appendChild(visual);
             setupDragAndDropForElement(visual, { type: 'track', sourceSlotIndex: slotIndex, level: level });
-            const planeObj = { slotIndex: slotIndex, element: visual, level: level, progress: savedProgress };
-            flyingPlanes.push(planeObj); updateUI(); 
+            flyingPlanes.push({ slotIndex: slotIndex, element: visual, level: level, progress: savedProgress }); updateUI(); 
         }
 
-        function removeFlyingPlaneBySlot(slotIdx) {
-            const pIndex = flyingPlanes.findIndex(p => p.slotIndex === slotIdx);
-            if (pIndex !== -1) { flyingPlanes[pIndex].element.remove(); flyingPlanes.splice(pIndex, 1); updateUI(); }
+        function removeFlyingPlaneBySlot(slotIdx) { const pIndex = flyingPlanes.findIndex(p => p.slotIndex === slotIdx); if (pIndex !== -1) { flyingPlanes[pIndex].element.remove(); flyingPlanes.splice(pIndex, 1); updateUI(); } }
+        function flashFinishLine() { const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; }
+        
+        // Z-INDEX 99999 VE SABİT POZİSYONLA PARA ANİMASYONU
+        function getMoneyPopX() { return window.innerWidth / 2 + 50; }
+        function getMoneyPopY() { return window.innerHeight / 2 - 150; }
+        
+        function popMoney(x, y, amount) { 
+            money += amount; updateUI(); 
+            const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
+            document.getElementById("gameContainer").appendChild(pop); 
+            setTimeout(() => pop.remove(), 1500); 
         }
 
-        function flashFinishLine() { 
-            const flash = document.getElementById('finishFlash'); flash.style.animation = 'none'; flash.offsetHeight; flash.style.animation = 'flashAnim 0.4s ease-out forwards'; 
-        }
-
-        function popMoney(x, y, amount) {
-            money += amount; updateUI();
-            const pop = document.createElement("div"); pop.className = "floating-money"; 
-            pop.innerText = "+" + formatNumber(amount);
-            pop.style.left = (x - 20) + "px"; pop.style.top = (y - 10) + "px"; 
-            trackEl.appendChild(pop);
-            setTimeout(() => pop.remove(), 1800); 
-        }
-
-        // --- MİLİMETRİK UÇUŞ ROTASI VE AKICI DÖNÜŞ (SAĞA YATMA) MOTORU ---
+        // --- AKICI SAĞ YATMA (TILT) ANİMASYONLU KUSURSUZ UÇUŞ ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
-
-            const L = 200; // Düz Yol Uzunluğu
-            const R = 166; // Dönüş Yarıçapı
-            const P = 2 * L + 2 * Math.PI * R; // Toplam Yol Çevresi
-            const cx = 152; const cy = 252; // Tam Merkez Koordinatları
+            const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
+            const cx = 152; const cy = 252; // Tam çizgiye oturtulmuş merkez koordinatları
 
             let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
+
+            let popBaseX = window.innerWidth / 2 + 50; // Para çıkacak nokta
+            let popBaseY = window.innerHeight / 2 - 50;
 
             flyingPlanes.forEach(p => {
                 let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
                 const oldProgress = p.progress; p.progress += speed; 
                 let d = p.progress % P; if (d < 0) d += P; 
-                let x = 0, y = 0, angle = 0;
+                let x = 0, y = 0, baseAngle = 0, tilt = 0;
 
-                // Uçakların yolu takip ederek dönmesini sağlayan trigonometrik hesaplama
-                if (d < L) {
-                    x = cx + R; 
-                    y = (cy - L/2) + d; 
-                    angle = 180; // Sağ düzlük (Aşağı bakıyor)
+                // Uçakların yolu takip ederek dönmesini sağlayan trigonometrik hesaplama (Akıcı Dönüş)
+                let baseLapAngle = Math.floor(p.progress / P) * 360;
+
+                if (d < L) { // SAĞ DÜZLÜK
+                    x = cx + R; y = (cy - L/2) + d; 
+                    baseAngle = 180; tilt = 0; 
                 }
-                else if (d < L + Math.PI * R) {
-                    let dist = d - L; 
-                    let theta = dist / R; 
-                    x = cx + R * Math.cos(theta); 
-                    y = (cy + L/2) + R * Math.sin(theta);
-                    angle = 180 + (theta * 180 / Math.PI); // Alt virajda yılan gibi akıcı dönüyor
+                else if (d < L + Math.PI * R) { // ALT VİRAJ
+                    let dist = d - L; let theta = dist / R; 
+                    x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
+                    baseAngle = 180 + (theta * 180 / Math.PI); tilt = 15; // Virajda sağa yatar
                 }
-                else if (d < 2 * L + Math.PI * R) {
+                else if (d < 2 * L + Math.PI * R) { // SOL DÜZLÜK
                     let dist = d - (L + Math.PI * R);
-                    x = cx - R; 
-                    y = (cy + L/2) - dist; 
-                    angle = 0; // Sol düzlük (Yukarı bakıyor)
+                    x = cx - R; y = (cy + L/2) - dist; 
+                    baseAngle = 360; tilt = 0; 
                 }
-                else {
-                    let dist = d - (2 * L + Math.PI * R); 
-                    let theta = Math.PI + (dist / R); 
-                    x = cx + R * Math.cos(theta); 
-                    y = (cy - L/2) + R * Math.sin(theta);
-                    angle = (dist / R) * 180 / Math.PI; // Üst virajda yılan gibi akıcı dönüyor
+                else { // ÜST VİRAJ
+                    let dist = d - (2 * L + Math.PI * R); let theta = Math.PI + (dist / R); 
+                    x = cx + R * Math.cos(theta); y = (cy - L/2) + R * Math.sin(theta);
+                    baseAngle = (theta * 180 / Math.PI); tilt = 15; // Virajda sağa yatar
                 }
 
-                // 32.5 = Uçağın tam merkez noktası. 
-                // Açı (angle) sayesinde uçak viraja girdiğinde tam o açıyla sağa doğru yatıp dönüyor.
-                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${angle}deg)`;
+                // Açıları toplayıp rotasyona aktarıyoruz (Base Angle + Tilt)
+                let finalAngle = baseLapAngle + baseAngle + tilt;
+                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${finalAngle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
-                if (currentLap > oldLap) { 
-                    flashFinishLine(); popMoney(cx + R, cy - L/2 + 20, getPlaneIncome(p.level) * currentIncomeMult); 
-                }
+                if (currentLap > oldLap) { flashFinishLine(); popMoney(popBaseX, popBaseY, getPlaneIncome(p.level) * currentIncomeMult); }
             });
-
             requestAnimationFrame(gameLoop);
         }
 
-        // --- DAKİKALIK ÖDÜL VE MODALLAR ---
         function updateTickers() {
-            const container = document.getElementById("activeBoosts");
-            container.innerHTML = ""; let now = Date.now();
-            if (now < boostMoneyEnd) {
-                let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f; text-shadow: 0 0 5px #f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`;
-            } else { boostMoneyMult = 1; }
-
-            if (now < boostSpeedEnd) {
-                let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                let shopEl = document.getElementById("generalShopModal");
-                if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); }
-            } else { boostSpeedMult = 1; }
+            const container = document.getElementById("activeBoosts"); container.innerHTML = ""; let now = Date.now();
+            if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
+            if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
             updateRewardsUI();
         }
 
@@ -992,180 +811,64 @@
         function closeRewardsMenu() { document.getElementById("rewardsModal").style.display = "none"; }
         function updateRewardsUI() {
             if(document.getElementById("rewardsModal").style.display !== "flex") return;
-            let now = Date.now(); let btn = document.getElementById("btnClaimReward");
-            let desc = document.getElementById("rewardDesc"); let icon = document.getElementById("rewardIcon"); let text = document.getElementById("rewardText");
-
-            if (now >= nextRewardTime) {
-                if (!currentMinuteReward) { currentMinuteReward = generateRandomMinuteReward(); saveGame(); }
-                desc.innerText = "Ödülün hazır, hemen al!"; icon.innerText = currentMinuteReward.icon; text.innerText = currentMinuteReward.text;
-                btn.style.background = "linear-gradient(45deg, #00ffff, #3498db)"; btn.innerText = "Ödülü Al"; btn.disabled = false; btn.style.color = "black";
-            } else {
-                let left = Math.ceil((nextRewardTime - now) / 1000);
-                desc.innerText = "Sonraki ödüle kalan süre:"; icon.innerText = "⏳"; text.innerText = left + " saniye";
-                btn.style.background = "rgba(0,0,0,0.5)"; btn.innerText = "Bekleniyor..."; btn.disabled = true; btn.style.color = "#aaa";
-            }
+            let now = Date.now(); let btn = document.getElementById("btnClaimReward"); let desc = document.getElementById("rewardDesc"); let icon = document.getElementById("rewardIcon"); let text = document.getElementById("rewardText");
+            if (now >= nextRewardTime) { if (!currentMinuteReward) { currentMinuteReward = generateRandomMinuteReward(); saveGame(); } desc.innerText = "Ödülün hazır, hemen al!"; icon.innerText = currentMinuteReward.icon; text.innerText = currentMinuteReward.text; btn.style.background = "linear-gradient(45deg, #00ffff, #3498db)"; btn.style.color = "black"; btn.innerText = "Ödülü Al"; btn.disabled = false; } 
+            else { let left = Math.ceil((nextRewardTime - now) / 1000); desc.innerText = "Sonraki ödüle kalan süre:"; icon.innerText = "⏳"; text.innerText = left + " saniye"; btn.style.background = "rgba(0,0,0,0.5)"; btn.style.color = "#aaa"; btn.innerText = "Bekleniyor..."; btn.disabled = true; }
         }
         function generateRandomMinuteReward() {
-            const types = ['money', 'gem', 'plane', 'boost'];
-            const type = types[Math.floor(Math.random() * types.length)];
-            let reward = { type: type, value: 0, text: '', icon: '' };
-            if (type === 'money') {
-                let amount = getPlaneIncome(playerLevel) * (Math.random() * 5 + 10);
-                reward.value = amount; reward.text = formatNumber(amount) + " Altın"; reward.icon = "❂";
-            } else if (type === 'gem') {
-                let amount = Math.floor(Math.random() * 5) + 1;
-                reward.value = amount; reward.text = amount + " Elmas"; reward.icon = "💎";
-            } else if (type === 'plane') {
-                let maxLvl = Math.max(1, playerLevel - 2); let lvl = Math.floor(Math.random() * maxLvl) + 1;
-                reward.value = lvl; reward.text = "Lv." + lvl + " Uçak"; reward.icon = "✈️";
-            } else if (type === 'boost') {
-                let boosts = ['2xMoney', '2xSpeed']; let b = boosts[Math.floor(Math.random() * boosts.length)];
-                reward.value = b; reward.text = (b === '2xMoney' ? "2x Para" : "2x Hız") + " (30sn)"; reward.icon = "⚡";
-            }
-            return reward;
+            const types = ['money', 'gem', 'plane', 'boost']; const type = types[Math.floor(Math.random() * types.length)]; let reward = { type: type, value: 0, text: '', icon: '' };
+            if (type === 'money') { let amount = getPlaneIncome(playerLevel) * (Math.random() * 5 + 10); reward.value = amount; reward.text = formatNumber(amount) + " Altın"; reward.icon = "❂"; } else if (type === 'gem') { let amount = Math.floor(Math.random() * 5) + 1; reward.value = amount; reward.text = amount + " Elmas"; reward.icon = "💎"; } else if (type === 'plane') { let maxLvl = Math.max(1, playerLevel - 2); let lvl = Math.floor(Math.random() * maxLvl) + 1; reward.value = lvl; reward.text = "Lv." + lvl + " Uçak"; reward.icon = "✈️"; } else if (type === 'boost') { let boosts = ['2xMoney', '2xSpeed']; let b = boosts[Math.floor(Math.random() * boosts.length)]; reward.value = b; reward.text = (b === '2xMoney' ? "2x Para" : "2x Hız") + " (30sn)"; reward.icon = "⚡"; } return reward;
         }
         function claimMinuteReward() {
             let now = Date.now(); if (now < nextRewardTime || !currentMinuteReward) return;
-            if (currentMinuteReward.type === 'money') { money += currentMinuteReward.value; } 
-            else if (currentMinuteReward.type === 'gem') { gems += currentMinuteReward.value; } 
-            else if (currentMinuteReward.type === 'plane') {
-                const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentMinuteReward.value, isFlying: false }; animatedIndex = emptyIndex; initGrid(); } 
-                else { showToast("Hangarda yer yok!", "error"); return; }
-            } else if (currentMinuteReward.type === 'boost') {
-                let duration = 30 * 1000;
-                if(currentMinuteReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
-                if(currentMinuteReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
-            }
-            updateUI(); currentMinuteReward = null; nextRewardTime = now + 60000; saveGame(); updateRewardsUI();
-            showToast("Ödül alındı!", "info");
+            if (currentMinuteReward.type === 'money') { money += currentMinuteReward.value; } else if (currentMinuteReward.type === 'gem') { gems += currentMinuteReward.value; } else if (currentMinuteReward.type === 'plane') { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentMinuteReward.value, isFlying: false }; animatedIndex = emptyIndex; initGrid(); } else { showToast("Hangarda yer yok!", "error"); return; } } else if (currentMinuteReward.type === 'boost') { let duration = 30 * 1000; if(currentMinuteReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; } if(currentMinuteReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; } }
+            updateUI(); currentMinuteReward = null; nextRewardTime = now + 60000; saveGame(); updateRewardsUI(); showToast("Ödül alındı!", "info");
         }
 
-        // --- ELMASLI VE DENGELENMİŞ KASA SİSTEMİ ---
         const caseData = [
-            { id: 1, name: "Tahta Kasa", price: 2, min: 1, max: 3, color: "#a0522d", icon: "📦" },
-            { id: 2, name: "Paslı Kasa", price: 5, min: 3, max: 6, color: "#95a5a6", icon: "🗑️" },
-            { id: 3, name: "Demir Kasa", price: 10, min: 6, max: 10, color: "#7f8c8d", icon: "🧰" },
-            { id: 4, name: "Çelik Kasa", price: 20, min: 10, max: 15, color: "#bdc3c7", icon: "🛡️" },
-            { id: 5, name: "Bronz Kasa", price: 35, min: 15, max: 22, color: "#cd7f32", icon: "🥉" },
-            { id: 6, name: "Gümüş Kasa", price: 55, min: 22, max: 30, color: "#c0c0c0", icon: "🥈" },
-            { id: 7, name: "Altın Kasa", price: 80, min: 30, max: 40, color: "#f1c40f", icon: "🥇" },
-            { id: 8, name: "Platin Kasa", price: 120, min: 40, max: 52, color: "#e5e4e2", icon: "💠" },
-            { id: 9, name: "Titanyum Kasa", price: 170, min: 52, max: 65, color: "#878681", icon: "⚙️" },
-            { id: 10, name: "Kristal Kasa", price: 250, min: 65, max: 80, color: "#5efc82", icon: "🔮" },
-            { id: 11, name: "Zümrüt Kasa", price: 350, min: 80, max: 95, color: "#2ecc71", icon: "❇️" },
-            { id: 12, name: "Yakut Kasa", price: 500, min: 95, max: 110, color: "#e74c3c", icon: "♦️" },
-            { id: 13, name: "Safir Kasa", price: 750, min: 110, max: 125, color: "#3498db", icon: "🧿" },
-            { id: 14, name: "Elmas Kasa", price: 1000, min: 125, max: 140, color: "#00ced1", icon: "💎" },
-            { id: 15, name: "Obsidyen Kasa", price: 1500, min: 140, max: 155, color: "#2c3e50", icon: "⬛" },
-            { id: 16, name: "Ejderha Kasası", price: 2500, min: 155, max: 170, color: "#d35400", icon: "🐉" },
-            { id: 17, name: "Meteor Kasası", price: 4000, min: 170, max: 180, color: "#ff5e00", icon: "☄️" },
-            { id: 18, name: "Galaksi Kasası", price: 6000, min: 180, max: 185, color: "#9b59b6", icon: "🌌" },
-            { id: 19, name: "Hiçlik Kasası", price: 8000, min: 185, max: 189, color: "#8e44ad", icon: "🕳️" },
-            { id: 20, name: "Tanrısal Kasa", price: 10000, min: 190, max: 200, color: "#f39c12", icon: "👑" }
+            { id: 1, name: "Tahta Kasa", price: 2, min: 1, max: 3, color: "#a0522d", icon: "📦" }, { id: 2, name: "Paslı Kasa", price: 5, min: 3, max: 6, color: "#95a5a6", icon: "🗑️" }, { id: 3, name: "Demir Kasa", price: 10, min: 6, max: 10, color: "#7f8c8d", icon: "🧰" }, { id: 4, name: "Çelik Kasa", price: 20, min: 10, max: 15, color: "#bdc3c7", icon: "🛡️" }, { id: 5, name: "Bronz Kasa", price: 35, min: 15, max: 22, color: "#cd7f32", icon: "🥉" }, { id: 6, name: "Gümüş Kasa", price: 55, min: 22, max: 30, color: "#c0c0c0", icon: "🥈" }, { id: 7, name: "Altın Kasa", price: 80, min: 30, max: 40, color: "#f1c40f", icon: "🥇" }, { id: 8, name: "Platin Kasa", price: 120, min: 40, max: 52, color: "#e5e4e2", icon: "💠" }, { id: 9, name: "Titanyum Kasa", price: 170, min: 52, max: 65, color: "#878681", icon: "⚙️" }, { id: 10, name: "Kristal Kasa", price: 250, min: 65, max: 80, color: "#5efc82", icon: "🔮" }, { id: 11, name: "Zümrüt Kasa", price: 350, min: 80, max: 95, color: "#2ecc71", icon: "❇️" }, { id: 12, name: "Yakut Kasa", price: 500, min: 95, max: 110, color: "#e74c3c", icon: "♦️" }, { id: 13, name: "Safir Kasa", price: 750, min: 110, max: 125, color: "#3498db", icon: "🧿" }, { id: 14, name: "Elmas Kasa", price: 1000, min: 125, max: 140, color: "#00ced1", icon: "💎" }, { id: 15, name: "Obsidyen Kasa", price: 1500, min: 140, max: 155, color: "#2c3e50", icon: "⬛" }, { id: 16, name: "Ejderha Kasası", price: 2500, min: 155, max: 170, color: "#d35400", icon: "🐉" }, { id: 17, name: "Meteor Kasası", price: 4000, min: 170, max: 180, color: "#ff5e00", icon: "☄️" }, { id: 18, name: "Galaksi Kasası", price: 6000, min: 180, max: 185, color: "#9b59b6", icon: "🌌" }, { id: 19, name: "Hiçlik Kasası", price: 8000, min: 185, max: 189, color: "#8e44ad", icon: "🕳️" }, { id: 20, name: "Tanrısal Kasa", price: 10000, min: 190, max: 200, color: "#f39c12", icon: "👑" }
         ];
 
-        const rarities = [
-            { name: "Sıradan", color: "#7f8c8d", id: 0 }, { name: "Nadir", color: "#3498db", id: 1 }, 
-            { name: "Epik", color: "#9b59b6", id: 2 }, { name: "Gizemli", color: "#e74c3c", id: 3 }, 
-            { name: "Efsanevi", color: "#f1c40f", id: 4 }, { name: "Mistik", color: "#ff9ff3", id: 5 }
-        ];
-
-        function getRandomRarity(crateId) {
-            let roll = Math.random() * 100; let tier = Math.ceil(crateId / 4); let chances = [];
-            if (tier === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; 
-            if (tier === 2) chances = [40, 35, 15, 7, 2.5, 0.5];
-            if (tier === 3) chances = [25, 35, 20, 12, 6, 2]; 
-            if (tier === 4) chances = [15, 30, 25, 16, 10, 4];
-            if (tier >= 5) chances = [5, 15, 25, 25, 18, 12];
-            let acc = 0; for (let i=0; i<6; i++) { acc += chances[i]; if (roll <= acc) return rarities[i]; } return rarities[0];
-        }
+        const rarities = [ { name: "Sıradan", color: "#7f8c8d", id: 0 }, { name: "Nadir", color: "#3498db", id: 1 }, { name: "Epik", color: "#9b59b6", id: 2 }, { name: "Gizemli", color: "#e74c3c", id: 3 }, { name: "Efsanevi", color: "#f1c40f", id: 4 }, { name: "Mistik", color: "#ff9ff3", id: 5 } ];
+        function getRandomRarity(crateId) { let roll = Math.random() * 100; let tier = Math.ceil(crateId / 4); let chances = []; if (tier === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; if (tier === 2) chances = [40, 35, 15, 7, 2.5, 0.5]; if (tier === 3) chances = [25, 35, 20, 12, 6, 2]; if (tier === 4) chances = [15, 30, 25, 16, 10, 4]; if (tier >= 5) chances = [5, 15, 25, 25, 18, 12]; let acc = 0; for (let i=0; i<6; i++) { acc += chances[i]; if (roll <= acc) return rarities[i]; } return rarities[0]; }
 
         function generateReward(crate) {
-            let rarity = getRandomRarity(crate.id); 
-            let typeRoll = Math.random();
-            let type = 'plane';
-            
-            if (typeRoll > 0.35 && typeRoll <= 0.60) type = 'money';
-            else if (typeRoll > 0.60 && typeRoll <= 0.75) type = 'gem';
-            else if (typeRoll > 0.75) type = 'boost';
-
+            let rarity = getRandomRarity(crate.id); let typeRoll = Math.random(); let type = 'plane';
+            if (typeRoll > 0.35 && typeRoll <= 0.60) type = 'money'; else if (typeRoll > 0.60 && typeRoll <= 0.75) type = 'gem'; else if (typeRoll > 0.75) type = 'boost';
             let value = null; let title = "";
-            if (type === 'plane') {
-                let range = crate.max - crate.min; let extra = Math.round((rarity.id / 5) * range);
-                value = crate.min + extra; title = `Lv.${value} Uçak`;
-            } else if (type === 'money') {
-                value = (Math.pow(1.5, crate.id) * 1000) * (rarity.id + 1) * (Math.random() * 2 + 1); title = `${formatNumber(value)} Altın`;
-            } else if (type === 'gem') {
-                value = 2 * crate.id * (rarity.id + 1); title = `${formatNumber(value)} Elmas`;
-            } else if (type === 'boost') {
-                let bRoll = Math.random();
-                if (bRoll < 0.20) { value = '5xMoney'; title = '5x Para (3Dk)'; }
-                else if (bRoll < 0.60) { value = '2xMoney'; title = '2x Para (3Dk)'; }
-                else if (bRoll < 0.70) { value = '5xSpeed'; title = '5x Hız (3Dk)'; }
-                else { value = '2xSpeed'; title = '2x Hız (3Dk)'; }
-            }
+            if (type === 'plane') { let range = crate.max - crate.min; let extra = Math.round((rarity.id / 5) * range); value = crate.min + extra; title = `Lv.${value} Uçak`; } 
+            else if (type === 'money') { value = (Math.pow(1.5, crate.id) * 1000) * (rarity.id + 1) * (Math.random() * 2 + 1); title = `${formatNumber(value)} Altın`; } 
+            else if (type === 'gem') { value = 2 * crate.id * (rarity.id + 1); title = `${formatNumber(value)} Elmas`; } 
+            else if (type === 'boost') { let bRoll = Math.random(); if (bRoll < 0.20) { value = '5xMoney'; title = '5x Para (3Dk)'; } else if (bRoll < 0.60) { value = '2xMoney'; title = '2x Para (3Dk)'; } else if (bRoll < 0.70) { value = '5xSpeed'; title = '5x Hız (3Dk)'; } else { value = '2xSpeed'; title = '2x Hız (3Dk)'; } }
             return { type, value, rarity, title };
         }
         
         let currentWonReward = null;
-        function openCaseMenu() {
-            const gridEl = document.getElementById("caseGrid"); gridEl.innerHTML = "";
-            caseData.forEach(c => {
-                const item = document.createElement("div"); item.className = "case-item"; item.style.borderColor = c.color;
-                item.innerHTML = `<div class="case-icon">${c.icon}</div><div class="case-name" style="color:${c.color}">${c.name}</div><div class="case-price">💎 ${formatNumber(c.price)}</div><div style="font-size:9px; color:#aaa; margin-top:3px;">Lv. ${c.min} - ${c.max}</div>`;
-                item.onclick = () => buyCase(c); gridEl.appendChild(item);
-            });
-            document.getElementById("caseModal").style.display = "flex"; document.getElementById("caseContent").style.display = "block"; document.getElementById("rouletteContainer").style.display = "none";
-        }
+        function openCaseMenu() { const gridEl = document.getElementById("caseGrid"); gridEl.innerHTML = ""; caseData.forEach(c => { const item = document.createElement("div"); item.className = "case-item"; item.style.borderColor = c.color; item.innerHTML = `<div class="case-icon">${c.icon}</div><div class="case-name" style="color:${c.color}">${c.name}</div><div class="case-price">💎 ${formatNumber(c.price)}</div><div style="font-size:9px; color:#aaa; margin-top:3px;">Lv. ${c.min} - ${c.max}</div>`; item.onclick = () => buyCase(c); gridEl.appendChild(item); }); document.getElementById("caseModal").style.display = "flex"; document.getElementById("caseContent").style.display = "block"; document.getElementById("rouletteContainer").style.display = "none"; }
         function closeCaseMenu() { document.getElementById("caseModal").style.display = "none"; }
         function buyCase(c) {
-            const emptyIndex = gridSlots.indexOf(null);
-            if (emptyIndex === -1) { showToast("Hangarda yer yok!", "error"); return; }
+            const emptyIndex = gridSlots.indexOf(null); if (emptyIndex === -1) { showToast("Hangarda yer yok!", "error"); return; }
             if (gems < c.price) { showToast(`Kasa için ${c.price} Elmas gerekiyor!`, "error"); return; }
-            gems -= c.price; updateUI(); saveGame(); 
-            document.getElementById("caseContent").style.display = "none"; document.getElementById("rouletteContainer").style.display = "flex";
-            document.getElementById("openingCaseName").innerText = c.name + " Açılıyor..."; 
-            document.getElementById("btnTakeReward").style.display = "none"; document.getElementById("rewardAnnounce").innerText = "";
-            const strip = document.getElementById("rouletteStrip");
-            strip.style.transition = "none"; strip.style.transform = "translateX(0px)"; strip.innerHTML = "";
-            currentWonReward = generateReward(c);
-            let itemsHTML = "";
+            gems -= c.price; updateUI(); saveGame(); document.getElementById("caseContent").style.display = "none"; document.getElementById("rouletteContainer").style.display = "flex"; document.getElementById("openingCaseName").innerText = c.name + " Açılıyor..."; document.getElementById("btnTakeReward").style.display = "none"; document.getElementById("rewardAnnounce").innerText = ""; const strip = document.getElementById("rouletteStrip"); strip.style.transition = "none"; strip.style.transform = "translateX(0px)"; strip.innerHTML = ""; currentWonReward = generateReward(c); let itemsHTML = "";
             for(let i = 0; i < 50; i++) {
-                let r = generateReward(c); if(i === 42) r = currentWonReward;
-                let iconHTML = "";
-                if(r.type === 'plane') iconHTML = getJetSVG(r.value, false);
-                if(r.type === 'money') iconHTML = `<div style="font-size:40px; color:#f1c40f; text-shadow:0 0 10px #f1c40f;">❂</div>`;
-                if(r.type === 'gem') iconHTML = `<div style="font-size:40px; color:#00ced1; text-shadow:0 0 10px #00ced1;">💎</div>`;
-                if(r.type === 'boost') iconHTML = `<div style="font-size:40px; color:white; text-shadow:0 0 10px white;">⚡</div>`;
+                let r = generateReward(c); if(i === 42) r = currentWonReward; let iconHTML = "";
+                if(r.type === 'plane') iconHTML = getJetSVG(r.value, false); if(r.type === 'money') iconHTML = `<div style="font-size:40px; color:#f1c40f; text-shadow:0 0 10px #f1c40f;">❂</div>`; if(r.type === 'gem') iconHTML = `<div style="font-size:40px; color:#00ced1; text-shadow:0 0 10px #00ced1;">💎</div>`; if(r.type === 'boost') iconHTML = `<div style="font-size:40px; color:white; text-shadow:0 0 10px white;">⚡</div>`;
                 itemsHTML += `<div class="roulette-item" style="border:2px solid ${r.rarity.color}; box-shadow: inset 0 0 15px ${r.rarity.color};"><div style="font-size:9px; color:${r.rarity.color}; position:absolute; top:2px; font-weight:bold;">${r.rarity.name}</div>${iconHTML}<div style="font-size:10px; font-weight:bold; position:absolute; bottom:5px; text-align:center; width:100%;">${r.title}</div></div>`;
             }
             strip.innerHTML = itemsHTML;
-            setTimeout(() => {
-                strip.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)";
-                const offset = -(42 * 110) + (130); const randomOffset = Math.floor(Math.random() * 80) - 40; 
-                strip.style.transform = `translateX(${offset + randomOffset}px)`;
-                setTimeout(() => { 
-                    document.getElementById("btnTakeReward").style.display = "block"; 
-                    document.getElementById("rewardAnnounce").innerHTML = `Kazandın: <span style="color:${currentWonReward.rarity.color}">${currentWonReward.title}</span>`;
-                }, 4000);
-            }, 50);
+            setTimeout(() => { strip.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)"; const offset = -(42 * 110) + (130); const randomOffset = Math.floor(Math.random() * 80) - 40; strip.style.transform = `translateX(${offset + randomOffset}px)`; setTimeout(() => { document.getElementById("btnTakeReward").style.display = "block"; document.getElementById("rewardAnnounce").innerHTML = `Kazandın: <span style="color:${currentWonReward.rarity.color}">${currentWonReward.title}</span>`; }, 4000); }, 50);
         }
         function takeCaseReward() {
             document.getElementById("btnTakeReward").style.display = "none";
-            if (currentWonReward.type === 'plane') {
-                const emptyIndex = gridSlots.indexOf(null);
-                if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) { playerLevel = currentWonReward.value; updateFrameUI(); } }
-            } else if (currentWonReward.type === 'money') { money += currentWonReward.value; } 
-            else if (currentWonReward.type === 'gem') { gems += currentWonReward.value; } 
+            if (currentWonReward.type === 'plane') { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) { playerLevel = currentWonReward.value; updateFrameUI(); } } } 
+            else if (currentWonReward.type === 'money') { money += currentWonReward.value; } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value; } 
             else if (currentWonReward.type === 'boost') {
                 let duration = 3 * 60 * 1000; let now = Date.now();
                 if(currentWonReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
                 if(currentWonReward.value === '5xMoney') { boostMoneyMult = 5; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
                 if(currentWonReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
                 if(currentWonReward.value === '5xSpeed') { boostSpeedMult = 5; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
-            }
-            initGrid(); saveGame(); closeCaseMenu(); updateTickers();
+            } initGrid(); saveGame(); closeCaseMenu(); updateTickers();
         }
     </script>
 </body>
