@@ -288,8 +288,8 @@
         .bottom-btn:active { transform: translateY(5px); box-shadow: 0 0 0 #1e8449; }
         .bottom-btn.shop { background: linear-gradient(to bottom, #9b59b6, #8e44ad); box-shadow: 0 5px 0 #732d91; }
         .bottom-btn.shop:active { box-shadow: 0 0 0 #732d91; }
-        .bottom-btn.speed { background: linear-gradient(to bottom, #e67e22, #d35400); box-shadow: 0 5px 0 #a04000; }
-        .bottom-btn.speed:active { box-shadow: 0 0 0 #a04000; }
+        .bottom-btn.speed { background: linear-gradient(to bottom, #2980b9, #2c3e50); box-shadow: 0 5px 0 #1a252f; }
+        .bottom-btn.speed:active { box-shadow: 0 0 0 #1a252f; }
         .bottom-btn span.big { font-size: 16px; display: block; margin-bottom: 2px; }
         .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 3px; }
 
@@ -366,20 +366,32 @@
             </div>
         </div>
 
-        <!-- HIZLANMA MODALI (10 KADEMELİ) -->
-        <div id="speedBoostModal" class="modal-overlay">
-            <div class="modal-content">
-                <h2>⚡ 2x Hızlanma</h2>
-                <p style="font-size:13px; color:#a4c8ff;">Her alım +3 Dakika kazandırır. Maksimum limit 30 Dakika!</p>
-                <div class="tier-container" id="speedTierBar">
-                    <!-- 10 Tane kutu -->
-                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
-                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
-                    <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+        <!-- NORMAL DÜKKAN (Hızlanma ve Uçak Market) -->
+        <div id="generalShopModal" class="modal-overlay">
+            <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
+                <h2 style="margin-bottom: 15px; color: #3498db;">🏪 Dükkan</h2>
+                
+                <!-- Hızlanma Bölümü -->
+                <div style="background: rgba(0,0,0,0.4); padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #e74c3c;">
+                    <h3 style="margin: 0 0 10px 0; color: #e74c3c;">⚡ 2x Hızlanma</h3>
+                    <p style="font-size:11px; color:#aaa; margin-bottom:5px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
+                    <div class="tier-container" id="shopSpeedTierBar" style="margin: 10px 0; padding: 5px;">
+                        <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                        <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                        <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
+                    </div>
+                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:5px 0;">Aktif Süre: 00:00</h4>
+                    <button class="modal-btn" style="background:#e67e22; font-size:14px; padding:10px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
-                <h3 id="speedBoostTimeLeft" style="color:white; margin-bottom:15px;">Aktif Süre: 00:00</h3>
-                <button class="modal-btn btn-save" onclick="buySpeedBoost()">+3 Dk Hızlanma Al (5000 ❂)</button>
-                <button class="modal-btn btn-close" onclick="closeSpeedMenu()">Kapat</button>
+
+                <!-- Uçak Galerisi -->
+                <h3 style="color:#f1c40f; margin-bottom:5px;">✈️ Uçak Galerisi</h3>
+                <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Ulaştığın seviyeye kadar tüm uçaklar burada.</p>
+                <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 10px; padding-right: 5px;">
+                    <!-- JS ile dinamik uçaklar buraya gelecek -->
+                </div>
+
+                <button class="modal-btn btn-close" style="margin-top:15px;" onclick="closeGeneralShop()">Kapat</button>
             </div>
         </div>
 
@@ -441,9 +453,9 @@
         <div id="trashBin">🗑️ Uçağı Sil</div>
 
         <div class="bottom-bar">
-            <!-- HIZLANMA BUTONU -->
-            <div class="bottom-btn speed" onclick="openSpeedMenu()">
-                <span class="big" id="speedBtnText">⚡ Hızlanma</span>
+            <!-- GENEL DÜKKAN BUTONU (Eski Hızlanma) -->
+            <div class="bottom-btn speed" onclick="openGeneralShop()">
+                <span class="big" id="speedBtnText">🏪 Dükkan</span>
             </div>
             <div class="bottom-btn" onclick="buyPlane()">
                 <span class="big">✈️ Al Lvl. <span id="buyLvlDisplay">1</span></span>
@@ -572,7 +584,7 @@
                 document.getElementById('displayUsername').innerHTML = `${currentCountry} <span style="color:#f1c40f">🌟 VIP Çınar</span>`;
                 showToast("VIP Girişi Başarılı!", "info");
             } else {
-                money = 0; gems = 50; // Başlangıçta test etmesi için 50 elmas hediye
+                money = 0; gems = 50; 
                 localStorage.removeItem("planeTycoonSave"); 
                 document.getElementById('displayUsername').innerText = `${currentCountry} ${currentName}`;
             }
@@ -637,47 +649,78 @@
             else container.innerHTML = `<span id="playerLvl">${playerLevel}</span>`;
         }
 
-        // --- HIZLANMA SİSTEMİ ---
-        function openSpeedMenu() {
-            document.getElementById("speedBoostModal").style.display = "flex";
-            updateSpeedModalUI();
-        }
-        function closeSpeedMenu() { document.getElementById("speedBoostModal").style.display = "none"; }
+        // --- NORMAL DÜKKAN (HIZLANMA & UÇAK) SİSTEMİ ---
         function updateSpeedModalUI() {
             let now = Date.now();
             let leftMs = Math.max(0, boostSpeedEnd - now);
             let totalMins = Math.ceil(leftMs / 60000);
             
-            // Tier bar doldurma (Her 3 dk = 1 Kutu)
             let boxesFilled = Math.min(10, Math.ceil(totalMins / 3));
-            const slots = document.querySelectorAll('.tier-slot');
+            const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot');
             slots.forEach((s, idx) => {
                 if(idx < boxesFilled) s.classList.add('filled');
                 else s.classList.remove('filled');
             });
 
-            // Metin güncelleme
+            let displayEl = document.getElementById("shopSpeedBoostTimeLeft");
             if(leftMs > 0) {
                 let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000);
-                document.getElementById("speedBoostTimeLeft").innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`;
-            } else { document.getElementById("speedBoostTimeLeft").innerText = "Aktif Süre: Yok"; }
+                if(displayEl) displayEl.innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`;
+            } else { if(displayEl) displayEl.innerText = "Aktif Süre: Yok"; }
         }
+
         function buySpeedBoost() {
             let now = Date.now();
             let leftMs = Math.max(0, boostSpeedEnd - now);
             if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; }
-            if(money < 5000) { showToast("Yetersiz bakiye (5000 ❂ gerekli)!", "error"); return; }
+            if(gems < 5) { showToast("Yetersiz bakiye (5 💎 Elmas gerekli)!", "error"); return; }
             
-            money -= 5000;
+            gems -= 5;
             boostSpeedMult = 2;
             let addTime = 3 * 60 * 1000; // 3 dk
             if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime;
             else boostSpeedEnd += addTime;
             
-            // Sınır 30dk
             if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
             
-            saveGame(); updateUI(); updateSpeedModalUI(); showToast("Hızlanma eklendi!", "info");
+            saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
+        }
+
+        function openGeneralShop() {
+            updateSpeedModalUI(); 
+            const grid = document.getElementById("planeShopGrid");
+            grid.innerHTML = "";
+            
+            for(let i = 1; i <= playerLevel; i++) {
+                let price = Math.floor(50 * Math.pow(1.6, i));
+                let planeSVG = getJetSVG(i, false); 
+                
+                grid.innerHTML += `
+                    <div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border-color:#3498db; padding: 10px;">
+                        <div style="width:55px; height:55px; position:relative; margin-bottom:5px;">
+                            ${planeSVG}
+                            <div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div>
+                        </div>
+                        <div style="font-size:11px; color:#f1c40f; font-weight:bold; margin: 8px 0;">❂ ${formatNumber(price)}</div>
+                        <button class="modal-btn btn-save" style="padding:6px; font-size:12px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button>
+                    </div>
+                `;
+            }
+            document.getElementById("generalShopModal").style.display = "flex";
+        }
+        
+        function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
+        
+        function buySpecificPlane(level, price) {
+            if(money >= price) {
+                const emptyIndex = gridSlots.indexOf(null);
+                if(emptyIndex !== -1) {
+                    money -= price; 
+                    gridSlots[emptyIndex] = { level: level, isFlying: false }; 
+                    initGrid(); saveGame(); updateUI();
+                    showToast(`Lv.${level} uçak satın alındı!`, "info");
+                } else { showToast("Hangarda yer yok! Uçakları piste sürükle veya birleştir.", "error"); }
+            } else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
         // Uçak Çizim Fonksiyonu
@@ -1060,15 +1103,14 @@
             // Üst bar ve ana menü hız ikonu güncellemeleri
             if (now < boostSpeedEnd) {
                 let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60;
-                document.getElementById("speedBtnText").innerText = `⚡ ${m}:${s < 10 ? '0'+s : s}`;
                 
-                // Eğer Modal Açıksa Güncelle
-                if(document.getElementById("speedBoostModal").style.display === "flex") {
+                // Dükkan Modal'ı açıksa güncellesin
+                let shopEl = document.getElementById("generalShopModal");
+                if(shopEl && shopEl.style.display === "flex") {
                     updateSpeedModalUI();
                 }
             } else { 
                 boostSpeedMult = 1; 
-                document.getElementById("speedBtnText").innerText = "⚡ Hızlanma"; 
             }
             updateRewardsUI();
         }
