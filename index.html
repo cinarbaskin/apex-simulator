@@ -3,273 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plane Tycoon</title>
+    <title>Plane Simulator</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #1e1e2f;
-            color: #ffffff;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        .header {
-            background-color: #2a2a40;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        h1 { margin: 0; color: #4CAF50; }
-        .stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
-        .stat-box { background: #3f3f5a; padding: 10px 20px; border-radius: 8px; }
-        .piste-alani {
-            background-color: #2a2a40;
-            padding: 20px;
-            border-radius: 10px;
-            min-height: 100px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            justify-content: center;
-        }
-        .ucak {
-            background: linear-gradient(135deg, #6e8efb, #a777e3);
-            width: 80px;
-            height: 80px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.2em;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-        }
-        .market, .kasalar {
-            background-color: #2a2a40;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            font-size: 16px;
-            margin: 4px 2px;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
-        }
-        button:hover { background-color: #45a049; }
-        .kasa-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 15px;
-        }
-        .kasa-btn {
-            background-color: #ff9800;
-            font-size: 14px;
-            padding: 15px;
-        }
-        .kasa-btn:hover { background-color: #e68a00; }
-        .log-alani {
-            background: #111;
-            padding: 10px;
-            border-radius: 5px;
-            height: 100px;
-            overflow-y: auto;
-            text-align: left;
-            font-family: monospace;
-            color: #0f0;
-        }
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #1a1a2e; color: white; text-align: center; margin: 0; padding: 20px; }
+        .header { background: #16213e; padding: 15px; border-radius: 10px; display: flex; justify-content: space-around; font-size: 1.2em; font-weight: bold; }
+        .grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; justify-content: center; max-width: 400px; margin: 20px auto; background: #0f3460; padding: 15px; border-radius: 10px; }
+        .slot { width: 80px; height: 80px; background: #1a1a2e; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; cursor: pointer; border: 2px solid transparent; transition: 0.2s; }
+        .slot.selected { border-color: #e94560; transform: scale(1.05); }
+        .ucak { width: 100%; height: 100%; border-radius: 8px; display: flex; align-items: center; justify-content: center; text-shadow: 1px 1px 2px black; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .market, .kasalar { background: #16213e; padding: 15px; border-radius: 10px; margin-top: 20px; }
+        .kasa-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; margin-top: 10px; }
+        button { background: #e94560; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { background: #d03050; }
     </style>
 </head>
 <body>
+    <!-- Kullanıcı Giriş Sistemi Korundu -->
+    <div id="login-screen" style="display:none;">
+        <h2>Giriş Yap</h2>
+        <input type="text" id="username" placeholder="Kullanıcı Adı">
+        <button onclick="document.getElementById('login-screen').style.display='none'; document.getElementById('game-screen').style.display='block';">Giriş</button>
+    </div>
 
-    <div class="header">
-        <h1>Plane Tycoon</h1>
-        <div class="stats">
-            <div class="stat-box">💰 Para: <span id="para-gosterge">1000</span></div>
-            <div class="stat-box">⭐ En Yüksek Level: <span id="max-level-gosterge">3</span></div>
-            <div class="stat-box">💸 Saniye Başı Kazanç: <span id="saniye-kazanc">0</span></div>
+    <div id="game-screen">
+        <div class="header">
+            <div>Para: <span id="para">1000</span>$</div>
+            <div>Maks Lvl: <span id="max-level">3</span></div>
+            <div>Gelir/sn: <span id="gelir">0</span>$</div>
         </div>
-    </div>
 
-    <div class="market">
-        <h2>🛠️ Standart Market (Maks Levelin 2 Altı)</h2>
-        <p>Her zaman en yüksek seviyeli uçağınızın 2 alt seviyesini satın alabilirsiniz.</p>
-        <button id="market-btn" onclick="markettenUcakAl()">Seviye 1 Uçak Al (Fiyat: 80)</button>
-    </div>
-
-    <h2>✈️ Pistin (Sahip Olduğun Uçaklar)</h2>
-    <div class="piste-alani" id="pist">
-        <!-- Uçaklar buraya eklenecek -->
-    </div>
-
-    <div class="kasalar">
-        <h2>🎁 Özel Kasalar (Lootboxes)</h2>
-        <div class="kasa-grid" id="kasa-alani">
-            <!-- Kasalar JS ile buraya yüklenecek -->
+        <div class="market">
+            <button id="market-btn" onclick="markettenUcakAl()">Seviye 1 Uçak Al (Fiyat: 80$)</button>
         </div>
-    </div>
 
-    <h2>📜 Sistem Kayıtları</h2>
-    <div class="log-alani" id="oyun-logu">
-        > Oyuna hoş geldin kral! Kasa açmaya başla...<br>
+        <h3>Pist (Birleştirmek için önce bir uçağa, sonra diğerine tıkla)</h3>
+        <div class="grid-container" id="grid"></div>
+
+        <div class="kasalar">
+            <h3>🎁 Özel Kasalar</h3>
+            <div class="kasa-grid" id="kasa-alani"></div>
+        </div>
     </div>
 
     <script>
-        // --- TEMEL DEĞİŞKENLER ---
-        let oyuncuParasi = 1000;
-        let enYuksekUcakSeviyesi = 3; 
-        let sahipOlunanUcaklar = [1, 2, 3]; // Başlangıç uçakları
+        // Oyun Değişkenleri ve 12 Slotluk Izgara
+        let para = 1000;
+        let maxLevel = 3;
+        let grid = [1, 2, 3, null, null, null, null, null, null, null, null, null]; 
+        let seciliIndex = null;
 
-        // --- 20 KADEMELİ DEV KASA SİSTEMİ ---
-        const kasaSistemi = [
-            { id: 1, isim: "Tahta Kasa", fiyat: 500, minLvl: 1, maxLvl: 3 },
-            { id: 2, isim: "Paslı Kasa", fiyat: 1500, minLvl: 3, maxLvl: 6 },
-            { id: 3, isim: "Demir Kasa", fiyat: 4000, minLvl: 6, maxLvl: 10 },
-            { id: 4, isim: "Çelik Kasa", fiyat: 10000, minLvl: 10, maxLvl: 15 },
-            { id: 5, isim: "Bronz Kasa", fiyat: 25000, minLvl: 15, maxLvl: 22 },
-            { id: 6, isim: "Gümüş Kasa", fiyat: 60000, minLvl: 22, maxLvl: 30 },
-            { id: 7, isim: "Altın Kasa", fiyat: 150000, minLvl: 30, maxLvl: 40 },
-            { id: 8, isim: "Platin Kasa", fiyat: 350000, minLvl: 40, maxLvl: 52 },
-            { id: 9, isim: "Titanyum Kasa", fiyat: 800000, minLvl: 52, maxLvl: 65 },
-            { id: 10, isim: "Kristal Kasa", fiyat: 2000000, minLvl: 65, maxLvl: 80 },
-            { id: 11, isim: "Zümrüt Kasa", fiyat: 5000000, minLvl: 80, maxLvl: 95 },
-            { id: 12, isim: "Yakut Kasa", fiyat: 12000000, minLvl: 95, maxLvl: 110 },
-            { id: 13, isim: "Safir Kasa", fiyat: 30000000, minLvl: 110, maxLvl: 125 },
-            { id: 14, isim: "Elmas Kasa", fiyat: 75000000, minLvl: 125, maxLvl: 140 },
-            { id: 15, isim: "Obsidyen Kasa", fiyat: 200000000, minLvl: 140, maxLvl: 155 },
-            { id: 16, isim: "Ejderha Kasası", fiyat: 500000000, minLvl: 155, maxLvl: 170 },
-            { id: 17, isim: "Meteor Kasası", fiyat: 1500000000, minLvl: 170, maxLvl: 180 },
-            { id: 18, isim: "Galaksi Kasası", fiyat: 5000000000, minLvl: 180, maxLvl: 185 },
-            { id: 19, isim: "Hiçlik (Void) Kasası", fiyat: 15000000000, minLvl: 185, maxLvl: 189 },
-            { id: 20, isim: "Tanrısal Kasa", fiyat: 50000000000, minLvl: 190, maxLvl: 200 }
+        // 20 Kademeli Dev Kasa Sistemi
+        const kasaIsimleri = [
+            "Tahta Kasa", "Paslı Kasa", "Demir Kasa", "Çelik Kasa", "Bronz Kasa", 
+            "Gümüş Kasa", "Altın Kasa", "Platin Kasa", "Titanyum Kasa", "Kristal Kasa", 
+            "Zümrüt Kasa", "Yakut Kasa", "Safir Kasa", "Elmas Kasa", "Obsidyen Kasa", 
+            "Ejderha Kasası", "Meteor Kasası", "Galaksi Kasası", "Hiçlik (Void) Kasası", "Tanrısal Kasa"
         ];
+        
+        const kasalar = kasaIsimleri.map((isim, i) => {
+            let carpan = Math.pow(2.2, i);
+            let minLvl = i === 19 ? 190 : (i * 9) + 1;
+            let maxLvl = i === 19 ? 200 : (i * 9) + 10;
+            if(i === 0) { minLvl = 1; maxLvl = 3; }
+            if(i === 1) { minLvl = 3; maxLvl = 6; }
+            return { id: i + 1, isim, fiyat: Math.floor(500 * carpan), minLvl, maxLvl };
+        });
 
-        // --- EKRAN GÜNCELLEME SİSTEMİ ---
-        function ekraniGuncelle() {
-            document.getElementById("para-gosterge").innerText = Math.floor(oyuncuParasi).toLocaleString('tr-TR');
-            document.getElementById("max-level-gosterge").innerText = enYuksekUcakSeviyesi;
-            
-            // Dinamik Market Butonu Güncelleme
-            let alinacakSeviye = Math.max(1, enYuksekUcakSeviyesi - 2);
-            let ucakFiyati = Math.floor(50 * Math.pow(1.6, alinacakSeviye));
-            document.getElementById("market-btn").innerText = `Seviye ${alinacakSeviye} Uçak Al (Fiyat: ${ucakFiyati.toLocaleString('tr-TR')})`;
+        // 200 Eşsiz Uçak İçin Algoritmik Renk Üretimi
+        function ucakRengi(level) {
+            let hue = (level * 45) % 360;
+            let lightness = 40 + (level % 20); 
+            return `hsl(${hue}, 80%, ${lightness}%)`;
+        }
 
-            // Pisti Güncelleme
-            const pistDiv = document.getElementById("pist");
-            pistDiv.innerHTML = "";
-            let toplamSaniyeKazanci = 0;
+        // Izgarayı ve Ekranı Güncelleme
+        function cizGrid() {
+            const gridDiv = document.getElementById("grid");
+            gridDiv.innerHTML = "";
+            let toplamGelir = 0;
 
-            sahipOlunanUcaklar.sort((a, b) => b - a); // Büyükten küçüğe sırala
-
-            sahipOlunanUcaklar.forEach(seviye => {
-                let ucakDiv = document.createElement("div");
-                ucakDiv.className = "ucak";
-                ucakDiv.innerText = "Lv." + seviye;
-                pistDiv.appendChild(ucakDiv);
+            grid.forEach((ucak, index) => {
+                let slotDiv = document.createElement("div");
+                slotDiv.className = "slot" + (seciliIndex === index ? " selected" : "");
                 
-                // Ekonomiyi dengeli tutan kazanç formülü (Çarpan 1.15)
-                toplamSaniyeKazanci += Math.floor(10 * Math.pow(1.15, seviye));
-            });
-
-            document.getElementById("saniye-kazanc").innerText = toplamSaniyeKazanci.toLocaleString('tr-TR');
-        }
-
-        // --- SİSTEM LOGLARI ---
-        function logYaz(mesaj) {
-            const logEkrani = document.getElementById("oyun-logu");
-            logEkrani.innerHTML += `> ${mesaj}<br>`;
-            logEkrani.scrollTop = logEkrani.scrollHeight; // Hep en alta kaydır
-        }
-
-        // --- MARKET SİSTEMİ (Maks Levelin 2 Altı) ---
-        function markettenUcakAl() {
-            let alinacakSeviye = Math.max(1, enYuksekUcakSeviyesi - 2);
-            let ucakFiyati = Math.floor(50 * Math.pow(1.6, alinacakSeviye));
-
-            if (oyuncuParasi >= ucakFiyati) {
-                oyuncuParasi -= ucakFiyati;
-                sahipOlunanUcaklar.push(alinacakSeviye);
-                logYaz(`Standart Marketten Seviye ${alinacakSeviye} uçak ${ucakFiyati.toLocaleString('tr-TR')} paraya satın alındı.`);
-                ekraniGuncelle();
-            } else {
-                logYaz("⚠️ Yeterli paran yok!");
-            }
-        }
-
-        // --- KASA AÇMA SİSTEMİ ---
-        function kasaAc(kasaId) {
-            let secilenKasa = kasaSistemi.find(k => k.id === kasaId);
-            
-            if (oyuncuParasi >= secilenKasa.fiyat) {
-                oyuncuParasi -= secilenKasa.fiyat;
-                
-                // Belirlenen aralıkta rastgele seviye uçak verme
-                let min = secilenKasa.minLvl;
-                let max = secilenKasa.maxLvl;
-                let cikanUcakSeviyesi = Math.floor(Math.random() * (max - min + 1)) + min;
-
-                sahipOlunanUcaklar.push(cikanUcakSeviyesi);
-
-                // Eğer çıkan uçak rekor kırdıysa sınırı yükselt
-                if(cikanUcakSeviyesi > enYuksekUcakSeviyesi) {
-                    enYuksekUcakSeviyesi = cikanUcakSeviyesi;
-                    logYaz(`🚀 YENİ REKOR! Artık en yüksek uçağın Seviye ${enYuksekUcakSeviyesi}!`);
+                if (ucak !== null) {
+                    let ucakDiv = document.createElement("div");
+                    ucakDiv.className = "ucak";
+                    ucakDiv.style.background = ucakRengi(ucak);
+                    ucakDiv.innerText = "Lv." + ucak;
+                    slotDiv.appendChild(ucakDiv);
+                    
+                    // Ekonomik Denge: Uçakların Saniyelik Getirisi
+                    toplamGelir += Math.floor(10 * Math.pow(1.15, ucak));
                 }
 
-                logYaz(`🎁 ${secilenKasa.isim} açıldı! İçinden Seviye ${cikanUcakSeviyesi} uçak çıktı!`);
-                ekraniGuncelle();
+                slotDiv.onclick = () => slotTikla(index);
+                gridDiv.appendChild(slotDiv);
+            });
+
+            document.getElementById("para").innerText = Math.floor(para).toLocaleString('tr-TR');
+            document.getElementById("max-level").innerText = maxLevel;
+            document.getElementById("gelir").innerText = toplamGelir.toLocaleString('tr-TR');
+            
+            // Dinamik Market: Her Zaman Max Level - 2
+            let alinacakLevel = Math.max(1, maxLevel - 2);
+            let fiyat = Math.floor(50 * Math.pow(1.6, alinacakLevel));
+            document.getElementById("market-btn").innerText = `Seviye ${alinacakLevel} Uçak Al (${fiyat.toLocaleString('tr-TR')}$)`;
+        }
+
+        // Merge (Birleştirme) Mekaniği
+        function slotTikla(index) {
+            if (seciliIndex === null) {
+                if (grid[index] !== null) seciliIndex = index;
             } else {
-                logYaz(`⚠️ Yetersiz bakiye! ${secilenKasa.isim} açmak için ${secilenKasa.fiyat.toLocaleString('tr-TR')} paran olmalı.`);
+                if (seciliIndex === index) {
+                    seciliIndex = null; 
+                } else if (grid[index] === null) {
+                    grid[index] = grid[seciliIndex];
+                    grid[seciliIndex] = null;
+                    seciliIndex = null;
+                } else if (grid[index] === grid[seciliIndex]) {
+                    let yeniLevel = grid[index] + 1;
+                    grid[index] = yeniLevel;
+                    grid[seciliIndex] = null;
+                    if (yeniLevel > maxLevel) maxLevel = yeniLevel;
+                    seciliIndex = null;
+                } else {
+                    seciliIndex = index; 
+                }
+            }
+            cizGrid();
+        }
+
+        function markettenUcakAl() {
+            let alinacakLevel = Math.max(1, maxLevel - 2);
+            let fiyat = Math.floor(50 * Math.pow(1.6, alinacakLevel));
+            if (para >= fiyat) {
+                let bosSlot = grid.indexOf(null);
+                if (bosSlot !== -1) {
+                    para -= fiyat;
+                    grid[bosSlot] = alinacakLevel;
+                    cizGrid();
+                } else alert("Pistte yer yok, uçakları birleştir!");
             }
         }
 
-        // --- KASALARI EKRANA ÇİZDİRME ---
-        function kasalariOlustur() {
-            const kasaAlani = document.getElementById("kasa-alani");
-            kasaSistemi.forEach(kasa => {
-                let btn = document.createElement("button");
-                btn.className = "kasa-btn";
-                // Eğer Tanrısal Kasa ise rengini özel yapalım
-                if(kasa.id === 20) btn.style.background = "linear-gradient(45deg, #ff0000, #ffeb3b)";
-                if(kasa.id === 19) btn.style.background = "linear-gradient(45deg, #800080, #000000)";
-
-                btn.innerText = `${kasa.isim}\n(Lvl: ${kasa.minLvl}-${kasa.maxLvl})\nFiyat: ${kasa.fiyat.toLocaleString('tr-TR')}`;
-                btn.onclick = () => kasaAc(kasa.id);
-                kasaAlani.appendChild(btn);
-            });
+        function kasaAc(kasa) {
+            if (para >= kasa.fiyat) {
+                let bosSlot = grid.indexOf(null);
+                if (bosSlot !== -1) {
+                    para -= kasa.fiyat;
+                    let cikanLevel = Math.floor(Math.random() * (kasa.maxLvl - kasa.minLvl + 1)) + kasa.minLvl;
+                    grid[bosSlot] = cikanLevel;
+                    if (cikanLevel > maxLevel) maxLevel = cikanLevel;
+                    cizGrid();
+                } else alert("Pistte yer yok! Önce uçakları birleştir.");
+            } else alert("Paran yetersiz!");
         }
 
-        // --- OYUN DÖNGÜSÜ (Saniyede 1 Para Kazanma) ---
-        setInterval(() => {
-            let anlikKazanc = 0;
-            sahipOlunanUcaklar.forEach(seviye => {
-                anlikKazanc += Math.floor(10 * Math.pow(1.15, seviye));
+        function baslat() {
+            let kasaAlani = document.getElementById("kasa-alani");
+            kasalar.forEach(kasa => {
+                let btn = document.createElement("button");
+                if (kasa.id === 20) btn.style.background = "linear-gradient(45deg, gold, red)";
+                if (kasa.id === 19) btn.style.background = "linear-gradient(45deg, purple, black)";
+                btn.innerText = `${kasa.isim}\n(Lv.${kasa.minLvl}-${kasa.maxLvl})\n${kasa.fiyat.toLocaleString('tr-TR')}$`;
+                btn.onclick = () => kasaAc(kasa);
+                kasaAlani.appendChild(btn);
             });
-            oyuncuParasi += anlikKazanc;
-            ekraniGuncelle();
-        }, 1000); // 1000 ms = 1 Saniye
 
-        // --- OYUNU BAŞLAT ---
-        kasalariOlustur();
-        ekraniGuncelle();
+            // Pasif Gelir Döngüsü (Saniyede 1 Kere)
+            setInterval(() => {
+                let gelir = 0;
+                grid.forEach(u => { if (u !== null) gelir += Math.floor(10 * Math.pow(1.15, u)); });
+                para += gelir;
+                cizGrid();
+            }, 1000);
 
+            cizGrid();
+        }
+
+        baslat();
     </script>
 </body>
 </html>
