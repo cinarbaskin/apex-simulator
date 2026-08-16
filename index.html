@@ -60,7 +60,7 @@
         .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 10px; color: white; transition: background 0.2s; }
         .btn-save { background: #2ecc71; } .btn-close { background: #e74c3c; }
 
-        /* ÇERÇEVELER */
+        /* YENİ EFSANEVİ ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; margin-bottom: 15px; }
         .frame-card { background: rgba(0,0,0,0.5); padding: 15px 5px; border-radius: 12px; border: 2px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
         .frame-card:active { transform: scale(0.95); }
@@ -128,7 +128,7 @@
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 3px; pointer-events: none; }
         .boost-tag { background: rgba(0,0,0,0.6); padding: 3px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; border: 1px solid; animation: pulseBoost 1.5s infinite alternate; }
 
-        /* PİST VE AKICI DÖNÜŞLÜ UÇUŞ MOTORU */
+        /* PİST */
         #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid #2c3e50; border-radius: 180px; background-color: transparent; box-shadow: 0 0 40px rgba(0,0,0,0.5) inset, 0 0 15px rgba(0,0,0,0.6); pointer-events: none; z-index: 2; transition: all 0.3s; }
         #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(255, 255, 255, 0.4); border-radius: 166px; box-sizing: border-box; }
         .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, white, white 10px, #e74c3c 10px, #e74c3c 20px); z-index: 1; border-left: 2px solid #f1c40f; border-right: 2px solid #f1c40f; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -136,8 +136,8 @@
         @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
         #trackContainer.drag-active { border-color: #f1c40f; box-shadow: 0 0 40px rgba(241, 196, 15, 0.4) inset; }
 
-        /* Uçaklar virajlarda sağa yatıp akıcı dönecek */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); transition: transform 0.05s linear; }
+        /* Uçakların pozisyonu merkezden ayarlanabilmesi için sıfırlandı */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.6)); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) !important; }
 
         .floating-money { position: absolute; color: #f1c40f; font-weight: 900; font-size: 24px; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000; pointer-events: none; z-index: 10; animation: popUpMoney 1.8s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
@@ -229,7 +229,7 @@
             </div>
         </div>
 
-        <!-- ÇERÇEVELER -->
+        <!-- ÇERÇEVELER (10 TANE EFSANEVİ) -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>💎 Elmas Dükkanı</h2>
@@ -239,7 +239,7 @@
             </div>
         </div>
 
-        <!-- DÜKKAN -->
+        <!-- DÜKKAN (Hızlanma ve Uçak Market) -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
                 <h2 style="margin-bottom: 15px; color: #3498db;">🏪 Dükkan</h2>
@@ -264,7 +264,7 @@
             </div>
         </div>
 
-        <!-- KASALAR -->
+        <!-- ELMASLI KASA SİSTEMİ -->
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
                 <h2>📦 Kasalar</h2>
@@ -286,6 +286,7 @@
         <!-- ÜST BAR -->
         <div class="top-bar">
             <div class="user-info" onclick="openSettings()">
+                <!-- PROFİL ÇERÇEVESİ -->
                 <div class="profile-pic-container f-default" id="userProfileFrame">
                     <span id="playerLvl">1</span>
                 </div>
@@ -298,6 +299,7 @@
             </div>
         </div>
 
+        <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
         </div>
@@ -312,7 +314,7 @@
             <div id="activeBoosts"></div>
         </div>
 
-        <!-- PİST -->
+        <!-- MİLİMETRİK PİST -->
         <div id="trackContainer">
             <div id="dashedLine"></div>
             <div class="finish-line"></div>
@@ -361,6 +363,7 @@
         let boostMoneyEnd = 0; let boostMoneyMult = 1;
         let boostSpeedEnd = 0; let boostSpeedMult = 1;
         
+        // 10 EFSANEVİ ÇERÇEVE
         let ownedFrames = ['default']; let activeFrame = 'default';
         const framesData = [
             { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
@@ -377,6 +380,7 @@
 
         let nextRewardTime = 0; let currentMinuteReward = null;
 
+        // YÜKLEME EKRANI VE OYUN BAŞLANGICI
         window.onload = () => {
             setTimeout(() => {
                 const overlay = document.getElementById('loadingOverlay');
@@ -414,6 +418,7 @@
         function login() {
             const user = document.getElementById('usernameInput').value.trim();
             if(user === "") { showToast("Pilot adını gir!", "error"); return; }
+
             currentName = user;
             
             if(user.toLowerCase() === "test") {
@@ -441,9 +446,13 @@
         }
         
         function checkAndSetUsernameDisplay() {
-            if(currentName.toLowerCase() === "test") document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`;
-            else if (currentName.toLowerCase() === "cinar") document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`;
-            else document.getElementById('displayUsername').innerText = `${currentName}`; 
+            if(currentName.toLowerCase() === "test") {
+                document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`;
+            } else if (currentName.toLowerCase() === "cinar") {
+                document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`;
+            } else { 
+                document.getElementById('displayUsername').innerText = `${currentName}`; 
+            }
         }
 
         function startGameLoops() {
@@ -495,7 +504,6 @@
                 if(isEquipped) btnHtml = `<div style="color:#f1c40f; font-weight:bold; font-size:12px;">Kuşanıldı</div>`;
                 else if(isOwned) btnHtml = `<button style="padding:5px 10px; background:#2ecc71; border:none; border-radius:5px; color:white; cursor:pointer;" onclick="equipFrame('${frame.id}')">Kuşan</button>`;
                 else btnHtml = `<button style="padding:5px 10px; background:#e74c3c; border:none; border-radius:5px; color:white; cursor:pointer;" onclick="buyFrame('${frame.id}', ${frame.price})">Satın Al (💎 ${frame.price})</button>`;
-                
                 let innerHTML = (frame.id === 'god' || frame.id === 'hacker') ? '<div class="inner" style="z-index:5;">?</div>' : '?';
                 
                 grid.innerHTML += `
@@ -510,7 +518,7 @@
         }
         function closeDiamondShop() { document.getElementById("diamondShopModal").style.display = "none"; }
         function buyFrame(id, price) {
-            if(gems >= price) { gems -= price; ownedFrames.push(id); saveGame(); openDiamondShop(); updateUI(); showToast("Çerçeve satın alındı!", "info"); }
+            if(gems >= price) { gems -= price; ownedFrames.push(id); saveGame(); openDiamondShop(); updateUI(); showToast("Çerçe satın alındı!", "info"); }
             else { showToast("Yeterli elmasın yok!", "error"); }
         }
         function equipFrame(id) { activeFrame = id; saveGame(); updateFrameUI(); openDiamondShop(); showToast("Çerçeve kuşanıldı!", "info"); }
@@ -554,7 +562,6 @@
             else boostSpeedEnd += addTime;
             
             if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
-            
             saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
         }
 
@@ -646,31 +653,17 @@
                 svg += `<circle cx="50" cy="55" r="40" fill="none" stroke="${c2}" stroke-width="6"/>`;
             }
 
-            if (bodyType === 0) {
-                svg += `<path d="M 45,20 L 55,20 L 60,80 L 50,95 L 40,80 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 1) {
-                svg += `<polygon points="50,5 35,45 40,90 60,90 65,45" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 2) {
-                svg += `<rect x="35" y="15" width="30" height="75" rx="15" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 3) {
-                svg += `<polygon points="50,10 25,60 50,90 75,60" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else if (bodyType === 4) {
-                svg += `<path d="M 50,5 C 30,30 30,70 50,95 C 70,70 70,30 50,5 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            } else {
-                svg += `<polygon points="50,15 15,80 85,80" fill="${c1}" stroke="#111" stroke-width="2"/>`;
-            }
+            if (bodyType === 0) { svg += `<path d="M 45,20 L 55,20 L 60,80 L 50,95 L 40,80 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 1) { svg += `<polygon points="50,5 35,45 40,90 60,90 65,45" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 2) { svg += `<rect x="35" y="15" width="30" height="75" rx="15" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 3) { svg += `<polygon points="50,10 25,60 50,90 75,60" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else if (bodyType === 4) { svg += `<path d="M 50,5 C 30,30 30,70 50,95 C 70,70 70,30 50,5 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } 
+            else { svg += `<polygon points="50,15 15,80 85,80" fill="${c1}" stroke="#111" stroke-width="2"/>`; }
 
-            if (tailType === 0) {
-                svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else if (tailType === 1) {
-                svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-                svg += `<polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else if (tailType === 2) {
-                svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-                svg += `<rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            } else {
-                svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`;
-            }
+            if (tailType === 0) { svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else if (tailType === 1) { svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/><polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else if (tailType === 2) { svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/><rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`; } 
+            else { svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`; }
 
             svg += `<ellipse cx="50" cy="35" rx="6" ry="14" fill="${cG}" stroke="#111" stroke-width="2"/>`;
             svg += `<path d="M 47,26 C 46,30 46,38 50,42" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
@@ -682,15 +675,10 @@
             document.getElementById("moneyDisplay").innerText = formatNumber(money);
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
             document.getElementById("centerMoney").innerText = formatNumber(money);
-            
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
             document.getElementById("buyPriceDisplay").innerText = formatNumber(getMarketPrice());
-            
-            let lvlSpan = document.getElementById("playerLvl");
-            if(lvlSpan) lvlSpan.innerText = playerLevel;
-            
-            let totalCps = 0; 
-            let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
+            let lvlSpan = document.getElementById("playerLvl"); if(lvlSpan) lvlSpan.innerText = playerLevel;
+            let totalCps = 0; let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
             flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
         }
@@ -793,7 +781,7 @@
             if (dragSource && dragSource.type === 'grid') {
                 const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length;
                 if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; }
-                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(dragSource.index, dragSource.index); initGrid(); saveGame();
+                gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame();
             }
             if (dragSource && dragSource.type === 'track' && e.target.closest('.grid-container')) {
                 gridSlots[dragSource.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(dragSource.sourceSlotIndex); initGrid(); saveGame();
@@ -909,7 +897,7 @@
             setTimeout(() => pop.remove(), 1800); 
         }
 
-        // --- AKICI SAĞ DÖNÜŞ ANİMASYONLU UÇUŞ MOTORU ---
+        // --- MİLİMETRİK UÇUŞ ROTASI VE AKICI DÖNÜŞ (ROTASYON) SİSTEMİ ---
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
 
@@ -925,37 +913,44 @@
                 let speed = (3.5 + (p.level * 0.15)) * currentSpeedMult;
                 const oldProgress = p.progress; p.progress += speed; 
                 let d = p.progress % P; if (d < 0) d += P; 
-                let x = 0, y = 0, tilt = 0;
+                let x = 0, y = 0, angle = 0;
 
-                // Uçağın virajlarda sağa doğru akıcı yatma (tilt) açısı hesaplaması
-                if (d < L/2) {
-                    x = cx + R; y = cy + d; tilt = 0; // Düz giderken dik
+                // 1. SAĞ DÜZLÜK (AŞAĞI DOĞRU İNİŞ)
+                if (d < L) {
+                    x = cx + R; 
+                    y = (cy - L/2) + d; 
+                    angle = 180;
                 }
-                else if (d < L/2 + Math.PI * R) {
-                    let dist = d - L/2; let theta = dist / R;
-                    x = cx + R * Math.cos(theta); y = (cy + L/2) + R * Math.sin(theta);
-                    tilt = 15; // Alt virajda sağa hafif yatış animasyonu
+                // 2. ALT OVAL DÖNÜŞ (SAĞDAN SOLA KIVRILMA)
+                else if (d < L + Math.PI * R) {
+                    let dist = d - L; 
+                    let theta = dist / R; 
+                    x = cx + R * Math.cos(theta); 
+                    y = (cy + L/2) + R * Math.sin(theta);
+                    angle = 180 + (theta * 180 / Math.PI); // Burnunu yola göre akıcı çevirir
                 }
-                else if (d < L/2 + Math.PI * R + L) {
-                    let dist = d - (L/2 + Math.PI * R);
-                    x = cx - R; y = (cy + L/2) - dist; tilt = 0; // Sol düzlükte dik
+                // 3. SOL DÜZLÜK (YUKARI ÇIKIŞ)
+                else if (d < 2 * L + Math.PI * R) {
+                    let dist = d - (L + Math.PI * R);
+                    x = cx - R; 
+                    y = (cy + L/2) - dist; 
+                    angle = 0; // Burnunu 0 (yukarı) sabitler
                 }
-                else if (d < L/2 + 2 * Math.PI * R + L) {
-                    let dist = d - (L/2 + Math.PI * R + L); let theta = Math.PI + dist / R;
-                    x = cx + R * Math.cos(theta); y = (cy - L/2) + R * Math.sin(theta);
-                    tilt = 15; // Üst virajda sağa akıcı yatış animasyonu
-                }
+                // 4. ÜST OVAL DÖNÜŞ (SOLDAN SAĞA KIVRILMA)
                 else {
-                    let dist = d - (L/2 + 2 * Math.PI * R + L);
-                    x = cx + R; y = (cy - L/2) + dist; tilt = 0; // Sağ düzlükte dik
+                    let dist = d - (2 * L + Math.PI * R); 
+                    let theta = Math.PI + (dist / R); 
+                    x = cx + R * Math.cos(theta); 
+                    y = (cy - L/2) + R * Math.sin(theta);
+                    angle = (dist / R) * 180 / Math.PI; // 0'dan 180'e yavaşça kıvrılır
                 }
 
-                // Uçak dümdüz bakar ancak virajlarda sağa doğru akıcı bir şekilde yatar (rotate(0deg) + tilt)
-                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${tilt}deg)`;
+                // 32.5 = Uçağın tam merkez noktası. Çizgide kalmasını ve kusursuz dönmesini sağlar.
+                p.element.style.transform = `translate(${x - 32.5}px, ${y - 32.5}px) rotate(${angle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
                 if (currentLap > oldLap) { 
-                    flashFinishLine(); popMoney(cx + R, cy + L/2, getPlaneIncome(p.level) * currentIncomeMult); 
+                    flashFinishLine(); popMoney(cx + R, cy, getPlaneIncome(p.level) * currentIncomeMult); 
                 }
             });
 
@@ -1101,7 +1096,7 @@
         
         let currentWonReward = null;
         function openCaseMenu() {
-            const gridEl = document.getElementById("caseGrid"); grid.innerHTML = "";
+            const gridEl = document.getElementById("caseGrid"); gridEl.innerHTML = "";
             caseData.forEach(c => {
                 const item = document.createElement("div"); item.className = "case-item"; item.style.borderColor = c.color;
                 item.innerHTML = `<div class="case-icon">${c.icon}</div><div class="case-name" style="color:${c.color}">${c.name}</div><div class="case-price">💎 ${formatNumber(c.price)}</div><div style="font-size:9px; color:#aaa; margin-top:3px;">Lv. ${c.min} - ${c.max}</div>`;
