@@ -23,227 +23,283 @@
         
         h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin, .lb-rank, .prestige-btn { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
 
+        /* GÖZ YORMAYAN, DERİN UZAY ARKA PLANI */
         body { 
             margin: 0; padding: 0; 
-            background-color: #030408;
+            background-color: #020105; 
             color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
-            position: relative;
+            position: relative; transition: background-image 2s ease;
         }
 
-        /* Köşeleri karartan sinematik efekt (Vignette) */
         body::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             box-shadow: inset 0 0 150px rgba(0,0,0,1); z-index: 0; pointer-events: none;
         }
 
-        /* Dinamik olarak rengi değişecek olan Grid arka planı */
         #dynamicBgGrid {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image: 
                 linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: moveGrid 15s linear infinite;
+            background-size: 35px 35px;
+            animation: moveGrid 20s linear infinite; transition: background-image 2s ease;
         }
-        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 30px 30px; } }
+        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 35px 35px; } }
 
         #gameContainer { 
             width: 100%; max-width: 450px; height: 100%; position: relative; 
-            background: rgba(5, 8, 15, 0.4); backdrop-filter: blur(4px);
-            display: flex; flex-direction: column; overflow: hidden; z-index: 1;
+            background: rgba(5, 5, 10, 0.5); backdrop-filter: blur(6px);
+            display: flex; flex-direction: column; box-shadow: 0 0 60px rgba(0, 255, 255, 0.1); overflow: hidden; z-index: 1;
         }
 
-        /* SİBERPUNK TARAMA ÇİZGİLERİ */
         #gameContainer::after {
             content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.3;
+            background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.35;
         }
 
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.4); } }
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .star { position: absolute; border-radius: 50%; animation: twinkle infinite alternate ease-in-out; }
+        @keyframes twinkle { 0% { opacity: 0.2; transform: scale(0.7); } 100% { opacity: 1; transform: scale(1.4); } }
+        
+        .nebula { position: absolute; border-radius: 50%; z-index: -2; pointer-events: none; animation: floatNebula 25s infinite alternate ease-in-out; transition: background 2s ease; }
+        .nebula-1 { width: 600px; height: 600px; top: -200px; left: -200px; }
+        .nebula-2 { width: 700px; height: 700px; bottom: -250px; right: -250px; animation-delay: -7s; }
+        .nebula-3 { width: 500px; height: 500px; top: 30%; left: 10%; animation-delay: -3s;}
+        @keyframes floatNebula { 0% { transform: scale(0.9) translate(0, 0); } 100% { transform: scale(1.1) translate(40px, 40px); } }
 
-        /* GALAKTİK SIÇRAMA (PRESTIGE) BUTONU */
+        /* GALAKTİK SIÇRAMA BUTONU */
         .prestige-btn {
-            position: absolute; top: 75px; left: 50%; transform: translateX(-50%);
+            position: absolute; top: 135px; left: 50%; transform: translateX(-50%);
             background: linear-gradient(45deg, #f1c40f, #e74c3c); color: #000;
-            padding: 5px 30px; border-radius: 20px; font-size: 26px; font-weight: 700;
-            border: 2px solid #fff; box-shadow: 0 0 25px #f1c40f, inset 0 0 10px #fff;
+            padding: 4px 20px; border-radius: 20px; font-size: 20px; font-weight: 700;
+            border: 2px solid #fff; box-shadow: 0 0 20px #f1c40f, inset 0 0 10px #fff;
             cursor: pointer; z-index: 45; display: none; text-transform: uppercase;
             animation: pulsePrestige 1s infinite alternate; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
         }
-        @keyframes pulsePrestige { 
-            0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 20px #f1c40f; } 
-            100% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 40px #f1c40f, 0 0 20px white; } 
-        }
+        @keyframes pulsePrestige { 0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 10px #f1c40f; } 100% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 25px #f1c40f, 0 0 10px white; } }
 
-        /* ROKET ATEŞİ */
+        /* GALAKSİ TABELASI */
+        #galaxyWrapper { position: absolute; top: 75px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 25; pointer-events: none; }
+        .galaxy-label { font-size: 10px; color: #fff; margin-bottom: -6px; letter-spacing: 2px; font-weight: bold; text-shadow: 0 0 5px #000; z-index: 2;}
+        #galaxyNameDisplay { padding: 6px 20px; border-radius: 25px; background: rgba(0,0,0,0.8); font-size: 20px; font-weight: 800; border: 2px solid; display: flex; align-items: center; gap: 8px; text-transform: uppercase; white-space: nowrap; backdrop-filter: blur(10px); font-family: 'Teko', sans-serif; letter-spacing: 2px; transition: all 1s; }
+
+        /* ROKET VE PERVANE ATEŞİ ANİMASYONLARI */
         @keyframes enginePulse { 0% { transform: scaleY(0.7); opacity: 0.7; } 100% { transform: scaleY(1.4); opacity: 1; filter: brightness(1.5); } }
-        .thrust-anim { transform-origin: top center; animation: enginePulse 0.08s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        .thrust-anim { transform-origin: top center; animation: enginePulse 0.05s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes spinProp { 0% { transform: scaleX(1); opacity: 1; } 50% { transform: scaleX(0.1); opacity: 0.5;} 100% { transform: scaleX(1); opacity: 1; } }
+        .prop-anim { transform-origin: center; animation: spinProp 0.1s linear infinite; }
 
         /* YÜKLEME EKRANI */
         #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #05050a; transition: opacity 0.5s ease; }
-        .loading-logo { width: 150px; height: 150px; border-radius: 35px; box-shadow: 0 0 50px #00ffff; border: 4px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 40px #00ffff; } 50% { transform: translateY(-15px); box-shadow: 0 0 70px #00ffff; } }
-        .loading-title { font-size: 50px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; text-shadow: 0 0 30px rgba(0,255,255,0.5); text-align: center; }
-        .loading-bar-container { width: 100%; height: 12px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 2px solid rgba(0,255,255,0.6); box-shadow: 0 0 20px rgba(0,255,255,0.4); }
-        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 25px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .loading-text { margin-top: 20px; font-size: 18px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold;}
+        .loading-logo { width: 130px; height: 130px; border-radius: 30px; box-shadow: 0 0 40px #00ffff; border: 3px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 30px #00ffff; } 50% { transform: translateY(-15px); box-shadow: 0 0 60px #00ffff; } }
+        .loading-title { font-size: 45px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 30px 0; text-shadow: 0 0 30px rgba(0,255,255,0.5); text-align: center; }
+        .loading-bar-container { width: 100%; height: 10px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 2px solid rgba(0,255,255,0.6); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 20px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .loading-text { margin-top: 15px; font-size: 16px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold;}
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
         @keyframes pulseText { 0% { opacity: 0.4; text-shadow: 0 0 0px #00ffff; } 100% { opacity: 1; text-shadow: 0 0 15px #00ffff; } }
 
         /* BİLDİRİMLER (TOAST) */
         #toastContainer { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100000; pointer-events: none; width: 90%; }
-        .custom-toast { background: rgba(10, 15, 30, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
-        .custom-toast.error { border-color: #ff003c; box-shadow: 0 0 20px rgba(255,0,60,0.4); animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
-        .custom-toast.info { border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+        .custom-toast { background: rgba(10, 15, 30, 0.95); border-left: 4px solid; color: white; padding: 12px 18px; border-radius: 10px; font-weight: bold; font-size: 13px; box-shadow: 0 5px 15px rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 10px; animation: toastEnter 0.5s forwards; }
+        .custom-toast.error { border-color: #ff003c; box-shadow: 0 0 15px rgba(255,0,60,0.4); animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
+        .custom-toast.info { border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
         .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
         @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
-        @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
+        @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-4px); } 40% { transform: translateX(4px); } 60% { transform: translateX(-2px); } 80% { transform: translateX(2px); } }
 
         /* GİRİŞ EKRANI */
-        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(20px); }
-        .login-box { background: rgba(10, 15, 25, 0.85); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(0,255,255,0.15); }
-        .login-box h1 { margin: 0 0 10px 0; font-size: 44px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
-        .slogan { font-size: 15px; color: #00ffff; margin-bottom: 30px; text-shadow: 0 0 5px #00ffff; }
-        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.7); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; font-weight: bold; }
-        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 25px rgba(0,255,255,0.5), inset 0 0 15px rgba(0,255,255,0.3); }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #fff; font-size: 24px; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 30px rgba(0,255,255,0.5); transition: 0.2s; text-transform: uppercase;}
-        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.92); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(15px); }
+        .login-box { background: rgba(10, 15, 25, 0.85); padding: 40px 25px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 40px rgba(0,255,255,0.3), inset 0 0 20px rgba(0,255,255,0.15); }
+        .login-box h1 { margin: 0 0 10px 0; font-size: 38px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
+        .slogan { font-size: 13px; color: #00ffff; margin-bottom: 25px; letter-spacing: 1px; text-shadow: 0 0 5px #00ffff; font-weight: bold;}
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 2px solid #3498db; border-radius: 8px; color: #00ffff; font-size: 18px; text-align: center; outline: none; transition: 0.3s; font-weight: bold; }
+        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.5), inset 0 0 10px rgba(0,255,255,0.3); }
+        .login-btn { width: 100%; padding: 12px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 8px; color: #fff; font-size: 22px; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 25px rgba(0,255,255,0.5); transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px 3px black; font-family: 'Teko', sans-serif;}
+        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 10px rgba(0,255,255,0.4); }
 
         /* MODALLAR */
-        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
-        .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 25px rgba(0,255,255,0.15); text-align: center; position: relative; }
-        .modal-content h2 { margin-top: 0; font-size: 32px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #fff; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.3); text-transform: uppercase; text-shadow: 1px 1px 2px black;}
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(8px); }
+        .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 12px; padding: 20px; width: 90%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 40px rgba(0,255,255,0.3), inset 0 0 20px rgba(0,255,255,0.15); text-align: center; position: relative; }
+        .modal-content h2 { margin-top: 0; font-size: 28px; color: #00ffff; text-shadow: 0 0 12px rgba(0,255,255,0.7); letter-spacing: 1px; font-weight: 700; }
+        .modal-content input, .modal-content select { width: 100%; padding: 10px; margin-bottom: 12px; background: #000; border: 1px solid #00ffff; border-radius: 6px; color: #00ffff; font-size: 16px; outline: none; text-align: center; font-weight: bold; }
+        .modal-btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-size: 20px; font-weight: 700; cursor: pointer; margin-bottom: 8px; color: #fff; transition: 0.2s; box-shadow: 0 0 12px rgba(0,255,255,0.3); text-transform: uppercase; text-shadow: 1px 1px 2px black; font-family: 'Teko', sans-serif;}
         .modal-btn:active { transform: scale(0.95); }
         .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
-        .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); box-shadow: 0 0 15px rgba(255,0,60,0.5); border: 1px solid #ff003c; }
+        .btn-close { background: transparent; color: #ff003c; border: 2px solid #ff003c; }
 
-        /* GÖREVLER LİSTESİ */
-        .mission-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(52,152,219,0.15); transition: 0.3s; }
-        .mission-item:hover { background: rgba(0,255,255,0.1); transform: translateX(5px); border-color: #00ffff; }
+        /* GÖREVLER VE SIRALAMA LİSTELERİ */
+        .mission-item, .lb-item { background: #000; border: 1px solid #3498db; border-radius: 10px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .mission-item:hover, .lb-item:hover { border-color: #00ffff; box-shadow: inset 0 0 15px rgba(0,255,255,0.2); }
         .mission-info { text-align: left; }
-        .mission-title { font-size: 16px; font-weight: bold; color: #00ffff; margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,255,0.5); }
-        .mission-reward { font-size: 15px; color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-weight: bold; }
-        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: 1px solid #2ecc71; border-radius: 8px; color: white; padding: 8px 18px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(46,204,113,0.6); transition: 0.2s; font-size: 18px; font-family: 'Teko', sans-serif;}
+        .mission-title { font-size: 14px; font-weight: bold; color: #00ffff; margin-bottom: 4px; text-shadow: 0 0 5px rgba(0,255,255,0.5); }
+        .mission-reward { font-size: 13px; color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-weight: bold; }
+        .btn-claim-mission { background: #2ecc71; border: none; border-radius: 6px; color: #000; padding: 6px 14px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 18px; font-family: 'Teko', sans-serif;}
         .btn-claim-mission:active { transform: scale(0.9); }
-        .btn-claim-mission:disabled { background: rgba(255,255,255,0.1); box-shadow: none; border-color: transparent; cursor: not-allowed; color: #555; }
-        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 15px red; z-index: 20; animation: pulseBadge 1.5s infinite;}
-        @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.15); box-shadow: 0 0 25px red; } 100% { transform: scale(1); } }
+        .btn-claim-mission:disabled { background: #222; color: #555; cursor: not-allowed; }
+        .mission-badge { position: absolute; top: -4px; right: -4px; background: #ff003c; color: white; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 10px red; z-index: 20; animation: pulseBadge 1.5s infinite;}
+        @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.15); box-shadow: 0 0 20px red; } 100% { transform: scale(1); } }
 
-        /* SIRALAMA */
-        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
-        .lb-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
-        .lb-item.is-player { background: rgba(0,255,255,0.15); border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
-        .lb-rank { font-size: 20px; font-weight: bold; width: 30px; text-align: center; }
-        .lb-rank-1 { color: #f1c40f; text-shadow: 0 0 10px #f1c40f; font-size: 24px; }
-        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
-        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
+        /* SIRALAMA (LEADERBOARD) SPESİFİK */
+        .leaderboard-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; padding-right: 5px; }
+        .lb-item.is-player { background: rgba(0,255,255,0.1); border-color: #00ffff; }
+        .lb-rank { font-size: 18px; font-weight: bold; width: 28px; text-align: center; }
+        .lb-rank-1 { color: #f1c40f; font-size: 22px; }
+        .lb-rank-2 { color: #bdc3c7; font-size: 20px; }
+        .lb-rank-3 { color: #cd7f32; font-size: 18px; }
+        .lb-name { flex-grow: 1; text-align: left; padding-left: 12px; font-size: 13px; font-weight: bold; color: #fff; }
+        .lb-money { font-size: 14px; color: #f1c40f; font-weight: bold; }
 
         /* ÇERÇEVELER */
-        .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; margin-bottom: 15px; }
-        .frame-card { background: rgba(0,0,0,0.6); padding: 15px 5px; border-radius: 12px; border: 1px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
-        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); box-shadow: 0 0 25px rgba(241,196,15,0.4); }
-        .profile-pic-container { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; background: #102a43; color: white; text-shadow: 1px 1px 3px black; position: relative; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.8); margin: 0 auto 10px auto; font-family: 'Teko', sans-serif;}
+        .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; margin-bottom: 12px; }
+        .frame-card { background: #000; padding: 12px 5px; border-radius: 10px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
+        .frame-card:hover { border-color: #bc13fe; }
+        .frame-card.owned { border-color: #00ffff; }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+        .profile-pic-container { width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 16px; background: #000; color: white; position: relative; z-index: 2; margin: 0 auto 8px auto; font-family: 'Teko', sans-serif;}
+        
+        .f-default { border: 2px solid rgba(255,255,255,0.6); box-shadow: 0 0 10px rgba(255,255,255,0.2); animation: defaultPulse 2s infinite alternate; }
+        @keyframes defaultPulse { 0% { box-shadow: 0 0 5px rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.5); } 100% { box-shadow: 0 0 15px rgba(255,255,255,0.6); border-color: rgba(255,255,255,0.9); } }
+        .f-gold { border: 3px solid #f1c40f; animation: goldPulse 1.5s infinite alternate; background: rgba(241,196,15,0.1); }
+        @keyframes goldPulse { 0% { box-shadow: 0 0 10px #f1c40f, inset 0 0 5px #f1c40f; } 100% { box-shadow: 0 0 25px #ffdb58, inset 0 0 15px #f1c40f; } }
+        .f-ice { border: 2px solid #00ffff; background: rgba(0,255,255,0.2); animation: iceGlow 2s infinite alternate; }
+        @keyframes iceGlow { 0% { box-shadow: 0 0 10px #00ffff, inset 0 0 5px #00ffff; } 100% { box-shadow: 0 0 25px #00ffff, inset 0 0 15px white; } }
+        .f-fire { border: 2px solid #ff003c; background: rgba(192,57,43,0.3); animation: fireGlow 0.5s infinite alternate; }
+        @keyframes fireGlow { 0% { box-shadow: 0 0 10px #ff003c, inset 0 -5px 10px #f39c12; } 100% { box-shadow: 0 0 25px #f39c12, inset 0 -10px 15px #ff003c; } }
+        .f-poison { border: 2px dashed #bc13fe; background: rgba(188,19,254,0.1); animation: poisonPulse 1.5s infinite; }
+        @keyframes poisonPulse { 0% { border-color: #bc13fe; box-shadow: 0 0 10px #00ffff; } 50% { border-color: #00ffff; box-shadow: 0 0 25px #bc13fe; } 100% { border-color: #bc13fe; box-shadow: 0 0 10px #00ffff; } }
+        .f-neon { border: 3px solid #0f0; border-radius: 10px; animation: neonPulse 1s infinite alternate; }
+        @keyframes neonPulse { 0% { filter: drop-shadow(0 0 5px #0f0); } 100% { filter: drop-shadow(0 0 20px #0f0) drop-shadow(0 0 10px #0ff); border-color: #0ff; } }
+        .f-hacker { border: none; background: transparent; }
+        .f-hacker::before { content: ''; position: absolute; inset: -4px; border: 2px dotted #0f0; border-radius: 50%; animation: hackerSpin 4s linear infinite; box-shadow: 0 0 10px #0f0; }
+        @keyframes hackerSpin { 100% { transform: rotate(360deg); } }
+        .f-cosmic { border: 2px solid white; animation: cosmicPulse 3s infinite alternate; }
+        @keyframes cosmicPulse { 0% { box-shadow: 0 0 10px #bc13fe, inset 0 0 10px #00ffff; } 100% { box-shadow: 0 0 30px #00ffff, inset 0 0 20px #bc13fe; } }
+        .f-void { border: 3px dashed #555; background: #111; animation: voidSpin 4s linear infinite; }
+        @keyframes voidSpin { 0% { transform: rotate(0deg) scale(0.95); box-shadow: inset 0 0 10px black; } 50% { transform: rotate(180deg) scale(1.05); box-shadow: inset 0 0 30px #bc13fe; } 100% { transform: rotate(360deg) scale(0.95); box-shadow: inset 0 0 10px black;} }
+        .f-god { background: #000; border: none; }
+        .f-god::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #00ffff; border-bottom-color: #bc13fe; animation: godSpin 2s linear infinite; z-index: -1; }
+        .f-god::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 2px solid transparent; border-left-color: #f1c40f; border-right-color: #e74c3c; animation: godSpinReverse 1.5s linear infinite; z-index: -1; }
+        @keyframes godSpin { 100% { transform: rotate(360deg); } } @keyframes godSpinReverse { 100% { transform: rotate(-360deg); } }
 
-        .f-default { border: 2px solid rgba(255,255,255,0.5); }
-        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
-        .f-ice { border: 2px solid #00ffff; box-shadow: 0 0 15px #00ffff; background: rgba(0,255,255,0.3); }
-        .f-fire { border: 2px solid #ff003c; box-shadow: 0 0 15px #ff003c, 0 0 5px #f39c12 inset; background: #c0392b; }
+        /* TIER BAR VE KASALAR */
+        .tier-container { display: flex; gap: 4px; justify-content: center; margin: 15px 0; padding: 8px; background: #000; border-radius: 8px; border: 1px solid #bc13fe; }
+        .tier-slot { flex: 1; height: 10px; background: #222; border-radius: 2px; border: 1px solid #444; transition: 0.3s; }
+        .tier-slot.filled { background: #00ffff; border-color: #fff; box-shadow: 0 0 8px #00ffff; }
 
-        /* KASALAR */
-        .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .case-item { position: relative; background: rgba(0,0,0,0.7); border: 1px solid rgba(0,255,255,0.3); border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
-        .case-item:hover { box-shadow: inset 0 0 30px rgba(0,255,255,0.2); transform: translateY(-3px); border-color: #00ffff; }
-        .case-icon { font-size: 35px; margin-bottom: 8px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); } 
-        .case-name { font-size: 13px; font-weight: bold; margin-bottom: 5px; } 
-        .case-price { font-size: 16px; color: #00ffff; font-weight: bold; text-shadow: 0 0 8px rgba(0,255,255,0.6); }
+        .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .case-item { position: relative; background: #000; border: 1px solid #bc13fe; border-radius: 10px; padding: 12px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .case-item:hover { transform: translateY(-2px); border-color: #00ffff; }
+        .case-item:active { transform: scale(0.95); }
+        .case-icon { font-size: 30px; margin-bottom: 6px; } 
+        .case-name { font-size: 12px; font-weight: bold; margin-bottom: 4px; } 
+        .case-price { font-size: 14px; color: #00ffff; font-weight: bold; }
+        
+        .case-info-btn { position: absolute; bottom: 6px; right: 6px; font-size: 12px; background: #000; border: 1px solid #00ffff; color: #00ffff; border-radius: 50%; width: 24px; height: 24px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; z-index: 10; }
+        .case-info-btn:hover { background: #00ffff; color: #000; }
+
+        /* KASA ROULETTE MİMARİSİ (Siyah Ekran Hatası Kesin Çözüm - Hardware Acceleration) */
+        #rouletteContainer { display: none; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
+        .roulette-window { width: 100%; height: 100px; background: #000; border: 2px solid #bc13fe; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 15px; }
+        .roulette-strip { display: flex; position: absolute; left: 0; align-items: center; height: 100%; will-change: transform; -webkit-backface-visibility: hidden; backface-visibility: hidden;}
+        .roulette-item { width: 80px; height: 80px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #333; background: #05050a; flex-shrink: 0; margin: 0 4px; border-radius: 8px; position: relative; box-sizing: border-box; -webkit-backface-visibility: hidden; backface-visibility: hidden; transform: translateZ(0);}
+        .roulette-svg-wrapper { width: 45px; height: 45px; position: relative; margin-bottom: 4px; }
+        .roulette-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: #ff003c; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #ff003c; border-radius: 4px; }
 
         /* ÜST BAR VE MENÜ */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 10px; background: rgba(10, 15, 30, 0.8); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(0, 255, 255, 0.4); cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
-        .username { font-size: 16px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
-        
-        .currencies { display: flex; gap: 10px; }
-        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
-        .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
-        .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; z-index: 10; }
+        .user-info { display: flex; align-items: center; gap: 8px; background: #000; padding: 4px 12px 4px 4px; border-radius: 25px; border: 1px solid #00ffff; cursor: pointer; transition: 0.2s; }
+        .user-info:active { transform: scale(0.95); }
+        .username { font-size: 14px; font-weight: bold; color: white; }
+        .settings-icon { font-size: 14px; margin-left: 2px; opacity: 0.8; }
 
-        .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: scale(0.9); }
+        .currencies { display: flex; gap: 8px; }
+        .currency { background: #000; color: white; border: 1px solid #bc13fe; border-radius: 10px; padding: 6px 10px; font-weight: 900; display: flex; align-items: center; gap: 4px; font-size: 14px; }
+        .currency.money span { color: #f1c40f; font-size: 16px; } 
+        .currency.gem span { color: #00ffff; font-size: 16px; }
+
+        /* YAN MENÜLER */
+        .side-menu { position: absolute; top: 100px; display: flex; flex-direction: column; gap: 12px; z-index: 10; transform: scale(0.9); }
         .side-menu.left { left: 5px; transform-origin: top left; } .side-menu.right { right: 5px; align-items: center; transform-origin: top right; }
-        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
-        .menu-btn .icon { background: rgba(10, 15, 30, 0.9); border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,255,255,0.25); transition: 0.2s; backdrop-filter: blur(8px); }
+        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 11px; font-weight: bold; cursor: pointer; color: #a4c8ff; }
+        .menu-btn .icon { background: #000; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; font-size: 20px; margin-bottom: 4px; border: 2px solid rgba(0, 255, 255, 0.5); transition: 0.2s; }
         .menu-btn:hover .icon { transform: scale(1.1); border-color: #00ffff; }
+        .menu-btn:active .icon { transform: scale(0.9); }
 
-        /* MERKEZ (SADECE CPS) */
-        .center-stats { position: absolute; top: 12%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
-        .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 15px #00ffff; letter-spacing: 1.5px; }
-        #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
-        .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; color: #f1c40f; }
+        /* MERKEZ İSTATİSTİKLER */
+        .center-stats { position: absolute; top: 15%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+        .center-stats p { margin: 0; font-size: 18px; color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; letter-spacing: 1px; }
+        #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 4px; pointer-events: none; }
+        .boost-tag { background: #000; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; border: 1px solid #f1c40f; color: #f1c40f; }
 
-        /* DİNAMİK PİST - Rengi JS ile Galaksiye Göre Değişecek */
-        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 1s; backdrop-filter: blur(3px); }
-        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(0, 255, 255, 0.7); border-radius: 166px; box-sizing: border-box; filter: drop-shadow(0 0 6px #00ffff); transition: all 1s;}
-        .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9) 10px, rgba(0,255,255,0.9) 10px, rgba(0,255,255,0.9) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 20px #00ffff; transition: all 1s;}
-        .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; opacity: 0; z-index: 5; pointer-events: none; }
+        /* DİNAMİK PİST */
+        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 320px; height: 500px; border: 24px solid #0b192c; border-radius: 160px; background-color: transparent; pointer-events: none; z-index: 2; transition: all 1s; }
+        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 296px; height: 476px; border: 3px dashed rgba(0, 255, 255, 0.4); border-radius: 148px; box-sizing: border-box; transition: all 1s; }
+        .finish-line { position: absolute; top: 50%; right: -24px; transform: translateY(-50%); width: 24px; height: 50px; background: repeating-linear-gradient(0deg, #fff, #fff 8px, #bc13fe 8px, #bc13fe 16px); z-index: 1; border-left: 2px solid #00ffff; border-right: 2px solid #00ffff; transition: all 1s; }
+        .finish-flash { position: absolute; top: 50%; right: -15px; transform: translateY(-50%); width: 25px; height: 70px; background: white; opacity: 0; z-index: 5; pointer-events: none; }
         @keyframes flashAnim { 0% { opacity: 0.8; transform: translateY(-50%) scale(1.2); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
-        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 80px rgba(0, 255, 255, 0.6) inset; }
+        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.4); }
 
         /* UÇAKLAR (HARDWARE ACCELERATION) */
         .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transform: translateZ(0); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; }
+        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 28px; text-shadow: 2px 2px 0px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
+        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -40px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -60px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -80px) scale(0.8); } }
 
-        /* Z-INDEX 999999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
-        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 36px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
-        @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -50px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -70px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -100px) scale(0.8); } }
+        /* HANGAR */
+        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 68px); grid-template-rows: repeat(5, 68px); gap: 8px; z-index: 20; padding: 10px; background: rgba(5, 5, 10, 0.8); border-radius: 20px; border: 2px solid #bc13fe; transition: all 1s; }
+        .slot { width: 100%; height: 100%; background: #000; border-radius: 12px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.3); position: relative; transition: 0.2s; }
+        .slot.drag-over { background: rgba(0,255,255,0.2); border-color: #00ffff; transform: scale(1.05); }
 
-        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) */
-        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(12px); transition: all 1s;}
-        .slot { width: 100%; height: 100%; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.15); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); transition: 0.2s; }
-        .slot.drag-over { background: rgba(0,255,255,0.25); border-color: #00ffff; box-shadow: inset 0 0 25px rgba(0,255,255,0.6); transform: scale(1.05); }
-
-        .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
+        /* 3D İZOMETRİK UÇAK (Katmanlı SVG Sistemi İçin) */
+        .plane-item { width: 60px; height: 60px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
         .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
         .plane-item.ghost { opacity: 0.4; filter: grayscale(50%); animation: none; cursor: pointer; transition: 0.2s; }
-        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #0f172a; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 900; border: 1px solid #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.6); z-index: 10; font-family: 'Teko', sans-serif; }
-        @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #000; color: #00ffff; padding: 2px 5px; border-radius: 5px; font-size: 11px; font-weight: 900; border: 1px solid #00ffff; z-index: 10; font-family: 'Teko', sans-serif; }
+        @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-        /* MOBİL UYUMLU DÜZELTİLMİŞ ÇÖP KUTUSU (BoundingBox ile Çarpışma Testi) */
-        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: rgba(255, 0, 60, 0.85); border: 2px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; align-items: center; justify-content: center; z-index: 9999; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; }
-        #trashBin.drag-over { background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 24px; }
-        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 85%; height: 55px; background: #ff003c; border: 3px dashed #fff; border-radius: 12px; color: white; font-weight: bold; font-size: 20px; display: none; align-items: center; justify-content: center; z-index: 9999; pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; }
+        #trashBin.drag-over { background: #fff; color: #ff003c; border: 3px solid #ff003c; font-size: 24px; }
+        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 60px; height: 60px; transform: translate(-50%, -50%) scale(1.2); display: none; }
 
-        /* ALT BAR */
-        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 12px; padding: 0 15px; z-index: 30; }
-        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); }
+        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
+        .bottom-btn { flex: 1; background: #000; border: 2px solid #00ffff; border-radius: 12px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 12px; cursor: pointer; transition: 0.2s; }
+        .bottom-btn:hover { background: #0a0a0a; transform: translateY(-3px); border-color: #bc13fe; }
         .bottom-btn:active { transform: translateY(5px); }
-        .bottom-btn span.big { font-size: 24px; display: block; margin-bottom: 2px; }
-        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
-
-        /* ORTADA GÖRÜNECEK GALAKSİ İSMİ EKRANI */
-        #galaxyNameDisplay {
-            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
-            font-size: 14px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;
-            text-transform: uppercase; letter-spacing: 2px; z-index: 5; transition: all 1s;
-        }
+        .bottom-btn.shop { border-color: #bc13fe; }
+        .bottom-btn.shop:hover { border-color: #00ffff; }
+        .bottom-btn.speed { border-color: #f1c40f; }
+        .bottom-btn span.big { font-size: 20px; display: block; margin-bottom: 2px; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 15px; }
 
     </style>
 </head>
 <body>
+
+    <!-- YENİ DİNAMİK DROP SHADOW (JavaScript ile Rengi Değişecek) -->
+    <svg width="0" height="0" style="position: absolute;">
+        <defs>
+            <filter id="planeShadow">
+                <feDropShadow dx="0" dy="0" stdDeviation="4" flood-opacity="0.9"/>
+            </filter>
+        </defs>
+    </svg>
+
     <div id="dragGhost"></div>
 
     <div id="gameContainer">
         <!-- ARKA PLAN YILDIZLARI VE DİNAMİK SİBER IZGARA -->
         <div class="bg-grid" id="dynamicBgGrid"></div>
         <div class="stars" id="starContainer"></div>
+        <div class="nebula nebula-1" id="neb1"></div>
+        <div class="nebula nebula-2" id="neb2"></div>
+        <div class="nebula nebula-3" id="neb3"></div>
 
-        <!-- TOAST BİLDİRİM ALANI -->
         <div id="toastContainer"></div>
         
-        <!-- YÜKLEME EKRANI -->
         <div id="loadingOverlay">
             <div class="loading-bg"></div>
             <div class="loading-content">
@@ -254,7 +310,6 @@
             </div>
         </div>
 
-        <!-- SADE GİRİŞ EKRANI -->
         <div id="loginOverlay" style="display: none;">
             <div class="login-box">
                 <h1>Plane Simulator</h1>
@@ -265,7 +320,6 @@
             </div>
         </div>
 
-        <!-- İSİM DEĞİŞTİRME AYARLARI -->
         <div id="settingsModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>⚙️ Profil Ayarları</h2>
@@ -275,110 +329,109 @@
             </div>
         </div>
 
-        <!-- SÜPRİZ ÖDÜL MENÜSÜ -->
         <div id="rewardsModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>🎁 Süpriz Ödül</h2>
                 <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
-                <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);">
-                    <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px;">❓</div>
-                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;">...</div>
+                <div style="background: #000; padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px;">
+                    <div id="rewardIcon" style="font-size: 40px; margin-bottom: 10px;">❓</div>
+                    <div id="rewardText" style="font-size: 20px; font-weight: bold; color: #00ffff; font-family: 'Teko', sans-serif;">...</div>
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
             </div>
         </div>
 
-        <!-- GÖREVLER (MISSIONS) MENÜSÜ -->
         <div id="missionsModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="color: #3498db; text-shadow: 0 0 15px #3498db;">📜 Görevler</h2>
-                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold; text-shadow:0 0 5px #00ffff;">3 Elmas</span> kazan!</p>
+                <h2 style="color: #3498db;">📜 Görevler</h2>
+                <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold;">3 Elmas</span> kazan!</p>
                 <div id="missionsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
                 <button class="modal-btn btn-close" onclick="closeMissionsMenu()">Kapat</button>
             </div>
         </div>
 
-        <!-- ELMAS DÜKYANI (ÇERÇEVELER) -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
-                <h2>💎 Elmas Dükyanı</h2>
-                <p style="font-size:13px; color:#aaa;">Profillerine hava katacak neon çerçeveler!</p>
+                <h2>💎 Elmas Dükkanı</h2>
+                <p style="font-size:12px; color:#aaa;">Profillerine hava katacak neon çerçeveler!</p>
                 <div class="frame-grid" id="frameShopGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeDiamondShop()">Kapat</button>
             </div>
         </div>
 
-        <!-- NORMAL DÜKKAN (Hızlanma ve Uçak Market) -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
-                <h2 style="margin-bottom: 15px; color: #00ffff;">🏪 Dükkan</h2>
-                
-                <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f; box-shadow: inset 0 0 20px rgba(241,196,15,0.15);">
-                    <h3 style="margin: 0 0 10px 0; color: #f1c40f; text-shadow: 0 0 8px #f1c40f;">⚡ 2x Hızlanma</h3>
-                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
+                <h2>🏪 Dükkan</h2>
+                <div style="background: #000; padding: 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #f1c40f;">
+                    <h3 style="margin: 0 0 10px 0; color: #f1c40f;">⚡ 2x Hızlanma</h3>
+                    <p style="font-size:11px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maks. 30Dk)</p>
                     <div class="tier-container" id="shopSpeedTierBar">
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                     </div>
-                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px;">Aktif Süre: 00:00</h4>
-                    <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:20px; padding:12px; margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
+                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:20px; font-family:'Teko', sans-serif;">Aktif Süre: 00:00</h4>
+                    <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:18px; padding:10px; margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
-
-                <h3 style="color:#00ffff; margin-bottom:8px; text-shadow: 0 0 8px #00ffff;">✈️ Neon Uçak Galerisi</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Maksimum 50 Level! En yüksek uçağının 2 alt seviyesine kadar satın alabilirsin.</p>
-                <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 12px; padding-right: 5px;"></div>
-
-                <button class="modal-btn btn-close" style="margin-top:15px;" onclick="closeGeneralShop()">Kapat</button>
+                <h3 style="color:#00ffff; margin-bottom:8px;">✈️ Neon Uçak Galerisi</h3>
+                <p style="font-size:11px; color:#aaa; margin-bottom:15px;">Maksimum 50 Level! En yüksek uçağının 2 alt seviyesine kadar satın alabilirsin.</p>
+                <div class="frame-grid" id="planeShopGrid" style="max-height: 200px; overflow-y: auto; gap: 10px; padding-right: 5px;"></div>
+                <button class="modal-btn btn-close" style="margin-top:10px;" onclick="closeGeneralShop()">Kapat</button>
             </div>
         </div>
 
-        <!-- KASA AÇMA SİSTEMİ -->
+        <div id="crateInfoModal" class="modal-overlay">
+            <div class="modal-content" style="max-width: 320px;">
+                <h2 id="ciTitle">Kasa İçeriği</h2>
+                <div id="ciContent" style="text-align: left; background: #000; padding: 15px; border-radius: 10px; border: 1px solid #00ffff; margin-bottom: 15px;"></div>
+                <button class="modal-btn btn-close" onclick="closeCrateInfo()">Kapat</button>
+            </div>
+        </div>
+
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
-                <h2 style="color: #bc13fe; text-shadow: 0 0 15px #bc13fe;">📦 Kasalar</h2>
+                <h2 style="color: #bc13fe;">📦 Kasalar</h2>
                 <div class="case-grid" id="caseGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeCaseMenu()">Kapat</button>
             </div>
             <div class="modal-content" id="rouletteContainer">
-                <h2 id="openingCaseName" style="color:#00ffff; text-shadow: 0 0 15px #00ffff;">Kasa Açılıyor...</h2>
+                <h2 id="openingCaseName" style="color:#00ffff;">Kasa Açılıyor...</h2>
                 <div class="roulette-window">
                     <div class="roulette-center-line"></div>
                     <div class="roulette-strip" id="rouletteStrip"></div>
                 </div>
-                <h3 id="rewardAnnounce" style="margin: 15px 0; font-size: 30px;"></h3>
+                <h3 id="rewardAnnounce" style="margin: 10px 0; font-size: 26px;"></h3>
                 <button class="modal-btn btn-save" id="btnTakeReward" style="display:none;" onclick="takeCaseReward()">Ödülü Al</button>
             </div>
         </div>
 
-        <!-- GALAKTİK SIÇRAMA ONAY EKRANI -->
         <div id="prestigeModal" class="modal-overlay" style="z-index: 100000;">
             <div class="modal-content">
-                <h2 style="color: #f1c40f; text-shadow: 0 0 20px #f1c40f;">🌌 GALAKTİK SIÇRAMA 🌌</h2>
-                <p style="font-size:15px; color:#fff; margin-bottom:15px; font-weight:bold;">Tebrikler! <span style="color:#e74c3c;">Maksimum Seviye olan 50'ye ulaştın!</span></p>
-                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Sıçrama yaparsan tüm paran, uçakların ve seviyen sıfırlanacak. Ancak yepyeni bir galaksiye geçeceksin ve <span style="color:#00ffff;">gelirlerin 5 KATINA çıkacak!</span> Görevler de sıfırlanıp tekrar elmas kazandıracak.</p>
+                <h2 style="color: #f1c40f;">🌌 GALAKTİK SIÇRAMA 🌌</h2>
+                <p style="font-size:14px; color:#fff; margin-bottom:15px; font-weight:bold;">Tebrikler! <span style="color:#e74c3c;">Maksimum Seviye olan 50'ye ulaştın!</span></p>
+                <p style="font-size:13px; color:#aaa; margin-bottom:20px;">Sıçrama yaparsan tüm paran, uçakların ve seviyen sıfırlanacak. Ancak yepyeni bir galaksiye geçeceksin ve <span style="color:#00ffff;">gelirlerin 5 KATINA çıkacak!</span> Görevler de sıfırlanıp tekrar elmas kazandıracak.</p>
                 <button class="modal-btn btn-save" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color:black;" onclick="doPrestige()">Sıçramayı Başlat!</button>
                 <button class="modal-btn btn-close" onclick="document.getElementById('prestigeModal').style.display='none';">Daha Sonra</button>
             </div>
         </div>
 
-        <!-- SIRALAMA (LEADERBOARD) EKRANI -->
         <div id="leaderboardModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="color: #f1c40f; text-shadow: 0 0 15px #f1c40f;">🏆 Canlı Sıralama</h2>
+                <h2 style="color: #f1c40f;">🏆 Canlı Sıralama</h2>
                 <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Dünyanın en zengin pilotları!</p>
                 <div class="leaderboard-list" id="leaderboardList"></div>
                 <button class="modal-btn btn-close" style="margin-top: 15px;" onclick="closeLeaderboard()">Kapat</button>
             </div>
         </div>
 
-        <!-- YÜKSELTME (PRESTIGE) BUTONU -->
         <div id="btnPrestige" class="prestige-btn" onclick="openPrestigeModal()">🚀 Yükselt 🚀</div>
 
-        <div id="galaxyNameDisplay">SİBER GALAKSİ</div>
+        <div id="galaxyWrapper">
+            <div class="galaxy-label">AKTİF BÖLGE</div>
+            <div id="galaxyNameDisplay"><span style="font-size:22px;">🌌</span> SİBER GALAKSİ</div>
+        </div>
 
-        <!-- ÜST BAR -->
         <div class="top-bar">
             <div class="user-info" onclick="openSettings()">
                 <div class="profile-pic-container f-default" id="userProfileFrame"><span id="playerLvl">1</span></div>
@@ -390,11 +443,10 @@
             </div>
         </div>
 
-        <!-- YAN MENÜLER -->
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
             <div class="menu-btn" onclick="openMissionsMenu()" style="position: relative;">
-                <div class="icon" style="border-color:#3498db; color: #3498db; text-shadow: 0 0 8px #3498db;">📜</div>Görevler
+                <div class="icon" style="border-color:#3498db; color: #3498db;">📜</div>Görevler
                 <div id="missionBadge" class="mission-badge" style="display: none;">0</div>
             </div>
         </div>
@@ -403,26 +455,21 @@
             <div class="menu-btn" onclick="openCaseMenu()"><div class="icon" style="color: #bc13fe; border-color:#bc13fe;">📦</div>Kasa</div> 
         </div>
 
-        <!-- MERKEZ İSTATİSTİKLER PİSTİN İÇİNE ALINDI -->
         <div class="center-stats">
             <p id="cpsDisplay">0 / sn</p>
             <div id="activeBoosts"></div>
         </div>
 
-        <!-- ORİJİNAL MERKEZİ DİKEY BÜYÜK PİST -->
         <div id="trackContainer">
             <div id="dashedLine"></div>
             <div class="finish-line"></div>
             <div class="finish-flash" id="finishFlash"></div>
         </div>
 
-        <!-- ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) -->
         <div class="grid-container" id="grid"></div>
         
-        <!-- ÇÖP KUTUSU -->
         <div id="trashBin">🗑️ UÇAĞI SİL</div>
 
-        <!-- ALT BUTONLAR -->
         <div class="bottom-bar">
             <div class="bottom-btn speed" onclick="openGeneralShop()">
                 <span class="big" id="speedBtnText">🏪 Dükkan</span>
@@ -432,25 +479,27 @@
                 <span class="price">❂ <span id="buyPriceDisplay">80</span></span>
             </div>
             <div class="bottom-btn shop" onclick="openDiamondShop()">
-                <span class="big" style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">💎</span> Elmas Dükyanı
+                <span class="big" style="color: #00ffff;">💎</span> Elmas Dükkanı
             </div>
         </div>
     </div>
 
     <script>
-        // --- ARKA PLAN YILDIZLARINI OLUŞTUR (FPS DOSTU) ---
         function createStars() {
             const container = document.getElementById('starContainer');
-            for(let i=0; i<40; i++) {
+            for(let i=0; i<60; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                star.style.width = Math.random() * 3 + 'px';
+                const size = Math.random() * 2 + 1;
+                star.style.width = size + 'px';
                 star.style.height = star.style.width;
                 star.style.left = Math.random() * 100 + '%';
                 star.style.top = Math.random() * 100 + '%';
-                star.style.animationDuration = (Math.random() * 3 + 1) + 's';
-                star.style.animationDelay = (Math.random() * 2) + 's';
-                container.appendChild(star);
+                star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                star.style.animationDelay = (Math.random() * 5) + 's';
+                let color = "#fff"; let roll = Math.random();
+                if(roll > 0.8) color = "#a4c8ff"; else if(roll > 0.6) color = "#f1c40f";
+                star.style.background = color; container.appendChild(star);
             }
         }
 
@@ -466,18 +515,12 @@
 
         let money = 0; let gems = 0; let playerLevel = 1; let galaxyLevel = 1;
         let currentName = "Pilot"; 
-        const MAX_PLANES = 5; 
-        const MAX_LEVEL = 50; // YENİ MAKSİMUM SEVİYE SINIRI
-        
-        let gridSlots = new Array(10).fill(null); 
-        let flyingPlanes = []; 
+        const MAX_PLANES = 5; const MAX_LEVEL = 50; 
+        let gridSlots = new Array(10).fill(null); let flyingPlanes = []; 
         let dragSource = null; let animatedIndex = null; 
-        let lastTime = performance.now();
-        let gameStarted = false; 
+        let lastTime = performance.now(); let gameStarted = false; 
 
-        let boostMoneyEnd = 0; let boostMoneyMult = 1;
-        let boostSpeedEnd = 0; let boostSpeedMult = 1;
-        
+        let boostMoneyEnd = 0; let boostMoneyMult = 1; let boostSpeedEnd = 0; let boostSpeedMult = 1;
         let claimedLevels = []; 
         
         let ownedFrames = ['default']; let activeFrame = 'default';
@@ -490,45 +533,29 @@
         ];
 
         const galaxyData = [
-            { name: "Siber Galaksi", c1: "rgba(0,255,255,", c2: "rgba(188,19,254," },
-            { name: "Kuantum Galaksisi", c1: "rgba(46,204,113,", c2: "rgba(241,196,15," },
-            { name: "Hiçlik Boyutu", c1: "rgba(231,76,60,", c2: "rgba(0,0,0," },
-            { name: "Aura Evreni", c1: "rgba(255,0,255,", c2: "rgba(0,255,255," },
+            { name: "Siber Galaksi", c1: "rgba(0,255,255,", c2: "rgba(188,19,254," }, { name: "Kuantum Galaksisi", c1: "rgba(46,204,113,", c2: "rgba(241,196,15," },
+            { name: "Hiçlik Boyutu", c1: "rgba(231,76,60,", c2: "rgba(0,0,0," }, { name: "Aura Evreni", c1: "rgba(255,0,255,", c2: "rgba(0,255,255," },
             { name: "Tanrısal Çekirdek", c1: "rgba(241,196,15,", c2: "rgba(255,255,255," }
         ];
 
         let nextRewardTime = 0; let currentMinuteReward = null;
-
-        // --- CANLI SIRALAMA (BOT SİSTEMİ) ---
         const botNames = ["SkyKing", "NeonFlyer", "CyberPilot", "AeroNinja", "JetFighter", "Mach10", "CloudStrife", "WindRider", "StarGazer", "Nova", "GalaxyCruiser", "SpaceFox", "CosmicRay", "Meteor", "Comet", "Astro", "Lunar", "Solaris", "Orbit", "Zenith", "Apex", "Vortex", "Pulsar", "Quasar", "Horizon", "Mirage", "Echo", "Phantom", "Specter", "Shadow"];
         let bots = [];
 
         function initBots() {
             if(bots.length === 0) {
                 let baseMoney = money === 0 ? 1000 : money;
-                botNames.forEach((name, i) => {
-                    bots.push({
-                        name: name,
-                        money: baseMoney * (Math.random() * 2) + (i * baseMoney * 0.1),
-                        cps: Math.floor(getPlaneIncome(playerLevel > 0 ? playerLevel : 1) * (Math.random() * 5 + 1))
-                    });
-                });
+                botNames.forEach((name, i) => { bots.push({ name: name, money: baseMoney * (Math.random() * 2) + (i * baseMoney * 0.1), cps: Math.floor(getPlaneIncome(playerLevel > 0 ? playerLevel : 1) * (Math.random() * 5 + 1)) }); });
             }
         }
 
-        // YÜKLEME EKRANI BAŞLANGICI
         window.onload = () => {
             createStars();
             setTimeout(() => {
-                const overlay = document.getElementById('loadingOverlay');
-                overlay.style.opacity = '0';
+                const overlay = document.getElementById('loadingOverlay'); overlay.style.opacity = '0';
                 setTimeout(() => { 
                     overlay.style.display = 'none'; 
-                    try {
-                        if(localStorage.getItem("planeTycoonSave")) {
-                            document.getElementById("btnLoadGame").style.display = "block";
-                        }
-                    } catch(e) {}
+                    try { if(localStorage.getItem("planeTycoonSave")) document.getElementById("btnLoadGame").style.display = "block"; } catch(e) {}
                     document.getElementById('loginOverlay').style.display = 'flex';
                 }, 500);
             }, 3000); 
@@ -536,59 +563,25 @@
 
         function loadGame() {
             try {
-                const saved = localStorage.getItem("planeTycoonSave");
-                if (!saved) return;
-                const data = JSON.parse(saved);
-                money = data.money || 0; gems = data.gems || 0; 
-                playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; 
-                galaxyLevel = data.galaxyLevel || 1;
-                boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
-                boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
-                ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
-                nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
-                gridSlots = data.gridSlots || new Array(10).fill(null);
-                claimedLevels = data.claimedLevels || [];
-                
-                document.getElementById('loginOverlay').style.display = 'none';
-                checkAndSetUsernameDisplay(); applyGalaxyTheme();
-                gameStarted = true;
+                const saved = localStorage.getItem("planeTycoonSave"); if (!saved) return; const data = JSON.parse(saved);
+                money = data.money || 0; gems = data.gems || 0; playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; 
+                galaxyLevel = data.galaxyLevel || 1; boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1; boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
+                ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default'; nextRewardTime = data.nextRewardTime || 0; currentMinuteReward = data.currentMinuteReward || null;
+                gridSlots = data.gridSlots || new Array(10).fill(null); claimedLevels = data.claimedLevels || [];
+                document.getElementById('loginOverlay').style.display = 'none'; checkAndSetUsernameDisplay(); applyGalaxyTheme(); gameStarted = true;
                 (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
-                initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
-                initBots(); startGameLoops();
-            } catch(e) {
-                console.error(e);
-                showToast("Kayıt dosyası bozuk, yeni oyun başlatılıyor.", "error");
-                login();
-            }
+                initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info"); initBots(); startGameLoops();
+            } catch(e) { console.error(e); showToast("Kayıt dosyası bozuk, yeni oyun başlatılıyor.", "error"); login(); }
         }
 
         function login() {
-            const user = document.getElementById('usernameInput').value.trim();
-            if(user === "") { showToast("Pilot adını gir!", "error"); return; }
-            currentName = user;
-            claimedLevels = []; galaxyLevel = 1;
-            
-            if(user.toLowerCase() === "test") {
-                money = 999999999999999; gems = 999999999; playerLevel = 1; 
-                showToast("Test Modu: Sınırsız Kaynak Aktif!", "info");
-            } else if(user.toLowerCase() === "cinar") {
-                money = 999999999999999; gems = 999999; playerLevel = 49;
-                showToast("VIP Girişi Başarılı!", "info");
-            } else {
-                money = 0; gems = 50; playerLevel = 1;
-                localStorage.removeItem("planeTycoonSave"); 
-            }
-            
-            checkAndSetUsernameDisplay(); applyGalaxyTheme();
-            document.getElementById('settingNameInput').value = currentName;
-            nextRewardTime = Date.now();
-            document.getElementById('loginOverlay').style.display = 'none';
-            gameStarted = true;
-            
-            if(money === 0) { 
-                setTimeout(() => { flashFinishLine(); popMoneyFixed(100); }, 500); 
-                showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info");
-            }
+            const user = document.getElementById('usernameInput').value.trim(); if(user === "") { showToast("Pilot adını gir!", "error"); return; }
+            currentName = user; claimedLevels = []; galaxyLevel = 1;
+            if(user.toLowerCase() === "test") { money = 9999999999999999; gems = 9999999999999999; playerLevel = 49; showToast("Test Modu: Lv. 49 & Sınırsız Kaynak!", "info"); } 
+            else if(user.toLowerCase() === "cinar") { money = 9999999999999999; gems = 9999999999; playerLevel = 49; showToast("VIP Girişi Başarılı!", "info"); } 
+            else { money = 0; gems = 50; playerLevel = 1; localStorage.removeItem("planeTycoonSave"); }
+            checkAndSetUsernameDisplay(); applyGalaxyTheme(); document.getElementById('settingNameInput').value = currentName; nextRewardTime = Date.now(); document.getElementById('loginOverlay').style.display = 'none'; gameStarted = true;
+            if(money === 0) { setTimeout(() => { flashFinishLine(); popMoneyFixed(100); }, 500); showToast("Oyuna hoş geldin! Sana 50 Elmas Hediye!", "info"); }
             initBots(); initGrid(); updateFrameUI(); startGameLoops();
         }
         
@@ -598,262 +591,285 @@
             else { document.getElementById('displayUsername').innerText = `${currentName}`; }
         }
 
-        // --- GALAKSİ TEMASINI UYGULAMA ---
         function applyGalaxyTheme() {
-            let gIndex = Math.min(galaxyLevel - 1, galaxyData.length - 1);
-            let g = galaxyData[gIndex];
-            document.getElementById("galaxyNameDisplay").innerText = g.name;
-            document.getElementById("galaxyNameDisplay").style.color = g.c1 + "1)";
-            document.getElementById("galaxyNameDisplay").style.textShadow = `0 0 10px ${g.c1}0.8)`;
+            let gIndex = Math.min(galaxyLevel - 1, galaxyData.length - 1); let g = galaxyData[gIndex];
+            let gName = document.getElementById("galaxyNameDisplay");
+            gName.innerHTML = `<span style="font-size:22px;">🌌</span> ${g.name}`; gName.style.borderColor = g.c1 + "1)"; gName.style.color = g.c1 + "1)"; gName.style.boxShadow = `0 10px 20px rgba(0,0,0,0.8), inset 0 0 15px ${g.c1}0.5), 0 0 15px ${g.c1}0.8)`;
+            document.getElementById("dynamicBgGrid").style.backgroundImage = `linear-gradient(${g.c1}0.05) 1px, transparent 1px), linear-gradient(90deg, ${g.c1}0.05) 1px, transparent 1px)`;
             
-            let bgGrid = document.getElementById("dynamicBgGrid");
-            bgGrid.style.backgroundImage = `linear-gradient(${g.c1}0.05) 1px, transparent 1px), linear-gradient(90deg, ${g.c1}0.05) 1px, transparent 1px)`;
-            
+            // GÖZ YORMAYAN YUMUŞAK UZAY ARKA PLANI
+            document.body.style.backgroundImage = `
+                radial-gradient(circle at 15% 85%, ${g.c2}0.06), transparent 45%),
+                radial-gradient(circle at 85% 15%, ${g.c1}0.06), transparent 45%),
+                linear-gradient(to bottom, #010103 0%, #05050a 100%)`;
+                
+            let n1 = document.getElementById("neb1"); let n2 = document.getElementById("neb2"); let n3 = document.getElementById("neb3");
+            if(n1) n1.style.background = `radial-gradient(circle, ${g.c2}0.12) 0%, transparent 60%)`;
+            if(n2) n2.style.background = `radial-gradient(circle, ${g.c1}0.12) 0%, transparent 60%)`;
+            if(n3) n3.style.background = `radial-gradient(circle, ${g.c1}0.05) 0%, transparent 60%)`;
+
             let tCont = document.getElementById("trackContainer");
-            tCont.style.borderColor = g.c1 + "0.6)";
-            tCont.style.boxShadow = `0 0 60px ${g.c1}0.25), inset 0 0 50px ${g.c1}0.15)`;
-            
-            document.getElementById("dashedLine").style.borderColor = g.c1 + "0.7)";
-            document.getElementById("dashedLine").style.filter = `drop-shadow(0 0 6px ${g.c1}1))`;
-            
-            document.querySelector(".grid-container").style.borderColor = g.c1 + "0.3)";
+            tCont.style.borderColor = g.c1 + "0.85)"; tCont.style.boxShadow = `0 0 60px ${g.c1}0.25), inset 0 0 50px ${g.c1}0.15)`;
+            document.getElementById("dashedLine").style.borderColor = g.c1 + "0.7)"; document.getElementById("dashedLine").style.filter = `drop-shadow(0 0 6px ${g.c1}1))`;
         }
 
-        function startGameLoops() {
-            setInterval(updateTickers, 1000); 
-            requestAnimationFrame(gameLoop);
-        }
-
-        function formatNumber(num) {
-            if (num < 1000) return Math.floor(num).toString();
-            const suffixes = ["", "k", "M", "B", "T", "aa", "ab", "ac", "ad", "ae", "af", "ag"];
-            const suffixNum = Math.floor(("" + Math.floor(num)).length / 3);
-            let shortValue = parseFloat((suffixNum !== 0 ? (num / Math.pow(1000, suffixNum)) : num).toPrecision(3));
-            if (shortValue % 1 !== 0) shortValue = shortValue.toFixed(1);
-            if (suffixNum < suffixes.length) return shortValue + suffixes[suffixNum];
-            return num.toExponential(2);
-        }
-
-        // 50 Levele göre yeni optimize ekonomi hesaplaması ve Galaksi Çarpanı (Galaxy Level * 5)
-        function getPlaneIncome(level) { 
-            let base = Math.floor(10 * Math.pow(1.25, level)); 
-            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
-            return base * mult;
-        }
+        function startGameLoops() { setInterval(updateTickers, 1000); requestAnimationFrame(gameLoop); }
+        function formatNumber(num) { if (num < 1000) return Math.floor(num).toString(); const suffixes = ["", "k", "M", "B", "T", "aa", "ab", "ac", "ad", "ae", "af", "ag"]; const suffixNum = Math.floor(("" + Math.floor(num)).length / 3); let shortValue = parseFloat((suffixNum !== 0 ? (num / Math.pow(1000, suffixNum)) : num).toPrecision(3)); if (shortValue % 1 !== 0) shortValue = shortValue.toFixed(1); if (suffixNum < suffixes.length) return shortValue + suffixes[suffixNum]; return num.toExponential(2); }
+        function getPlaneIncome(level) { let base = Math.floor(10 * Math.pow(1.25, level)); let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1; return base * mult; }
         function getMarketLevel() { return Math.max(1, playerLevel - 2); }
-        function getMarketPrice() { 
-            let lvl = getMarketLevel();
-            let base = Math.floor(50 * Math.pow(1.35, lvl)); 
-            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
-            return base * mult;
-        }
+        function getMarketPrice() { let lvl = getMarketLevel(); let base = Math.floor(50 * Math.pow(1.35, lvl)); let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1; return base * mult; }
 
         function saveGame() {
             if(!gameStarted) return;
-            const data = {
-                money, gems, playerLevel, currentName, galaxyLevel,
-                boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
-                ownedFrames, activeFrame, nextRewardTime, currentMinuteReward,
-                gridSlots: gridSlots, claimedLevels: claimedLevels,
-                flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress }))
-            };
-            localStorage.setItem("planeTycoonSave", JSON.stringify(data));
+            localStorage.setItem("planeTycoonSave", JSON.stringify({ money, gems, playerLevel, currentName, galaxyLevel, boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult, ownedFrames, activeFrame, nextRewardTime, currentMinuteReward, gridSlots: gridSlots, claimedLevels: claimedLevels, flying: flyingPlanes.map(p => ({ slotIndex: p.slotIndex, level: p.level, progress: p.progress })) }));
         }
 
-        // --- GALAKTİK SIÇRAMA (PRESTIGE) ---
-        function checkPrestige() {
-            if(playerLevel >= MAX_LEVEL) {
-                document.getElementById("btnPrestige").style.display = "block";
-            } else {
-                document.getElementById("btnPrestige").style.display = "none";
-            }
-        }
-
+        function checkPrestige() { if(playerLevel >= MAX_LEVEL) { document.getElementById("btnPrestige").style.display = "block"; } else { document.getElementById("btnPrestige").style.display = "none"; } }
         function openPrestigeModal() { document.getElementById("prestigeModal").style.display = "flex"; }
-        
         function doPrestige() {
-            document.getElementById("prestigeModal").style.display = "none";
-            createExplosion();
-            
-            // Verileri Sıfırla
-            money = 0; playerLevel = 1; galaxyLevel++; claimedLevels = [];
-            gridSlots = new Array(10).fill(null);
-            flyingPlanes.forEach(p => p.element.remove());
-            flyingPlanes = [];
-            
-            applyGalaxyTheme(); initGrid(); updateUI(); saveGame();
-            showToast("BÜYÜK SIÇRAMA GERÇEKLEŞTİ! Gelirlerin uçuşa geçti!", "info");
+            document.getElementById("prestigeModal").style.display = "none"; createExplosion();
+            if(currentName.toLowerCase() !== "test" && currentName.toLowerCase() !== "cinar") { money = 0; }
+            playerLevel = 1; galaxyLevel++; claimedLevels = []; gridSlots = new Array(10).fill(null);
+            flyingPlanes.forEach(p => p.element.remove()); flyingPlanes = [];
+            applyGalaxyTheme(); initGrid(); updateUI(); saveGame(); showToast("BÜYÜK SIÇRAMA GERÇEKLEŞTİ! Gelirlerin uçuşa geçti!", "info");
         }
 
         function createExplosion() {
-            const expCont = document.createElement("div");
-            expCont.style.position = "fixed"; expCont.style.top = "0"; expCont.style.left = "0";
-            expCont.style.width = "100%"; expCont.style.height = "100%";
-            expCont.style.pointerEvents = "none"; expCont.style.zIndex = "99999999";
-            document.body.appendChild(expCont);
-
+            const expCont = document.createElement("div"); expCont.style.position = "fixed"; expCont.style.top = "0"; expCont.style.left = "0"; expCont.style.width = "100%"; expCont.style.height = "100%"; expCont.style.pointerEvents = "none"; expCont.style.zIndex = "99999999"; document.body.appendChild(expCont);
             for (let i = 0; i < 80; i++) {
-                let p = document.createElement("div");
-                p.innerText = Math.random() > 0.5 ? "❂" : "✨";
-                p.style.position = "absolute"; p.style.left = "50%"; p.style.top = "50%";
-                p.style.fontSize = (Math.random() * 30 + 20) + "px";
-                p.style.color = Math.random() > 0.5 ? "#f1c40f" : "#00ffff";
-                p.style.textShadow = "0 0 10px currentColor";
-                let tx = (Math.random() - 0.5) * window.innerWidth * 1.5;
-                let ty = (Math.random() - 0.5) * window.innerHeight * 1.5;
-                p.animate([
-                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
-                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
-                ], { duration: Math.random() * 1500 + 1000, easing: 'cubic-bezier(0.1, 0.8, 0.1, 1)', fill: 'forwards' });
-                expCont.appendChild(p);
-            }
-            setTimeout(() => expCont.remove(), 3000);
+                let p = document.createElement("div"); p.innerText = Math.random() > 0.5 ? "❂" : "✨"; p.style.position = "absolute"; p.style.left = "50%"; p.style.top = "50%"; p.style.fontSize = (Math.random() * 30 + 20) + "px"; p.style.color = Math.random() > 0.5 ? "#f1c40f" : "#00ffff"; p.style.textShadow = "0 0 10px currentColor";
+                let tx = (Math.random() - 0.5) * window.innerWidth * 1.5; let ty = (Math.random() - 0.5) * window.innerHeight * 1.5;
+                p.animate([ { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 }, { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 } ], { duration: Math.random() * 1500 + 1000, easing: 'cubic-bezier(0.1, 0.8, 0.1, 1)', fill: 'forwards' }); expCont.appendChild(p);
+            } setTimeout(() => expCont.remove(), 3000);
         }
 
-        // --- SIRALAMA GÖSTERİMİ ---
         function openLeaderboard() {
-            const list = document.getElementById("leaderboardList"); list.innerHTML = "";
-            let allPlayers = [...bots];
-            allPlayers.push({ name: currentName, money: money, isPlayer: true });
-            allPlayers.sort((a, b) => b.money - a.money);
+            const list = document.getElementById("leaderboardList"); list.innerHTML = ""; let allPlayers = [...bots]; allPlayers.push({ name: currentName, money: money, isPlayer: true }); allPlayers.sort((a, b) => b.money - a.money);
             let html = "";
             allPlayers.forEach((p, index) => {
                 let rankStr = index + 1; let rankClass = "";
-                if(index === 0) { rankStr = "👑"; rankClass = "lb-rank-1"; }
-                else if(index === 1) { rankStr = "2."; rankClass = "lb-rank-2"; }
-                else if(index === 2) { rankStr = "3."; rankClass = "lb-rank-3"; }
+                if(index === 0) { rankStr = "👑"; rankClass = "lb-rank-1"; } else if(index === 1) { rankStr = "2."; rankClass = "lb-rank-2"; } else if(index === 2) { rankStr = "3."; rankClass = "lb-rank-3"; }
                 let isPClass = p.isPlayer ? "is-player" : "";
                 html += `<div class="lb-item ${isPClass}"><div class="lb-rank ${rankClass}">${rankStr}</div><div class="lb-name">${p.name} ${p.isPlayer ? '(Sen)' : ''}</div><div class="lb-money">❂ ${formatNumber(p.money)}</div></div>`;
-            });
-            list.innerHTML = html; document.getElementById("leaderboardModal").style.display = "flex";
+            }); list.innerHTML = html; document.getElementById("leaderboardModal").style.display = "flex";
         }
         function closeLeaderboard() { document.getElementById("leaderboardModal").style.display = "none"; }
 
-        function updateMissionsBadge() {
-            let claimableCount = 0; for(let i = 2; i <= playerLevel; i++) { if(!claimedLevels.includes(i)) claimableCount++; }
-            const badge = document.getElementById("missionBadge");
-            if(claimableCount > 0) { badge.style.display = "flex"; badge.innerText = claimableCount; } else { badge.style.display = "none"; }
-        }
-
+        function updateMissionsBadge() { let claimableCount = 0; for(let i = 2; i <= playerLevel; i++) { if(!claimedLevels.includes(i)) claimableCount++; } const badge = document.getElementById("missionBadge"); if(claimableCount > 0) { badge.style.display = "flex"; badge.innerText = claimableCount; } else { badge.style.display = "none"; } }
         function openMissionsMenu() {
-            const list = document.getElementById("missionsList"); list.innerHTML = "";
-            let highestToShow = playerLevel + 1; if(highestToShow > MAX_LEVEL) highestToShow = MAX_LEVEL;
-            let html = "";
+            const list = document.getElementById("missionsList"); list.innerHTML = ""; let highestToShow = playerLevel + 1; if(highestToShow > MAX_LEVEL) highestToShow = MAX_LEVEL; let html = "";
             for(let i = 2; i <= highestToShow; i++) {
                 let isClaimed = claimedLevels.includes(i); let isUnlocked = i <= playerLevel;
                 if(isClaimed) { html += `<div class="mission-item" style="opacity:0.5; border-color:#555; box-shadow:none;"><div class="mission-info"><div class="mission-title" style="color:#aaa;">Lv.${i} Uçak Aç</div><div class="mission-reward" style="color:#777; text-shadow:none;">Alındı</div></div><button class="btn-claim-mission" disabled>✓</button></div>`; } 
                 else if(isUnlocked) { html += `<div class="mission-item"><div class="mission-info"><div class="mission-title">Lv.${i} Uçak Aç</div><div class="mission-reward">💎 3 Elmas</div></div><button class="btn-claim-mission" onclick="claimMissionReward(${i})">Al</button></div>`; } 
                 else { html += `<div class="mission-item" style="border-color:#e74c3c; box-shadow: inset 0 0 10px rgba(231,76,60,0.2);"><div class="mission-info"><div class="mission-title" style="color:#e74c3c;">Lv.${i} Uçak Aç</div><div class="mission-reward" style="color:#e74c3c; text-shadow:none;">Kilitli</div></div><button class="btn-claim-mission" style="background:rgba(231,76,60,0.2); box-shadow:none;" disabled>🔒</button></div>`; }
-            }
-            list.innerHTML = html; document.getElementById("missionsModal").style.display = "flex"; updateMissionsBadge();
+            } list.innerHTML = html; document.getElementById("missionsModal").style.display = "flex"; updateMissionsBadge();
         }
         function closeMissionsMenu() { document.getElementById("missionsModal").style.display = "none"; }
-
-        function claimMissionReward(level) {
-            if(level <= playerLevel && !claimedLevels.includes(level)) {
-                gems += 3; claimedLevels.push(level); saveGame(); updateUI(); openMissionsMenu(); showToast(`Seviye ${level} Görevi: 3 Elmas Kazandın!`, "info");
-            }
-        }
+        function claimMissionReward(level) { if(level <= playerLevel && !claimedLevels.includes(level)) { gems += 3; claimedLevels.push(level); saveGame(); updateUI(); openMissionsMenu(); showToast(`Seviye ${level} Görevi: 3 Elmas Kazandın!`, "info"); } }
 
         function openSettings() { document.getElementById('settingsModal').style.display = 'flex'; }
         function closeSettings() { document.getElementById('settingsModal').style.display = 'none'; }
-        function saveSettings() {
-            const newName = document.getElementById('settingNameInput').value.trim(); if(newName !== "") currentName = newName; 
-            if(currentName.toLowerCase() === "test") { money = 999999999999999; gems = 999999999; playerLevel = 1; showToast("Test Modu Aktif!", "info"); }
-            checkAndSetUsernameDisplay(); closeSettings(); saveGame(); updateUI();
-        }
+        function saveSettings() { const newName = document.getElementById('settingNameInput').value.trim(); if(newName !== "") currentName = newName; if(currentName.toLowerCase() === "test") { money = 9999999999999999; gems = 9999999999999999; playerLevel = 49; showToast("Test Modu Aktif!", "info"); } checkAndSetUsernameDisplay(); closeSettings(); saveGame(); updateUI(); }
 
         function openDiamondShop() {
             const grid = document.getElementById("frameShopGrid"); grid.innerHTML = "";
             framesData.forEach(frame => {
                 const isOwned = ownedFrames.includes(frame.id); const isEquipped = activeFrame === frame.id; let btnHtml = "";
-                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px; text-shadow:0 0 5px #00ffff;">Kuşanıldı</div>`;
+                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px; text-shadow:0 0 5px #00ffff; font-family:'Teko', sans-serif; letter-spacing: 1px;">Kuşanıldı</div>`;
                 else if(isOwned) btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #2ecc71, #27ae60); border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="equipFrame('${frame.id}')">Kuşan</button>`;
                 else btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #00ffff, #3498db); border:none; border-radius:5px; color:black; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="buyFrame('${frame.id}', ${frame.price})">Al (💎 ${frame.price})</button>`;
                 let innerHTML = (frame.id === 'god' || frame.id === 'hacker') ? '<div class="inner" style="z-index:5;">?</div>' : '?';
-                grid.innerHTML += `<div class="frame-card ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}"><div class="profile-pic-container ${frame.cssClass}" style="margin: 0 auto 10px auto;">${innerHTML}</div><div style="font-size:14px; font-weight:bold; color: #fff; margin-bottom:10px;">${frame.name}</div>${btnHtml}</div>`;
+                grid.innerHTML += `<div class="frame-card ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}"><div class="profile-pic-container ${frame.cssClass}" style="margin: 0 auto 10px auto;">${innerHTML}</div><div style="font-size:14px; font-weight:bold; color: #fff; margin-bottom:10px; font-family:'Share Tech Mono', sans-serif;">${frame.name}</div>${btnHtml}</div>`;
             });
             document.getElementById("diamondShopModal").style.display = "flex";
         }
         function closeDiamondShop() { document.getElementById("diamondShopModal").style.display = "none"; }
         function buyFrame(id, price) { if(gems >= price) { gems -= price; ownedFrames.push(id); saveGame(); openDiamondShop(); updateUI(); showToast("Çerçeve satın alındı!", "info"); } else { showToast("Yeterli elmasın yok!", "error"); } }
         function equipFrame(id) { activeFrame = id; saveGame(); updateFrameUI(); openDiamondShop(); showToast("Çerçeve kuşanıldı!", "info"); }
-        function updateFrameUI() {
-            const fData = framesData.find(f => f.id === activeFrame); const container = document.getElementById("userProfileFrame"); container.className = `profile-pic-container ${fData.cssClass}`;
-            if(activeFrame === 'god' || activeFrame === 'hacker') container.innerHTML = `<div class="inner" style="z-index:5;"><span id="playerLvl">${playerLevel}</span></div>`; else container.innerHTML = `<span id="playerLvl">${playerLevel}</span>`;
-        }
+        function updateFrameUI() { const fData = framesData.find(f => f.id === activeFrame); const container = document.getElementById("userProfileFrame"); container.className = `profile-pic-container ${fData.cssClass}`; if(activeFrame === 'god' || activeFrame === 'hacker') container.innerHTML = `<div class="inner" style="z-index:5;"><span id="playerLvl">${playerLevel}</span></div>`; else container.innerHTML = `<span id="playerLvl">${playerLevel}</span>`; }
 
-        function updateSpeedModalUI() {
-            let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now); let totalMins = Math.ceil(leftMs / 60000);
-            let boxesFilled = Math.min(10, Math.ceil(totalMins / 3)); const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot');
-            slots.forEach((s, idx) => { if(idx < boxesFilled) s.classList.add('filled'); else s.classList.remove('filled'); });
-            let displayEl = document.getElementById("shopSpeedBoostTimeLeft");
-            if(leftMs > 0) { let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000); if(displayEl) displayEl.innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`; } 
-            else { if(displayEl) displayEl.innerText = "Aktif Süre: Yok"; }
-        }
+        function updateSpeedModalUI() { let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now); let totalMins = Math.ceil(leftMs / 60000); let boxesFilled = Math.min(10, Math.ceil(totalMins / 3)); const slots = document.querySelectorAll('#shopSpeedTierBar .tier-slot'); slots.forEach((s, idx) => { if(idx < boxesFilled) s.classList.add('filled'); else s.classList.remove('filled'); }); let displayEl = document.getElementById("shopSpeedBoostTimeLeft"); if(leftMs > 0) { let m = Math.floor(leftMs/60000); let s = Math.floor((leftMs%60000)/1000); if(displayEl) displayEl.innerText = `Aktif Süre: ${m}:${s < 10 ? '0'+s : s}`; } else { if(displayEl) displayEl.innerText = "Aktif Süre: Yok"; } }
+        function buySpeedBoost() { let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now); if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; } if(gems < 5) { showToast("Yetersiz bakiye (5 💎 Elmas gerekli)!", "error"); return; } gems -= 5; boostSpeedMult = 2; let addTime = 3 * 60 * 1000; if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime; else boostSpeedEnd += addTime; if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000; saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info"); }
 
-        function buySpeedBoost() {
-            let now = Date.now(); let leftMs = Math.max(0, boostSpeedEnd - now);
-            if(leftMs >= 30 * 60 * 1000) { showToast("Maksimum limite (30 Dk) ulaştın!", "error"); return; }
-            if(gems < 5) { showToast("Yetersiz bakiye (5 💎 Elmas gerekli)!", "error"); return; }
-            gems -= 5; boostSpeedMult = 2; let addTime = 3 * 60 * 1000;
-            if(now >= boostSpeedEnd) boostSpeedEnd = now + addTime; else boostSpeedEnd += addTime;
-            if(boostSpeedEnd > now + 30 * 60 * 1000) boostSpeedEnd = now + 30 * 60 * 1000;
-            saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
-        }
-
-        // DÜKKAN LİMİTİ: En Yüksek Seviye - 2
         function openGeneralShop() {
-            updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
-            let limit = getMarketLevel();
+            updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = ""; let limit = getMarketLevel();
             for(let i = 1; i <= limit; i++) {
                 let price = getMarketPriceForLevel(i); let income = getPlaneIncome(i); let planeSVG = getJetSVG(i, false); 
-                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.6); padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0; text-shadow: 0 0 5px #f1c40f;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:16px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
-            }
-            document.getElementById("generalShopModal").style.display = "flex";
+                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid #bc13fe; background: #000; padding: 12px;"><div style="width:50px; height:50px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:18px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
+            } document.getElementById("generalShopModal").style.display = "flex";
         }
-        function getMarketPriceForLevel(lvl) {
-            let base = Math.floor(50 * Math.pow(1.35, lvl)); 
-            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
-            return base * mult;
-        }
-
+        function getMarketPriceForLevel(lvl) { let base = Math.floor(50 * Math.pow(1.35, lvl)); let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1; return base * mult; }
         function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
-        function buySpecificPlane(level, price) {
-            if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok!", "error"); } } 
-            else { showToast("Yetersiz bakiye kral!", "error"); }
-        }
+        function buySpecificPlane(level, price) { if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok!", "error"); } } else { showToast("Yetersiz bakiye kral!", "error"); } }
 
-        // --- GALAKSİ RENGİNE DUYARLI JET ÇİZİMİ ---
+        // --- TAM 50 LEVEL İÇİN FARKLI ÇİZİLEN 3D İZOMETRİK UÇAK MOTORU ---
+        // (Her levelin kanadı, motoru, kuyruğu l değerine göre milimetrik değişir. Hiçbir uçak birbirinin aynı değildir!)
         function getJetSVG(level, isFlying = true) {
-            let l = level; 
-            // Galaksi değiştikçe uçakların base rengine 60 ekleyelim
-            let hueBase = ((l * 37) + (galaxyLevel * 60)) % 360; 
-            let c1 = `hsl(${hueBase}, 85%, 55%)`; let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
-            let cG = `#74b9ff`; let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
+            let l = Math.min(level, 50); 
+            let tier = Math.ceil(l / 5); // 1'den 10'a kadar kategori (Görseldeki gibi)
+            let sub = ((l - 1) % 5) + 1; // 1'den 5'e kadar alt seviye (Kanat, boy değişimini sağlar)
+            
+            let colorIdx = (l - 1) % 5;
+            let hues = [0, 40, 120, 210, 25]; // Kırmızı, Sarı, Yeşil, Mavi, Turuncu (Görseldekiyle birebir aynı sıra)
+            let h = hues[colorIdx];
+            
+            let c1 = `hsl(${h}, 90%, 55%)`; 
+            let c2 = (tier % 2 === 0) ? `#ffffff` : `hsl(${h}, 80%, 35%)`; // Çift tierlerde şık beyaz şeritler
+            let c3 = `hsl(${h}, 90%, 25%)`; // 3D Gölgelendirme
+            let cGlass = `#88ddff`;
+            let cProp = `#cccccc`;
+            let cFire = `hsl(${(h + 20) % 360}, 100%, 60%)`;
+            if (tier >= 9) cFire = `#00ffff`; 
 
-            let bodyType = l % 6; let wingType = l % 6; let tailType = l % 4; let engineType = l % 3;
+            let parts = [];
+            let fireSVG = '';
+            let thrustClass = isFlying ? 'class="thrust-anim"' : '';
+            let propAnim = isFlying ? 'class="prop-anim"' : '';
             
-            let svg = ''; let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3; 
-            let animClass = isFlying ? 'class="thrust-anim"' : '';
+            // HER LEVEL İÇİN FARKLI KANAT VE GÖVDE HESAPLAMASI
+            let ws = 20 + sub * 4; // Kanat genişliği her level artar
+            let bl = 30 + sub * 2; // Gövde uzunluğu her level artar
             
-            let engineFire = (x, y) => `
-                <g ${animClass} style="transform-origin: ${x}px ${y}px;">
-                    <polygon points="${x-8},${y} ${x},${tL} ${x+8},${y}" fill="${cTo}" opacity="${tO}"/>
-                    <polygon points="${x-4},${y} ${x},${isFlying?y+40:y+15} ${x+4},${y}" fill="${cT}" opacity="0.9"/>
-                    <polygon points="${x-1.5},${y} ${x},${isFlying?y+20:y+8} ${x+1.5},${y}" fill="#fff"/>
-                </g>`;
+            // TIER 1: Pervaneli Uçaklar (Lv 1-5)
+            if (tier === 1) { 
+                parts.push({ svg: `<rect x="${50-ws}" y="45" width="${ws*2}" height="14" rx="5"/>`, side: c3, top: c1, z1: 2, z2: 4 });
+                parts.push({ svg: `<ellipse cx="50" cy="50" rx="12" ry="${bl}"/>`, side: c3, top: c1, z1: 2, z2: 12 });
+                parts.push({ svg: `<polygon points="${50-ws/1.5},85 ${50+ws/1.5},85 50,95"/>`, side: c3, top: c1, z1: 3, z2: 5 });
+                parts.push({ svg: `<ellipse cx="50" cy="40" rx="6" ry="10"/>`, side: '#005588', top: cGlass, z1: 12, z2: 16 });
+                if(isFlying) fireSVG = `<g ${propAnim} style="transform-origin: 50px ${50-bl}px;"><ellipse cx="50" cy="${50-bl}" rx="${ws*0.8}" ry="2" fill="#fff" opacity="0.6"/></g>`;
+            }
+            // TIER 2: Gelişmiş Pervaneli ve Şeritli (Lv 6-10)
+            else if (tier === 2) { 
+                parts.push({ svg: `<polygon points="${50-ws},50 ${50+ws},50 ${50+ws-10},60 ${50-ws+10},60"/>`, side: c3, top: c1, z1: 2, z2: 5 });
+                parts.push({ svg: `<polygon points="${50-ws},50 ${50-ws+5},50 ${50-ws+10},60 ${50-ws+5},60"/>`, side: '#ccc', top: c2, z1: 2.1, z2: 5.1 }); 
+                parts.push({ svg: `<polygon points="${50+ws-5},50 ${50+ws},50 ${50+ws-5},60 ${50+ws-10},60"/>`, side: '#ccc', top: c2, z1: 2.1, z2: 5.1 }); 
+                parts.push({ svg: `<path d="M 40 ${50-bl} Q 50 ${50-bl-10} 60 ${50-bl} L 55 ${50+bl} L 45 ${50+bl} Z"/>`, side: c3, top: c1, z1: 2, z2: 10 });
+                parts.push({ svg: `<polygon points="${50-ws/2},80 ${50+ws/2},80 50,90"/>`, side: c3, top: c1, z1: 4, z2: 6 });
+                parts.push({ svg: `<ellipse cx="50" cy="45" rx="5" ry="12"/>`, side: '#005588', top: cGlass, z1: 10, z2: 14 });
+                if(isFlying) fireSVG = `<g ${propAnim} style="transform-origin: 50px ${50-bl-5}px;"><ellipse cx="50" cy="${50-bl-5}" rx="${ws*0.9}" ry="2.5" fill="#fff" opacity="0.7"/></g>`;
+            }
+            // TIER 3: Çift Kanatlılar / Biplanes (Lv 11-15) - Altlı üstlü 3D kanat
+            else if (tier === 3) { 
+                parts.push({ svg: `<rect x="${50-ws+5}" y="50" width="${ws*2-10}" height="12" rx="2"/>`, side: c3, top: c1, z1: 2, z2: 4 }); // Alt Kanat
+                parts.push({ svg: `<rect x="40" y="${50-bl}" width="20" height="${bl*2}" rx="5"/>`, side: c3, top: c1, z1: 2, z2: 12 });
+                parts.push({ svg: `<rect x="${50-ws}" y="45" width="${ws*2}" height="14" rx="3"/>`, side: c3, top: c1, z1: 12, z2: 14 }); // Üst kanat
+                parts.push({ svg: `<rect x="${50-ws/2}" y="85" width="${ws}" height="8" rx="2"/>`, side: c3, top: c1, z1: 4, z2: 6 });
+                parts.push({ svg: `<ellipse cx="50" cy="55" rx="6" ry="6"/>`, side: '#005588', top: cGlass, z1: 12, z2: 16 });
+                if(isFlying) fireSVG = `<g ${propAnim} style="transform-origin: 50px ${50-bl}px;"><ellipse cx="50" cy="${50-bl}" rx="${ws}" ry="3" fill="#fff" opacity="0.5"/></g>`;
+            }
+            // TIER 4: Çift Motorlu (Lv 16-20)
+            else if (tier === 4) { 
+                ws = 35 + sub * 3;
+                parts.push({ svg: `<rect x="${50-ws}" y="45" width="${ws*2}" height="16" rx="4"/>`, side: c3, top: c1, z1: 2, z2: 5 });
+                parts.push({ svg: `<rect x="${50-ws/1.5 - 5}" y="35" width="10" height="25" rx="3"/>`, side: c3, top: c2, z1: 3, z2: 8 });
+                parts.push({ svg: `<rect x="${50+ws/1.5 - 5}" y="35" width="10" height="25" rx="3"/>`, side: c3, top: c2, z1: 3, z2: 8 });
+                parts.push({ svg: `<ellipse cx="50" cy="50" rx="12" ry="${bl}"/>`, side: c3, top: c1, z1: 2, z2: 10 });
+                parts.push({ svg: `<rect x="${50-ws/2}" y="85" width="${ws}" height="8" rx="2"/>`, side: c3, top: c1, z1: 5, z2: 7 });
+                parts.push({ svg: `<ellipse cx="50" cy="40" rx="6" ry="12"/>`, side: '#005588', top: cGlass, z1: 10, z2: 15 });
+                if(isFlying) {
+                    fireSVG += `<g ${propAnim} style="transform-origin: ${50-ws/1.5}px 35px;"><ellipse cx="${50-ws/1.5}" cy="35" rx="12" ry="2" fill="#fff" opacity="0.6"/></g>`;
+                    fireSVG += `<g ${propAnim} style="transform-origin: ${50+ws/1.5}px 35px;"><ellipse cx="${50+ws/1.5}" cy="35" rx="12" ry="2" fill="#fff" opacity="0.6"/></g>`;
+                }
+            }
+            // TIER 5: Geri Açılı Çift Motorlular (Lv 21-25)
+            else if (tier === 5) { 
+                ws = 30 + sub * 4;
+                parts.push({ svg: `<polygon points="50,40 ${50-ws},65 ${50-ws+10},75 50,55 ${50+ws-10},75 ${50+ws},65"/>`, side: c3, top: c1, z1: 2, z2: 5 });
+                parts.push({ svg: `<ellipse cx="50" cy="50" rx="10" ry="${bl}"/>`, side: c3, top: c1, z1: 2, z2: 12 });
+                parts.push({ svg: `<polygon points="50,80 ${50-ws/1.5},95 ${50+ws/1.5},95"/>`, side: c3, top: c2, z1: 5, z2: 8 });
+                parts.push({ svg: `<ellipse cx="50" cy="45" rx="5" ry="14"/>`, side: '#005588', top: cGlass, z1: 12, z2: 16 });
+                if(isFlying) {
+                    fireSVG += `<g ${propAnim} style="transform-origin: 35px 50px;"><ellipse cx="35" cy="50" rx="10" ry="1.5" fill="#fff" opacity="0.6"/></g>`;
+                    fireSVG += `<g ${propAnim} style="transform-origin: 65px 50px;"><ellipse cx="65" cy="50" rx="10" ry="1.5" fill="#fff" opacity="0.6"/></g>`;
+                }
+            }
+            // TIER 6: İlk Tek Motorlu Jetler (Lv 26-30)
+            else if (tier === 6) { 
+                ws = 25 + sub * 5;
+                parts.push({ svg: `<polygon points="50,35 ${50-ws},70 ${50-ws+5},80 50,60 ${50+ws-5},80 ${50+ws},70"/>`, side: c3, top: c1, z1: 2, z2: 6 });
+                parts.push({ svg: `<path d="M 45 ${50-bl} L 55 ${50-bl} L 58 ${50+bl} L 42 ${50+bl} Z"/>`, side: c3, top: c1, z1: 2, z2: 10 });
+                parts.push({ svg: `<polygon points="50,75 ${50-ws/2},95 ${50+ws/2},95"/>`, side: c3, top: c2, z1: 6, z2: 12 });
+                parts.push({ svg: `<polygon points="50,25 45,50 50,60 55,50"/>`, side: '#005588', top: cGlass, z1: 10, z2: 14 });
+                if(isFlying) fireSVG += `<g ${thrustClass} style="transform-origin: 50px ${50+bl}px;"><polygon points="45,${50+bl} 55,${50+bl} 50,${50+bl+20+sub*2}" fill="${cFire}"/></g>`;
+            }
+            // TIER 7: Çift Motorlu Delta Jetler (Lv 31-35)
+            else if (tier === 7) { 
+                ws = 30 + sub * 4;
+                parts.push({ svg: `<polygon points="50,20 ${50-ws},75 50,70 ${50+ws},75"/>`, side: c3, top: c1, z1: 2, z2: 5 });
+                parts.push({ svg: `<polygon points="50,20 ${50-ws+10},73 50,68 ${50+ws-10},73"/>`, side: c3, top: c2, z1: 5.1, z2: 5.5 }); 
+                parts.push({ svg: `<polygon points="50,10 40,50 45,85 55,85 60,50"/>`, side: c3, top: c1, z1: 2, z2: 12 });
+                parts.push({ svg: `<polygon points="45,75 45,95 48,95"/>`, side: c3, top: c2, z1: 12, z2: 18 }); 
+                parts.push({ svg: `<polygon points="55,75 55,95 52,95"/>`, side: c3, top: c2, z1: 12, z2: 18 }); 
+                parts.push({ svg: `<ellipse cx="50" cy="40" rx="5" ry="15"/>`, side: '#005588', top: cGlass, z1: 12, z2: 16 });
+                if(isFlying) {
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 45px 85px;"><polygon points="42,85 48,85 45,${85+15+sub*2}" fill="${cFire}"/></g>`;
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 55px 85px;"><polygon points="52,85 58,85 55,${85+15+sub*2}" fill="${cFire}"/></g>`;
+                }
+            }
+            // TIER 8: Hayalet (Stealth) Savaş Jetleri (Lv 36-40)
+            else if (tier === 8) { 
+                ws = 35 + sub * 3;
+                parts.push({ svg: `<polygon points="50,15 ${50-ws},65 ${50-ws+15},80 50,70 ${50+ws-15},80 ${50+ws},65"/>`, side: c3, top: c1, z1: 2, z2: 6 });
+                parts.push({ svg: `<polygon points="50,5 35,55 40,85 60,85 65,55"/>`, side: c3, top: c2, z1: 2, z2: 10 });
+                parts.push({ svg: `<polygon points="50,60 30,95 40,95 50,80 60,95 70,95"/>`, side: c3, top: c1, z1: 6, z2: 14 });
+                parts.push({ svg: `<polygon points="50,20 43,45 50,65 57,45"/>`, side: '#005588', top: cGlass, z1: 10, z2: 15 });
+                if(isFlying) fireSVG += `<g ${thrustClass} style="transform-origin: 50px 85px;"><polygon points="40,85 60,85 50,${85+20+sub*3}" fill="${cFire}"/></g>`;
+            }
+            // TIER 9: Geleceğin Teknolojisi Uzay Savaşçıları (Lv 41-45)
+            else if (tier === 9) { 
+                ws = 30 + sub * 5;
+                parts.push({ svg: `<path d="M 50 30 Q ${50-ws} 50 ${50-ws-5} 80 L 50 65 L ${50+ws+5} 80 Q ${50+ws} 50 50 30 Z"/>`, side: c3, top: c1, z1: 2, z2: 7 });
+                parts.push({ svg: `<path d="M 50 5 Q 35 40 40 85 L 60 85 Q 65 40 50 5 Z"/>`, side: c3, top: c2, z1: 2, z2: 14 });
+                parts.push({ svg: `<polygon points="50,50 35,90 65,90"/>`, side: c3, top: c1, z1: 14, z2: 20 });
+                parts.push({ svg: `<ellipse cx="50" cy="45" rx="6" ry="18"/>`, side: '#005588', top: cGlass, z1: 14, z2: 19 });
+                if(isFlying) {
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 40px 85px;"><polygon points="35,85 45,85 40,${85+25+sub*2}" fill="${cFire}"/></g>`;
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 60px 85px;"><polygon points="55,85 65,85 60,${85+25+sub*2}" fill="${cFire}"/></g>`;
+                }
+            }
+            // TIER 10: Uç Nokta Tanrısal Uzay Kruvazörleri (Lv 46-50)
+            else { 
+                ws = 40 + sub * 4;
+                parts.push({ svg: `<polygon points="25,50 ${50-ws},30 ${50-ws-5},40 35,80"/>`, side: c3, top: c1, z1: 2, z2: 8 });
+                parts.push({ svg: `<polygon points="75,50 ${50+ws},30 ${50+ws+5},40 65,80"/>`, side: c3, top: c1, z1: 2, z2: 8 });
+                parts.push({ svg: `<polygon points="50,0 20,60 35,90 50,80 65,90 80,60"/>`, side: c3, top: c2, z1: 2, z2: 15 });
+                parts.push({ svg: `<polygon points="50,20 30,70 50,95 70,70"/>`, side: c3, top: c1, z1: 15, z2: 20 });
+                parts.push({ svg: `<ellipse cx="50" cy="50" rx="8" ry="25"/>`, side: '#005588', top: cGlass, z1: 20, z2: 26 });
+                if(isFlying) {
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 35px 90px;"><polygon points="30,90 40,90 35,${90+30+sub*3}" fill="${cFire}"/></g>`;
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 50px 80px;"><polygon points="40,80 60,80 50,${80+40+sub*4}" fill="#ffffff"/></g>`;
+                    fireSVG += `<g ${thrustClass} style="transform-origin: 65px 90px;"><polygon points="60,90 70,90 65,${90+30+sub*3}" fill="${cFire}"/></g>`;
+                }
+            }
 
-            if (engineType === 0) { svg += engineFire(50, 90); } else if (engineType === 1) { svg += engineFire(35, 85) + engineFire(65, 85); } else { svg += engineFire(50, 90) + engineFire(25, 80) + engineFire(75, 80); }
-            if (wingType === 0) { svg += `<polygon points="50,40 10,75 18,85 45,70" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,40 90,75 82,85 55,70" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 1) { svg += `<polygon points="50,30 5,60 15,85 45,65" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,30 95,60 85,85 55,65" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 2) { svg += `<polygon points="45,50 0,60 10,80 40,75" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="55,50 100,60 90,80 60,75" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 3) { svg += `<polygon points="50,20 10,80 50,70" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="50,20 90,80 50,70" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else if (wingType === 4) { svg += `<polygon points="45,65 5,20 15,10 50,55" fill="${c2}" stroke="#111" stroke-width="2"/><polygon points="55,65 95,20 85,10 50,55" fill="${c2}" stroke="#111" stroke-width="2"/>`; } else { svg += `<circle cx="50" cy="55" r="40" fill="none" stroke="${c2}" stroke-width="6"/>`; }
-            if (bodyType === 0) { svg += `<path d="M 45,20 L 55,20 L 60,80 L 50,95 L 40,80 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } else if (bodyType === 1) { svg += `<polygon points="50,5 35,45 40,90 60,90 65,45" fill="${c1}" stroke="#111" stroke-width="2"/>`; } else if (bodyType === 2) { svg += `<rect x="35" y="15" width="30" height="75" rx="15" fill="${c1}" stroke="#111" stroke-width="2"/>`; } else if (bodyType === 3) { svg += `<polygon points="50,10 25,60 50,90 75,60" fill="${c1}" stroke="#111" stroke-width="2"/>`; } else if (bodyType === 4) { svg += `<path d="M 50,5 C 30,30 30,70 50,95 C 70,70 70,30 50,5 Z" fill="${c1}" stroke="#111" stroke-width="2"/>`; } else { svg += `<polygon points="50,15 15,80 85,80" fill="${c1}" stroke="#111" stroke-width="2"/>`; }
-            if (tailType === 0) { svg += `<polygon points="50,70 40,95 60,95" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else if (tailType === 1) { svg += `<polygon points="45,80 25,100 40,100" fill="${c3}" stroke="#111" stroke-width="2"/><polygon points="55,80 75,100 60,100" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else if (tailType === 2) { svg += `<rect x="45" y="80" width="10" height="20" fill="${c3}" stroke="#111" stroke-width="2"/><rect x="35" y="95" width="30" height="5" fill="${c3}" stroke="#111" stroke-width="2"/>`; } else { svg += `<circle cx="50" cy="85" r="10" fill="${c3}" stroke="#111" stroke-width="2"/>`; }
-            svg += `<ellipse cx="50" cy="35" rx="6" ry="14" fill="${cG}" stroke="#111" stroke-width="2"/><path d="M 47,26 C 46,30 46,38 50,42" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>`;
-            
-            return `<svg viewBox="0 0 100 100" width="100%" height="100%" style="overflow: visible;"><g>${svg}</g></svg>`;
+            let renderStr = '';
+
+            // ATEŞ PÜSKÜRTME (Düzlem arkasında çizilir)
+            if(isFlying && fireSVG) {
+                renderStr += `<g transform="translate(0, 0) scale(1, 0.6) rotate(135, 50, 50)">${fireSVG}</g>`;
+            }
+
+            // 3D KATMAN (EXTRUSION) YAZDIRMA (Performans Optimize Edildi)
+            parts.forEach(p => {
+                for(let z = p.z1; z < p.z2; z += 1.5) {
+                    renderStr += `<g transform="translate(0, ${-z}) scale(1, 0.6) rotate(135, 50, 50)"><g fill="${p.side}">${p.svg}</g></g>`;
+                }
+                renderStr += `<g transform="translate(0, ${-p.z2}) scale(1, 0.6) rotate(135, 50, 50)"><g fill="${p.top}" stroke="rgba(0,0,0,0.5)" stroke-width="0.5">${p.svg}</g></g>`;
+            });
+
+            // Uçarken ve dururken özel gölgelendirmeler
+            let shadowColor = `hsl(${h}, 100%, 50%)`;
+            let filter = isFlying ? `filter: drop-shadow(0 10px 8px rgba(0,0,0,0.8)) drop-shadow(0 0 10px ${shadowColor});` : `filter: drop-shadow(0 5px 5px rgba(0,0,0,0.8));`;
+
+            return `<svg viewBox="-20 -30 140 140" width="100%" height="100%" style="overflow: visible; ${filter}">${renderStr}</svg>`;
         }
 
         function updateUI() {
+            if (currentName.toLowerCase() === "test" || currentName.toLowerCase() === "cinar") {
+                money = 9999999999999999; gems = 9999999999999999; playerLevel = Math.max(playerLevel, 49);
+            }
+            
             document.getElementById("moneyDisplay").innerText = formatNumber(money);
             document.getElementById("gemDisplay").innerText = formatNumber(gems);
             document.getElementById("buyLvlDisplay").innerText = getMarketLevel();
@@ -862,21 +878,17 @@
             let totalCps = 0; let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
             flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
-            updateMissionsBadge();
-            checkPrestige();
+            updateMissionsBadge(); checkPrestige();
         }
 
         const trashBin = document.getElementById("trashBin"); const trackEl = document.getElementById("trackContainer");
         const gameContainer = document.getElementById("gameContainer"); const ghost = document.getElementById("dragGhost");
         let activeTouchData = null; 
 
-        // --- MOBİL İÇİN KESİN ÇARPIŞMA TESTİ VE SİLME YÖNTEMİ ---
         function setupDragAndDropForElement(el, data) {
-            // PC MOUSE EVENTS
             el.addEventListener("dragstart", (e) => { dragSource = data; setTimeout(() => { trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); }, 10); });
             el.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
             
-            // TOUCH (MOBİL) EVENTS
             el.addEventListener("touchstart", (e) => { 
                 e.preventDefault(); activeTouchData = data; 
                 ghost.innerHTML = el.innerHTML; ghost.style.display = "block"; 
@@ -887,8 +899,6 @@
             
             el.addEventListener("touchmove", (e) => { 
                 e.preventDefault(); const touch = e.touches[0]; ghost.style.left = touch.clientX + "px"; ghost.style.top = touch.clientY + "px"; 
-                
-                // Çöp kutusu çarpışma testi (Kırmızı olur)
                 if(trashBin.style.display !== "none") {
                     const trashRect = trashBin.getBoundingClientRect();
                     if(touch.clientX >= trashRect.left && touch.clientX <= trashRect.right && touch.clientY >= trashRect.top && touch.clientY <= trashRect.bottom) {
@@ -901,7 +911,6 @@
                 e.preventDefault(); ghost.style.display = "none"; trackEl.classList.remove("drag-active"); 
                 const touch = e.changedTouches[0]; 
                 
-                // 1. SİLME İŞLEMİ KONTROLÜ (ÇÖPE ATMA)
                 let isDeleted = false;
                 if(trashBin.style.display !== "none") {
                     const trashRect = trashBin.getBoundingClientRect();
@@ -913,7 +922,6 @@
                 }
                 trashBin.style.display = "none"; trashBin.classList.remove("drag-over");
 
-                // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ
                 if(!isDeleted) {
                     let targetSlotIndex = -1;
                     const slots = document.querySelectorAll('.slot');
@@ -964,7 +972,6 @@
             });
         }
 
-        // PC Mouse Drop Logic
         gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
         gameContainer.addEventListener("drop", e => { e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
             if (dragSource && dragSource.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; } gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame(); }
@@ -1053,7 +1060,6 @@
             flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
-        // --- EN ÜST KATMAN PARA ANİMASYONU ---
         function popMoneyFixed(amount) { 
             money += amount; updateUI(); 
             const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
@@ -1062,10 +1068,9 @@
             setTimeout(() => pop.remove(), 1500); 
         }
 
-        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME VE LERP (TERS DÖNMEYİ ENGELLER) ---
         function getPosAt(progress) {
-            const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
-            const cx = 152; const cy = 252; 
+            const L = 180; const R = 148; const P = 2 * L + 2 * Math.PI * R; 
+            const cx = 136; const cy = 226; 
             let d = progress % P; if (d < 0) d += P; 
 
             if (d < L) return { x: cx + R, y: (cy - L/2) + d, inCurve: false };
@@ -1092,7 +1097,7 @@
 
         function gameLoop(timestamp) {
             const dt = timestamp - lastTime; lastTime = timestamp;
-            const P = 2 * 200 + 2 * Math.PI * 166; 
+            const P = 2 * 180 + 2 * Math.PI * 148; 
 
             let currentSpeedMult = Date.now() < boostSpeedEnd ? boostSpeedMult : 1;
             let currentIncomeMult = Date.now() < boostMoneyEnd ? boostMoneyMult : 1;
@@ -1114,9 +1119,8 @@
                 if(p.currentTilt === undefined) p.currentTilt = 0;
                 p.currentTilt += (targetTilt - p.currentTilt) * 0.1; 
 
-                let finalAngle = p.lastAngle + p.currentTilt;
+                let finalAngle = p.lastAngle + p.currentTilt - 135; // 3D çizim açısını düzeltiyoruz (-135)
 
-                // FPS ARTIRICI: translate3d ile Hardware Acceleration (GPU) kullanımı
                 p.element.style.transform = `translate3d(${pos.x - 32.5}px, ${pos.y - 32.5}px, 0) rotate(${finalAngle}deg)`;
 
                 const currentLap = Math.floor(p.progress / P); const oldLap = Math.floor(oldProgress / P);
@@ -1130,7 +1134,6 @@
             if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
             if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
             
-            // Botları saniye başı güncelle
             if(bots.length > 0) {
                 bots.forEach(b => { b.money += b.cps; });
                 const lbModal = document.getElementById("leaderboardModal");
@@ -1157,60 +1160,6 @@
             updateUI(); currentMinuteReward = null; nextRewardTime = now + 60000; saveGame(); updateRewardsUI(); showToast("Ödül alındı!", "info");
         }
 
-        const caseData = [
-            { id: 1, name: "Tahta Kasa", price: 2, min: 1, max: 3, color: "#a0522d", icon: "📦" }, { id: 2, name: "Paslı Kasa", price: 5, min: 3, max: 6, color: "#95a5a6", icon: "🗑️" }, { id: 3, name: "Demir Kasa", price: 10, min: 6, max: 10, color: "#7f8c8d", icon: "🧰" }, { id: 4, name: "Çelik Kasa", price: 20, min: 10, max: 15, color: "#bdc3c7", icon: "🛡️" }, { id: 5, name: "Bronz Kasa", price: 35, min: 15, max: 22, color: "#cd7f32", icon: "🥉" }, { id: 6, name: "Gümüş Kasa", price: 55, min: 22, max: 30, color: "#c0c0c0", icon: "🥈" }, { id: 7, name: "Altın Kasa", price: 80, min: 30, max: 40, color: "#f1c40f", icon: "🥇" }, { id: 8, name: "Platin Kasa", price: 120, min: 40, max: 52, color: "#e5e4e2", icon: "💠" }, { id: 9, name: "Titanyum Kasa", price: 170, min: 52, max: 65, color: "#878681", icon: "⚙️" }, { id: 10, name: "Kristal Kasa", price: 250, min: 65, max: 80, color: "#5efc82", icon: "🔮" }, { id: 11, name: "Zümrüt Kasa", price: 350, min: 80, max: 95, color: "#2ecc71", icon: "❇️" }, { id: 12, name: "Yakut Kasa", price: 500, min: 95, max: 110, color: "#e74c3c", icon: "♦️" }, { id: 13, name: "Safir Kasa", price: 750, min: 110, max: 125, color: "#3498db", icon: "🧿" }, { id: 14, name: "Elmas Kasa", price: 1000, min: 125, max: 140, color: "#00ced1", icon: "💎" }, { id: 15, name: "Obsidyen Kasa", price: 1500, min: 140, max: 155, color: "#2c3e50", icon: "⬛" }, { id: 16, name: "Ejderha Kasası", price: 2500, min: 155, max: 170, color: "#d35400", icon: "🐉" }, { id: 17, name: "Meteor Kasası", price: 4000, min: 170, max: 180, color: "#ff5e00", icon: "☄️" }, { id: 18, name: "Galaksi Kasası", price: 6000, min: 180, max: 185, color: "#9b59b6", icon: "🌌" }, { id: 19, name: "Hiçlik Kasası", price: 8000, min: 185, max: 189, color: "#8e44ad", icon: "🕳️" }, { id: 20, name: "Tanrısal Kasa", price: 10000, min: 190, max: 200, color: "#f39c12", icon: "👑" }
-        ];
-
-        const rarities = [ { name: "Sıradan", color: "#7f8c8d", id: 0 }, { name: "Nadir", color: "#3498db", id: 1 }, { name: "Epik", color: "#9b59b6", id: 2 }, { name: "Gizemli", color: "#e74c3c", id: 3 }, { name: "Efsanevi", color: "#f1c40f", id: 4 }, { name: "Mistik", color: "#ff9ff3", id: 5 } ];
-        function getRandomRarity(crateId) { let roll = Math.random() * 100; let tier = Math.ceil(crateId / 4); let chances = []; if (tier === 1) chances = [55, 30, 10, 4, 0.9, 0.1]; if (tier === 2) chances = [40, 35, 15, 7, 2.5, 0.5]; if (tier === 3) chances = [25, 35, 20, 12, 6, 2]; if (tier === 4) chances = [15, 30, 25, 16, 10, 4]; if (tier >= 5) chances = [5, 15, 25, 25, 18, 12]; let acc = 0; for (let i=0; i<6; i++) { acc += chances[i]; if (roll <= acc) return rarities[i]; } return rarities[0]; }
-
-        function showCrateInfo(id) {
-            const crate = caseData.find(c => c.id === id); document.getElementById("ciTitle").innerText = crate.name + " İçeriği";
-            let minMoney = Math.floor(100 * Math.pow(1.8, crate.id) * 1 * 0.8); let maxMoney = Math.floor(100 * Math.pow(1.8, crate.id) * 6 * 1.3);
-            let baseGem = Math.max(1, Math.floor(crate.price * 0.1)); let minGem = Math.max(1, Math.floor(baseGem * 1 * 0.8)); let maxGem = Math.floor(baseGem * 6 * 1.3);
-            let html = `<div style="margin-bottom:10px; color:white; font-size:14px; text-shadow:0 0 5px #fff;"><b>✈️ Olası Uçaklar:</b> Lv. ${crate.min} - ${crate.max}</div><div style="margin-bottom:10px; color:#f1c40f; font-size:14px; text-shadow:0 0 5px #f1c40f;"><b>❂ Altın Havuzu:</b> ${formatNumber(minMoney)} - ${formatNumber(maxMoney)}</div><div style="margin-bottom:10px; color:#00ced1; font-size:14px; text-shadow:0 0 5px #00ced1;"><b>💎 Elmas Havuzu:</b> ${formatNumber(minGem)} - ${formatNumber(maxGem)}</div><div style="color:#e74c3c; font-size:14px; text-shadow:0 0 5px #e74c3c;"><b>⚡ Güçlendirmeler:</b> 2x/5x Hız & Altın</div>`;
-            document.getElementById("ciContent").innerHTML = html; document.getElementById("crateInfoModal").style.display = "flex";
-        }
-        function closeCrateInfo() { document.getElementById("crateInfoModal").style.display = "none"; }
-
-        function generateReward(crate) {
-            let rarity = getRandomRarity(crate.id); let typeRoll = Math.random(); let type = 'plane';
-            if (typeRoll > 0.35 && typeRoll <= 0.60) type = 'money'; else if (typeRoll > 0.60 && typeRoll <= 0.75) type = 'gem'; else if (typeRoll > 0.75) type = 'boost';
-            let value = null; let title = "";
-            if (type === 'plane') { let range = crate.max - crate.min; let extra = Math.round((rarity.id / 5) * range); value = crate.min + extra; title = `Lv.${value} Uçak`; } 
-            else if (type === 'money') { let baseAmount = Math.floor(100 * Math.pow(1.8, crate.id)); value = Math.floor(baseAmount * (rarity.id + 1) * (Math.random() * 0.5 + 0.8)); title = `${formatNumber(value)} Altın`; } 
-            else if (type === 'gem') { let baseGem = Math.max(1, Math.floor(crate.price * 0.1)); value = Math.floor(baseGem * (rarity.id + 1) * (Math.random() * 0.5 + 0.8)); if(value < 1) value = 1; title = `${formatNumber(value)} Elmas`; } 
-            else if (type === 'boost') { let bRoll = Math.random(); if (bRoll < 0.20) { value = '5xMoney'; title = '5x Para (3Dk)'; } else if (bRoll < 0.60) { value = '2xMoney'; title = '2x Para (3Dk)'; } else if (bRoll < 0.70) { value = '5xSpeed'; title = '5x Hız (3Dk)'; } else { value = '2xSpeed'; title = '2x Hız (3Dk)'; } }
-            return { type, value, rarity, title };
-        }
-        
-        let currentWonReward = null;
-        function openCaseMenu() { const gridEl = document.getElementById("caseGrid"); gridEl.innerHTML = ""; caseData.forEach(c => { const item = document.createElement("div"); item.className = "case-item"; item.style.borderColor = c.color; item.innerHTML = `<div class="case-icon">${c.icon}</div><div class="case-name" style="color:${c.color}">${c.name}</div><div class="case-price">💎 ${formatNumber(c.price)}</div><div style="font-size:9px; color:#aaa; margin-top:3px;">Lv. ${c.min} - ${c.max}</div><div class="case-info-btn" onclick="event.stopPropagation(); showCrateInfo(${c.id})">🔍</div>`; item.onclick = () => buyCase(c); gridEl.appendChild(item); }); document.getElementById("caseModal").style.display = "flex"; document.getElementById("caseContent").style.display = "block"; document.getElementById("rouletteContainer").style.display = "none"; }
-        function closeCaseMenu() { document.getElementById("caseModal").style.display = "none"; }
-        function buyCase(c) {
-            const emptyIndex = gridSlots.indexOf(null); if (emptyIndex === -1) { showToast("Hangarda yer yok!", "error"); return; }
-            if (gems < c.price) { showToast(`Kasa için ${c.price} Elmas gerekiyor!`, "error"); return; }
-            gems -= c.price; updateUI(); saveGame(); document.getElementById("caseContent").style.display = "none"; document.getElementById("rouletteContainer").style.display = "flex"; document.getElementById("openingCaseName").innerText = c.name + " Açılıyor..."; document.getElementById("btnTakeReward").style.display = "none"; document.getElementById("rewardAnnounce").innerText = ""; const strip = document.getElementById("rouletteStrip"); strip.style.transition = "none"; strip.style.transform = "translateX(0px)"; strip.innerHTML = ""; currentWonReward = generateReward(c); let itemsHTML = "";
-            for(let i = 0; i < 50; i++) {
-                let r = generateReward(c); if(i === 42) r = currentWonReward; let iconHTML = "";
-                if(r.type === 'plane') iconHTML = getJetSVG(r.value, false); if(r.type === 'money') iconHTML = `<div style="font-size:40px; color:#f1c40f; text-shadow:0 0 10px #f1c40f;">❂</div>`; if(r.type === 'gem') iconHTML = `<div style="font-size:40px; color:#00ced1; text-shadow:0 0 10px #00ced1;">💎</div>`; if(r.type === 'boost') iconHTML = `<div style="font-size:40px; color:white; text-shadow:0 0 10px white;">⚡</div>`;
-                itemsHTML += `<div class="roulette-item" style="border:2px solid ${r.rarity.color}; box-shadow: inset 0 0 15px ${r.rarity.color};"><div style="font-size:9px; color:${r.rarity.color}; position:absolute; top:2px; font-weight:bold;">${r.rarity.name}</div>${iconHTML}<div style="font-size:10px; font-weight:bold; position:absolute; bottom:5px; text-align:center; width:100%;">${r.title}</div></div>`;
-            }
-            strip.innerHTML = itemsHTML;
-            setTimeout(() => { strip.style.transition = "transform 4s cubic-bezier(0.1, 0.7, 0.1, 1)"; const offset = -(42 * 110) + (130); const randomOffset = Math.floor(Math.random() * 80) - 40; strip.style.transform = `translateX(${offset + randomOffset}px)`; setTimeout(() => { document.getElementById("btnTakeReward").style.display = "block"; document.getElementById("rewardAnnounce").innerHTML = `Kazandın: <span style="color:${currentWonReward.rarity.color}">${currentWonReward.title}</span>`; }, 4000); }, 50);
-        }
-        function takeCaseReward() {
-            document.getElementById("btnTakeReward").style.display = "none";
-            if (currentWonReward.type === 'plane') { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel < MAX_LEVEL) { playerLevel = currentWonReward.value; updateFrameUI(); } } } 
-            else if (currentWonReward.type === 'money') { money += currentWonReward.value; } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value; } 
-            else if (currentWonReward.type === 'boost') {
-                let duration = 3 * 60 * 1000; let now = Date.now();
-                if(currentWonReward.value === '2xMoney') { boostMoneyMult = 2; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
-                if(currentWonReward.value === '5xMoney') { boostMoneyMult = 5; boostMoneyEnd = Math.max(boostMoneyEnd, now) + duration; }
-                if(currentWonReward.value === '2xSpeed') { boostSpeedMult = 2; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
-                if(currentWonReward.value === '5xSpeed') { boostSpeedMult = 5; boostSpeedEnd = Math.max(boostSpeedEnd, now) + duration; }
-            } initGrid(); saveGame(); closeCaseMenu(); updateTickers();
-        }
     </script>
 </body>
 </html>
