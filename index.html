@@ -15,241 +15,230 @@
     <link rel="icon" type="image/jpeg" sizes="512x512" href="icon_2.jpg">
     <link rel="shortcut icon" href="icon_2.jpg">
 
-    <!-- "Schriftbild" Hissi Veren Efsanevi Siber-Tech Fontları -->
+    <!-- Siber-Tech Fontları -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
         * { box-sizing: border-box; user-select: none; -webkit-touch-callout: none; font-family: 'Share Tech Mono', monospace; }
         
-        h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin, .lb-rank { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin, .lb-rank, .prestige-btn { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
 
-        /* SİMSİYAH, MOR VE TURKUAZ NEON ARKA PLAN (Sıfır Kasma) */
         body { 
             margin: 0; padding: 0; 
-            background-color: #020202; /* Tam Siyah */
+            background-color: #030408;
             color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
             position: relative;
         }
 
-        /* Arka plan siber ızgarası (FPS Dostu) */
-        .bg-grid {
+        /* Köşeleri karartan sinematik efekt (Vignette) */
+        body::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            box-shadow: inset 0 0 150px rgba(0,0,0,1); z-index: 0; pointer-events: none;
+        }
+
+        /* Dinamik olarak rengi değişecek olan Grid arka planı */
+        #dynamicBgGrid {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image: 
                 linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 35px 35px;
-            animation: moveGrid 20s linear infinite;
+            background-size: 30px 30px;
+            animation: moveGrid 15s linear infinite;
         }
-        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 35px 35px; } }
-
-        /* FPS Katili "blur" filtresi silindi! Yerine gradient kullanıldı. Oyun artık yağ gibi. */
-        .nebula { position: absolute; border-radius: 50%; z-index: -1; pointer-events: none; animation: floatNebula 20s infinite alternate ease-in-out; }
-        .nebula-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(188,19,254,0.15) 0%, transparent 70%); top: -150px; left: -150px; }
-        .nebula-2 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,255,255,0.15) 0%, transparent 70%); bottom: -200px; right: -200px; animation-delay: -5s; }
-        @keyframes floatNebula { 0% { transform: scale(0.9) translate(0, 0); } 100% { transform: scale(1.1) translate(30px, 30px); } }
+        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 30px 30px; } }
 
         #gameContainer { 
             width: 100%; max-width: 450px; height: 100%; position: relative; 
-            background: rgba(0, 0, 0, 0.6); /* Daha koyu ve saydam */
+            background: rgba(5, 8, 15, 0.4); backdrop-filter: blur(4px);
             display: flex; flex-direction: column; overflow: hidden; z-index: 1;
         }
 
-        /* YILDIZLAR (Performans için gölgeler silindi) */
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 0.8; transform: scale(1.2); } }
+        /* SİBERPUNK TARAMA ÇİZGİLERİ */
+        #gameContainer::after {
+            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
+            background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.3;
+        }
+
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.4); } }
+
+        /* GALAKTİK SIÇRAMA (PRESTIGE) BUTONU */
+        .prestige-btn {
+            position: absolute; top: 75px; left: 50%; transform: translateX(-50%);
+            background: linear-gradient(45deg, #f1c40f, #e74c3c); color: #000;
+            padding: 5px 30px; border-radius: 20px; font-size: 26px; font-weight: 700;
+            border: 2px solid #fff; box-shadow: 0 0 25px #f1c40f, inset 0 0 10px #fff;
+            cursor: pointer; z-index: 45; display: none; text-transform: uppercase;
+            animation: pulsePrestige 1s infinite alternate; text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+        }
+        @keyframes pulsePrestige { 
+            0% { transform: translateX(-50%) scale(1); box-shadow: 0 0 20px #f1c40f; } 
+            100% { transform: translateX(-50%) scale(1.1); box-shadow: 0 0 40px #f1c40f, 0 0 20px white; } 
+        }
+
+        /* ROKET ATEŞİ */
+        @keyframes enginePulse { 0% { transform: scaleY(0.7); opacity: 0.7; } 100% { transform: scaleY(1.4); opacity: 1; filter: brightness(1.5); } }
+        .thrust-anim { transform-origin: top center; animation: enginePulse 0.08s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* YÜKLEME EKRANI */
-        #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; background: #020202; transition: opacity 0.5s ease; }
-        .loading-content { z-index: 1; display: flex; flex-direction: column; align-items: center; width: 85%; }
-        .loading-logo { width: 150px; height: 150px; border-radius: 35px; box-shadow: 0 0 30px #bc13fe; border: 4px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 20px #bc13fe; } 50% { transform: translateY(-15px); box-shadow: 0 0 40px #00ffff; } }
-        .loading-title { font-size: 55px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; font-weight: 700; text-align: center; }
-        .loading-bar-container { width: 100%; height: 12px; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid #bc13fe; box-shadow: 0 0 15px rgba(188,19,254,0.5); }
-        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 20px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .loading-text { margin-top: 20px; font-size: 18px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold; letter-spacing: 2px;}
+        #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #05050a; transition: opacity 0.5s ease; }
+        .loading-logo { width: 150px; height: 150px; border-radius: 35px; box-shadow: 0 0 50px #00ffff; border: 4px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 40px #00ffff; } 50% { transform: translateY(-15px); box-shadow: 0 0 70px #00ffff; } }
+        .loading-title { font-size: 50px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; text-shadow: 0 0 30px rgba(0,255,255,0.5); text-align: center; }
+        .loading-bar-container { width: 100%; height: 12px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 2px solid rgba(0,255,255,0.6); box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 25px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .loading-text { margin-top: 20px; font-size: 18px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold;}
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
-        @keyframes pulseText { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes pulseText { 0% { opacity: 0.4; text-shadow: 0 0 0px #00ffff; } 100% { opacity: 1; text-shadow: 0 0 15px #00ffff; } }
 
         /* BİLDİRİMLER (TOAST) */
         #toastContainer { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100000; pointer-events: none; width: 90%; }
-        .custom-toast { background: rgba(5, 5, 10, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
-        .custom-toast.error { border-color: #ff003c; animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
-        .custom-toast.info { border-color: #00ffff; }
+        .custom-toast { background: rgba(10, 15, 30, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
+        .custom-toast.error { border-color: #ff003c; box-shadow: 0 0 20px rgba(255,0,60,0.4); animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
+        .custom-toast.info { border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
         .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
         @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
         /* GİRİŞ EKRANI */
-        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 2, 5, 0.95); justify-content: center; align-items: center; z-index: 99999; }
-        .login-box { background: rgba(5, 5, 10, 0.95); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #bc13fe; box-shadow: 0 0 30px rgba(188,19,254,0.3); }
-        .login-box h1 { margin: 0 0 10px 0; font-size: 44px; color: #00ffff; font-weight: 700; text-shadow: 0 0 10px #00ffff; }
-        .slogan { font-size: 16px; color: #bc13fe; margin-bottom: 30px; letter-spacing: 1px; text-shadow: 0 0 5px #bc13fe; font-weight: bold;}
-        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 2px solid #00ffff; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; font-weight: bold; }
-        .login-box input:focus { border-color: #bc13fe; box-shadow: 0 0 15px rgba(188,19,254,0.5); }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #000; font-size: 26px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif;}
-        .login-btn:active { transform: scale(0.95); }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(20px); }
+        .login-box { background: rgba(10, 15, 25, 0.85); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(0,255,255,0.15); }
+        .login-box h1 { margin: 0 0 10px 0; font-size: 44px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
+        .slogan { font-size: 15px; color: #00ffff; margin-bottom: 30px; text-shadow: 0 0 5px #00ffff; }
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.7); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; font-weight: bold; }
+        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 25px rgba(0,255,255,0.5), inset 0 0 15px rgba(0,255,255,0.3); }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #fff; font-size: 24px; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 30px rgba(0,255,255,0.5); transition: 0.2s; text-transform: uppercase;}
+        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
 
-        /* MODALLAR (Karanlık Tema) */
-        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
-        .modal-content { background: #05050a; border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 30px rgba(0,255,255,0.2); text-align: center; position: relative; }
-        .modal-content h2 { margin-top: 0; font-size: 32px; color: #bc13fe; text-shadow: 0 0 15px rgba(188,19,254,0.5); letter-spacing: 1px; font-weight: 700; }
-        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #00ffff; border-radius: 8px; color: #00ffff; font-size: 18px; outline: none; text-align: center; font-weight: bold; }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #000; transition: 0.2s; text-transform: uppercase; font-family: 'Teko', sans-serif; }
+        /* MODALLAR */
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
+        .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 25px rgba(0,255,255,0.15); text-align: center; position: relative; }
+        .modal-content h2 { margin-top: 0; font-size: 32px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #fff; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.3); text-transform: uppercase; text-shadow: 1px 1px 2px black;}
         .modal-btn:active { transform: scale(0.95); }
-        .btn-save { background: linear-gradient(45deg, #00ffff, #bc13fe); } 
-        .btn-close { background: transparent; color: #ff003c; border: 2px solid #ff003c; }
+        .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
+        .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); box-shadow: 0 0 15px rgba(255,0,60,0.5); border: 1px solid #ff003c; }
 
-        /* GÖREVLER VE SIRALAMA LİSTELERİ */
-        .mission-item, .lb-item { background: #000; border: 1px solid #bc13fe; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
-        .mission-item:hover, .lb-item:hover { border-color: #00ffff; box-shadow: inset 0 0 15px rgba(0,255,255,0.2); }
+        /* GÖREVLER LİSTESİ */
+        .mission-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(52,152,219,0.15); transition: 0.3s; }
+        .mission-item:hover { background: rgba(0,255,255,0.1); transform: translateX(5px); border-color: #00ffff; }
         .mission-info { text-align: left; }
-        .mission-title { font-size: 15px; font-weight: bold; color: #00ffff; margin-bottom: 5px; }
-        .mission-reward { font-size: 14px; color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-weight: bold; }
-        .btn-claim-mission { background: #2ecc71; border: none; border-radius: 8px; color: #000; padding: 8px 18px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 20px; font-family: 'Teko', sans-serif;}
+        .mission-title { font-size: 16px; font-weight: bold; color: #00ffff; margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,255,0.5); }
+        .mission-reward { font-size: 15px; color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-weight: bold; }
+        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: 1px solid #2ecc71; border-radius: 8px; color: white; padding: 8px 18px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(46,204,113,0.6); transition: 0.2s; font-size: 18px; font-family: 'Teko', sans-serif;}
         .btn-claim-mission:active { transform: scale(0.9); }
-        .btn-claim-mission:disabled { background: #222; color: #555; cursor: not-allowed; }
-        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #000; }
+        .btn-claim-mission:disabled { background: rgba(255,255,255,0.1); box-shadow: none; border-color: transparent; cursor: not-allowed; color: #555; }
+        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 15px red; z-index: 20; animation: pulseBadge 1.5s infinite;}
+        @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.15); box-shadow: 0 0 25px red; } 100% { transform: scale(1); } }
 
-        /* SIRALAMA (LEADERBOARD) SPESİFİK */
+        /* SIRALAMA */
         .leaderboard-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
-        .lb-item.is-player { background: rgba(0,255,255,0.1); border-color: #00ffff; }
+        .lb-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; }
+        .lb-item.is-player { background: rgba(0,255,255,0.15); border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
         .lb-rank { font-size: 20px; font-weight: bold; width: 30px; text-align: center; }
-        .lb-rank-1 { color: #f1c40f; font-size: 24px; }
-        .lb-rank-2 { color: #bdc3c7; font-size: 22px; }
-        .lb-rank-3 { color: #cd7f32; font-size: 20px; }
-        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; }
-        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; }
+        .lb-rank-1 { color: #f1c40f; text-shadow: 0 0 10px #f1c40f; font-size: 24px; }
+        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
+        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
 
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; margin-bottom: 15px; }
-        .frame-card { background: #000; padding: 15px 5px; border-radius: 12px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
-        .frame-card:hover { border-color: #bc13fe; }
-        .frame-card:active { transform: scale(0.95); }
-        .frame-card.owned { border-color: #00ffff; }
-        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
-        .profile-pic-container { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; background: #000; color: white; position: relative; z-index: 2; margin: 0 auto 10px auto; font-family: 'Teko', sans-serif;}
-        
-        .f-default { border: 2px solid #555; }
-        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; }
-        .f-ice { border: 2px solid #00ffff; box-shadow: 0 0 10px #00ffff; }
-        .f-fire { border: 2px solid #ff003c; box-shadow: 0 0 10px #ff003c; }
-        .f-poison { border: 2px dashed #bc13fe; box-shadow: 0 0 10px #bc13fe; }
-        .f-neon { border: 3px solid #0f0; box-shadow: 0 0 10px #0f0; }
-        .f-hacker { border: 2px dotted #0f0; }
-        .f-cosmic { border: 2px solid #bc13fe; }
-        .f-void { border: 3px dashed #555; }
-        .f-god { border: 3px solid #00ffff; }
+        .frame-card { background: rgba(0,0,0,0.6); padding: 15px 5px; border-radius: 12px; border: 1px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); box-shadow: 0 0 25px rgba(241,196,15,0.4); }
+        .profile-pic-container { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; background: #102a43; color: white; text-shadow: 1px 1px 3px black; position: relative; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.8); margin: 0 auto 10px auto; font-family: 'Teko', sans-serif;}
 
-        /* TIER BAR VE KASALAR */
-        .tier-container { display: flex; gap: 4px; justify-content: center; margin: 20px 0; padding: 10px; background: #000; border-radius: 10px; border: 1px solid #bc13fe; }
-        .tier-slot { flex: 1; height: 12px; background: #222; border-radius: 3px; border: 1px solid #444; transition: 0.3s; }
-        .tier-slot.filled { background: #00ffff; border-color: #fff; box-shadow: 0 0 8px #00ffff; }
+        .f-default { border: 2px solid rgba(255,255,255,0.5); }
+        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
+        .f-ice { border: 2px solid #00ffff; box-shadow: 0 0 15px #00ffff; background: rgba(0,255,255,0.3); }
+        .f-fire { border: 2px solid #ff003c; box-shadow: 0 0 15px #ff003c, 0 0 5px #f39c12 inset; background: #c0392b; }
 
+        /* KASALAR */
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .case-item { position: relative; background: #000; border: 1px solid #bc13fe; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
-        .case-item:hover { transform: translateY(-3px); border-color: #00ffff; }
-        .case-item:active { transform: scale(0.95); }
-        .case-icon { font-size: 35px; margin-bottom: 8px; } 
-        .case-name { font-size: 13px; font-weight: bold; margin-bottom: 5px; letter-spacing: 0.5px; } 
-        .case-price { font-size: 16px; color: #00ffff; font-weight: bold; }
-        
-        .case-info-btn { position: absolute; bottom: 8px; right: 8px; font-size: 14px; background: #000; border: 1px solid #00ffff; color: #00ffff; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; z-index: 10; }
-        .case-info-btn:hover { background: #00ffff; color: #000; }
-        .case-info-btn:active { transform: scale(0.9); }
-
-        #rouletteContainer { display: none; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
-        .roulette-window { width: 100%; height: 120px; background: #000; border: 2px solid #bc13fe; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px; }
-        .roulette-strip { display: flex; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .roulette-item { width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #333; background: #05050a; flex-shrink: 0; margin: 5px; border-radius: 10px; position: relative; box-sizing: border-box; }
-        .roulette-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #ff003c; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #ff003c; border-radius: 5px; }
+        .case-item { position: relative; background: rgba(0,0,0,0.7); border: 1px solid rgba(0,255,255,0.3); border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
+        .case-item:hover { box-shadow: inset 0 0 30px rgba(0,255,255,0.2); transform: translateY(-3px); border-color: #00ffff; }
+        .case-icon { font-size: 35px; margin-bottom: 8px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); } 
+        .case-name { font-size: 13px; font-weight: bold; margin-bottom: 5px; } 
+        .case-price { font-size: 16px; color: #00ffff; font-weight: bold; text-shadow: 0 0 8px rgba(0,255,255,0.6); }
 
         /* ÜST BAR VE MENÜ */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 10px; background: #000; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #00ffff; cursor: pointer; transition: 0.2s; }
-        .user-info:active { transform: scale(0.95); }
-        .username { font-size: 16px; font-weight: bold; color: white; }
-        .settings-icon { font-size: 16px; margin-left: 2px; opacity: 0.8; }
-
+        .user-info { display: flex; align-items: center; gap: 10px; background: rgba(10, 15, 30, 0.8); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(0, 255, 255, 0.4); cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
+        .username { font-size: 16px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
+        
         .currencies { display: flex; gap: 10px; }
-        .currency { background: #000; color: white; border: 1px solid #bc13fe; border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; }
-        .currency.money span { color: #f1c40f; font-size: 20px; } 
-        .currency.gem span { color: #00ffff; font-size: 20px; }
+        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
+        .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
+        .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
 
-        /* YAN MENÜLER */
         .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: scale(0.9); }
         .side-menu.left { left: 5px; transform-origin: top left; } .side-menu.right { right: 5px; align-items: center; transform-origin: top right; }
-        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; }
-        .menu-btn .icon { background: #000; border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); transition: 0.2s; }
+        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
+        .menu-btn .icon { background: rgba(10, 15, 30, 0.9); border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,255,255,0.25); transition: 0.2s; backdrop-filter: blur(8px); }
         .menu-btn:hover .icon { transform: scale(1.1); border-color: #00ffff; }
-        .menu-btn:active .icon { transform: scale(0.9); }
 
-        /* MERKEZ İSTATİSTİKLER (SADECE CPS) */
+        /* MERKEZ (SADECE CPS) */
         .center-stats { position: absolute; top: 12%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
-        .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; letter-spacing: 1.5px; }
+        .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 15px #00ffff; letter-spacing: 1.5px; }
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
-        .boost-tag { background: #000; padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; color: #f1c40f; }
+        .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; color: #f1c40f; }
 
-        /* KASMAMASI İÇİN FİLTRESİZ, DÜZ RENKLİ PİST */
-        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 26px solid #0b192c; border-radius: 180px; background-color: transparent; pointer-events: none; z-index: 2; transition: all 0.3s; }
-        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 334px; height: 534px; border: 3px dashed rgba(0, 255, 255, 0.4); border-radius: 167px; box-sizing: border-box; }
-        .finish-line { position: absolute; top: 50%; right: -26px; transform: translateY(-50%); width: 26px; height: 60px; background: repeating-linear-gradient(0deg, #fff, #fff 10px, #bc13fe 10px, #bc13fe 20px); z-index: 1; border-left: 2px solid #00ffff; border-right: 2px solid #00ffff; }
+        /* DİNAMİK PİST - Rengi JS ile Galaksiye Göre Değişecek */
+        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 1s; backdrop-filter: blur(3px); }
+        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(0, 255, 255, 0.7); border-radius: 166px; box-sizing: border-box; filter: drop-shadow(0 0 6px #00ffff); transition: all 1s;}
+        .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9) 10px, rgba(0,255,255,0.9) 10px, rgba(0,255,255,0.9) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 20px #00ffff; transition: all 1s;}
         .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; opacity: 0; z-index: 5; pointer-events: none; }
         @keyframes flashAnim { 0% { opacity: 0.8; transform: translateY(-50%) scale(1.2); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
-        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.4); }
+        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 80px rgba(0, 255, 255, 0.6) inset; }
 
-        /* UÇAKLAR (HARDWARE ACCELERATION İLE %100 AKICI - 120 FPS) */
-        /* FPS katili SVG Shadow tamamen silindi! Sadece Translate3D kullanıldı */
+        /* UÇAKLAR (HARDWARE ACCELERATION) */
         .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transform: translateZ(0); }
         .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; }
 
         /* Z-INDEX 999999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
-        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 34px; text-shadow: 2px 2px 0px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
+        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 36px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; }
         @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -50px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -70px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -100px) scale(0.8); } }
 
-        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde) */
-        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(5, 5, 10, 0.8); border-radius: 24px; border: 2px solid #bc13fe; }
-        .slot { width: 100%; height: 100%; background: #000; border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.3); position: relative; transition: 0.2s; }
-        .slot.drag-over { background: rgba(0,255,255,0.2); border-color: #00ffff; transform: scale(1.05); }
+        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) */
+        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(12px); transition: all 1s;}
+        .slot { width: 100%; height: 100%; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.15); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); transition: 0.2s; }
+        .slot.drag-over { background: rgba(0,255,255,0.25); border-color: #00ffff; box-shadow: inset 0 0 25px rgba(0,255,255,0.6); transform: scale(1.05); }
 
         .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
         .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
         .plane-item.ghost { opacity: 0.4; filter: grayscale(50%); animation: none; cursor: pointer; transition: 0.2s; }
-        .plane-item.ghost:hover { opacity: 0.8; filter: grayscale(10%); transform: scale(1.1); }
+        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #0f172a; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 900; border: 1px solid #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.6); z-index: 10; font-family: 'Teko', sans-serif; }
         @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #000; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 14px; font-weight: 900; border: 1px solid #00ffff; z-index: 10; font-family: 'Teko', sans-serif; }
-        .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
-        @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
 
         /* MOBİL UYUMLU DÜZELTİLMİŞ ÇÖP KUTUSU (BoundingBox ile Çarpışma Testi) */
-        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: #ff003c; border: 3px dashed #fff; border-radius: 15px; color: white; font-weight: bold; font-size: 24px; display: none; align-items: center; justify-content: center; z-index: 9999; pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 20px #ff003c;}
-        #trashBin.drag-over { background: #fff; color: #ff003c; border: 3px solid #ff003c; font-size: 28px; }
-        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; }
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: rgba(255, 0, 60, 0.85); border: 2px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; align-items: center; justify-content: center; z-index: 9999; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; }
+        #trashBin.drag-over { background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 24px; }
+        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
 
         /* ALT BAR */
         .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 12px; padding: 0 15px; z-index: 30; }
-        .bottom-btn { flex: 1; background: #000; border: 2px solid #00ffff; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.2s; }
-        .bottom-btn:hover { background: #0a0a0a; transform: translateY(-3px); border-color: #bc13fe; }
+        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); }
         .bottom-btn:active { transform: translateY(5px); }
-        .bottom-btn.shop { border-color: #bc13fe; }
-        .bottom-btn.shop:hover { border-color: #00ffff; }
-        .bottom-btn.speed { border-color: #f1c40f; }
-        .bottom-btn span.big { font-size: 26px; display: block; margin-bottom: 2px; }
-        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; }
+        .bottom-btn span.big { font-size: 24px; display: block; margin-bottom: 2px; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
+
+        /* ORTADA GÖRÜNECEK GALAKSİ İSMİ EKRANI */
+        #galaxyNameDisplay {
+            position: absolute; top: 60px; left: 50%; transform: translateX(-50%);
+            font-size: 14px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;
+            text-transform: uppercase; letter-spacing: 2px; z-index: 5; transition: all 1s;
+        }
 
     </style>
 </head>
 <body>
-
     <div id="dragGhost"></div>
 
     <div id="gameContainer">
-        <!-- ARKA PLAN YILDIZLARI VE SİBER IZGARA -->
-        <div class="bg-grid"></div>
+        <!-- ARKA PLAN YILDIZLARI VE DİNAMİK SİBER IZGARA -->
+        <div class="bg-grid" id="dynamicBgGrid"></div>
         <div class="stars" id="starContainer"></div>
-        <div class="nebula nebula-1"></div>
-        <div class="nebula nebula-2"></div>
 
         <!-- TOAST BİLDİRİM ALANI -->
         <div id="toastContainer"></div>
@@ -291,9 +280,9 @@
             <div class="modal-content">
                 <h2>🎁 Süpriz Ödül</h2>
                 <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
-                <div style="background: #000; padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px;">
+                <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);">
                     <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px;">❓</div>
-                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; font-family: 'Teko', sans-serif;">...</div>
+                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;">...</div>
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
@@ -303,14 +292,14 @@
         <!-- GÖREVLER (MISSIONS) MENÜSÜ -->
         <div id="missionsModal" class="modal-overlay">
             <div class="modal-content">
-                <h2>📜 Görevler</h2>
-                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold;">2 Elmas</span> kazan!</p>
+                <h2 style="color: #3498db; text-shadow: 0 0 15px #3498db;">📜 Görevler</h2>
+                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold; text-shadow:0 0 5px #00ffff;">3 Elmas</span> kazan!</p>
                 <div id="missionsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
                 <button class="modal-btn btn-close" onclick="closeMissionsMenu()">Kapat</button>
             </div>
         </div>
 
-        <!-- ELMAS DÜKKANI (ÇERÇEVELER) -> İSİM DÜZELTİLDİ: "ELMAS DÜKYANI" -->
+        <!-- ELMAS DÜKYANI (ÇERÇEVELER) -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
                 <h2>💎 Elmas Dükyanı</h2>
@@ -323,47 +312,37 @@
         <!-- NORMAL DÜKKAN (Hızlanma ve Uçak Market) -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
-                <h2>🏪 Dükkan</h2>
+                <h2 style="margin-bottom: 15px; color: #00ffff;">🏪 Dükkan</h2>
                 
-                <div style="background: #000; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f;">
-                    <h3 style="margin: 0 0 10px 0; color: #f1c40f;">⚡ 2x Hızlanma</h3>
-                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maks. 30Dk)</p>
+                <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f; box-shadow: inset 0 0 20px rgba(241,196,15,0.15);">
+                    <h3 style="margin: 0 0 10px 0; color: #f1c40f; text-shadow: 0 0 8px #f1c40f;">⚡ 2x Hızlanma</h3>
+                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
                     <div class="tier-container" id="shopSpeedTierBar">
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                     </div>
-                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px; font-family:'Teko', sans-serif;">Aktif Süre: 00:00</h4>
+                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px;">Aktif Süre: 00:00</h4>
                     <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:20px; padding:12px; margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
 
-                <h3 style="color:#00ffff; margin-bottom:8px;">✈️ Neon Uçak Galerisi</h3>
-                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Ulaştığın seviyeye kadar tüm jetler burada.</p>
+                <h3 style="color:#00ffff; margin-bottom:8px; text-shadow: 0 0 8px #00ffff;">✈️ Neon Uçak Galerisi</h3>
+                <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Maksimum 50 Level! En yüksek uçağının 2 alt seviyesine kadar satın alabilirsin.</p>
                 <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 12px; padding-right: 5px;"></div>
 
                 <button class="modal-btn btn-close" style="margin-top:15px;" onclick="closeGeneralShop()">Kapat</button>
             </div>
         </div>
 
-        <!-- KASA İÇERİĞİ EKRANI -->
-        <div id="crateInfoModal" class="modal-overlay">
-            <div class="modal-content" style="max-width: 350px;">
-                <h2 id="ciTitle">Kasa İçeriği</h2>
-                <div id="ciContent" style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #00ffff; margin-bottom: 20px;"></div>
-                <button class="modal-btn btn-close" onclick="closeCrateInfo()">Kapat</button>
-            </div>
-        </div>
-
         <!-- KASA AÇMA SİSTEMİ -->
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
-                <h2 style="color: #bc13fe;">📦 Kasalar</h2>
+                <h2 style="color: #bc13fe; text-shadow: 0 0 15px #bc13fe;">📦 Kasalar</h2>
                 <div class="case-grid" id="caseGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeCaseMenu()">Kapat</button>
             </div>
-            
             <div class="modal-content" id="rouletteContainer">
-                <h2 id="openingCaseName">Kasa Açılıyor...</h2>
+                <h2 id="openingCaseName" style="color:#00ffff; text-shadow: 0 0 15px #00ffff;">Kasa Açılıyor...</h2>
                 <div class="roulette-window">
                     <div class="roulette-center-line"></div>
                     <div class="roulette-strip" id="rouletteStrip"></div>
@@ -373,24 +352,37 @@
             </div>
         </div>
 
+        <!-- GALAKTİK SIÇRAMA ONAY EKRANI -->
+        <div id="prestigeModal" class="modal-overlay" style="z-index: 100000;">
+            <div class="modal-content">
+                <h2 style="color: #f1c40f; text-shadow: 0 0 20px #f1c40f;">🌌 GALAKTİK SIÇRAMA 🌌</h2>
+                <p style="font-size:15px; color:#fff; margin-bottom:15px; font-weight:bold;">Tebrikler! <span style="color:#e74c3c;">Maksimum Seviye olan 50'ye ulaştın!</span></p>
+                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Sıçrama yaparsan tüm paran, uçakların ve seviyen sıfırlanacak. Ancak yepyeni bir galaksiye geçeceksin ve <span style="color:#00ffff;">gelirlerin 5 KATINA çıkacak!</span> Görevler de sıfırlanıp tekrar elmas kazandıracak.</p>
+                <button class="modal-btn btn-save" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color:black;" onclick="doPrestige()">Sıçramayı Başlat!</button>
+                <button class="modal-btn btn-close" onclick="document.getElementById('prestigeModal').style.display='none';">Daha Sonra</button>
+            </div>
+        </div>
+
         <!-- SIRALAMA (LEADERBOARD) EKRANI -->
         <div id="leaderboardModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="color: #f1c40f;">🏆 Canlı Sıralama</h2>
+                <h2 style="color: #f1c40f; text-shadow: 0 0 15px #f1c40f;">🏆 Canlı Sıralama</h2>
                 <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Dünyanın en zengin pilotları!</p>
                 <div class="leaderboard-list" id="leaderboardList"></div>
                 <button class="modal-btn btn-close" style="margin-top: 15px;" onclick="closeLeaderboard()">Kapat</button>
             </div>
         </div>
 
+        <!-- YÜKSELTME (PRESTIGE) BUTONU -->
+        <div id="btnPrestige" class="prestige-btn" onclick="openPrestigeModal()">🚀 Yükselt 🚀</div>
+
+        <div id="galaxyNameDisplay">SİBER GALAKSİ</div>
+
         <!-- ÜST BAR -->
         <div class="top-bar">
             <div class="user-info" onclick="openSettings()">
-                <div class="profile-pic-container f-default" id="userProfileFrame">
-                    <span id="playerLvl">1</span>
-                </div>
+                <div class="profile-pic-container f-default" id="userProfileFrame"><span id="playerLvl">1</span></div>
                 <div class="username" id="displayUsername">Pilot</div>
-                <div class="settings-icon">⚙️</div>
             </div>
             <div class="currencies">
                 <div class="currency money"><span>❂</span> <div id="moneyDisplay">0</div></div>
@@ -402,7 +394,7 @@
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
             <div class="menu-btn" onclick="openMissionsMenu()" style="position: relative;">
-                <div class="icon" style="border-color:#3498db; color: #3498db;">📜</div>Görevler
+                <div class="icon" style="border-color:#3498db; color: #3498db; text-shadow: 0 0 8px #3498db;">📜</div>Görevler
                 <div id="missionBadge" class="mission-badge" style="display: none;">0</div>
             </div>
         </div>
@@ -440,7 +432,7 @@
                 <span class="price">❂ <span id="buyPriceDisplay">80</span></span>
             </div>
             <div class="bottom-btn shop" onclick="openDiamondShop()">
-                <span class="big" style="color: #00ffff;">💎</span> Elmas Dükyanı
+                <span class="big" style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">💎</span> Elmas Dükyanı
             </div>
         </div>
     </div>
@@ -472,9 +464,10 @@
             setTimeout(() => { toast.classList.add("leaving"); setTimeout(() => toast.remove(), 400); }, 3000);
         }
 
-        let money = 0; let gems = 0; let playerLevel = 1;
+        let money = 0; let gems = 0; let playerLevel = 1; let galaxyLevel = 1;
         let currentName = "Pilot"; 
         const MAX_PLANES = 5; 
+        const MAX_LEVEL = 50; // YENİ MAKSİMUM SEVİYE SINIRI
         
         let gridSlots = new Array(10).fill(null); 
         let flyingPlanes = []; 
@@ -489,16 +482,19 @@
         
         let ownedFrames = ['default']; let activeFrame = 'default';
         const framesData = [
-            { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' },
-            { id: 'gold', name: 'Altın', price: 15, cssClass: 'f-gold' },
-            { id: 'ice', name: 'Buzul', price: 25, cssClass: 'f-ice' },
-            { id: 'fire', name: 'Ateş', price: 40, cssClass: 'f-fire' },
-            { id: 'poison', name: 'Zehir', price: 60, cssClass: 'f-poison' },
-            { id: 'neon', name: 'Neon', price: 80, cssClass: 'f-neon' },
-            { id: 'hacker', name: 'Hacker', price: 110, cssClass: 'f-hacker' },
-            { id: 'void', name: 'Void', price: 150, cssClass: 'f-void' },
-            { id: 'cosmic', name: 'Kozmik', price: 220, cssClass: 'f-cosmic' },
-            { id: 'god', name: 'Tanrısal', price: 300, cssClass: 'f-god' }
+            { id: 'default', name: 'Standart', price: 0, cssClass: 'f-default' }, { id: 'gold', name: 'Altın', price: 15, cssClass: 'f-gold' },
+            { id: 'ice', name: 'Buzul', price: 25, cssClass: 'f-ice' }, { id: 'fire', name: 'Ateş', price: 40, cssClass: 'f-fire' },
+            { id: 'poison', name: 'Zehir', price: 60, cssClass: 'f-poison' }, { id: 'neon', name: 'Neon', price: 80, cssClass: 'f-neon' },
+            { id: 'hacker', name: 'Hacker', price: 110, cssClass: 'f-hacker' }, { id: 'void', name: 'Void', price: 150, cssClass: 'f-void' },
+            { id: 'cosmic', name: 'Kozmik', price: 220, cssClass: 'f-cosmic' }, { id: 'god', name: 'Tanrısal', price: 300, cssClass: 'f-god' }
+        ];
+
+        const galaxyData = [
+            { name: "Siber Galaksi", c1: "rgba(0,255,255,", c2: "rgba(188,19,254," },
+            { name: "Kuantum Galaksisi", c1: "rgba(46,204,113,", c2: "rgba(241,196,15," },
+            { name: "Hiçlik Boyutu", c1: "rgba(231,76,60,", c2: "rgba(0,0,0," },
+            { name: "Aura Evreni", c1: "rgba(255,0,255,", c2: "rgba(0,255,255," },
+            { name: "Tanrısal Çekirdek", c1: "rgba(241,196,15,", c2: "rgba(255,255,255," }
         ];
 
         let nextRewardTime = 0; let currentMinuteReward = null;
@@ -545,6 +541,7 @@
                 const data = JSON.parse(saved);
                 money = data.money || 0; gems = data.gems || 0; 
                 playerLevel = data.playerLevel || 1; currentName = data.currentName || "Pilot"; 
+                galaxyLevel = data.galaxyLevel || 1;
                 boostMoneyEnd = data.boostMoneyEnd || 0; boostMoneyMult = data.boostMoneyMult || 1;
                 boostSpeedEnd = data.boostSpeedEnd || 0; boostSpeedMult = data.boostSpeedMult || 1;
                 ownedFrames = data.ownedFrames || ['default']; activeFrame = data.activeFrame || 'default';
@@ -553,7 +550,7 @@
                 claimedLevels = data.claimedLevels || [];
                 
                 document.getElementById('loginOverlay').style.display = 'none';
-                checkAndSetUsernameDisplay();
+                checkAndSetUsernameDisplay(); applyGalaxyTheme();
                 gameStarted = true;
                 (data.flying || []).forEach(f => { spawnTrackPlane(f.level, f.slotIndex, f.progress); });
                 initGrid(); updateFrameUI(); showToast("Kaldığın yerden devam ediyorsun!", "info");
@@ -569,20 +566,20 @@
             const user = document.getElementById('usernameInput').value.trim();
             if(user === "") { showToast("Pilot adını gir!", "error"); return; }
             currentName = user;
-            claimedLevels = []; 
+            claimedLevels = []; galaxyLevel = 1;
             
             if(user.toLowerCase() === "test") {
                 money = 999999999999999; gems = 999999999; playerLevel = 1; 
                 showToast("Test Modu: Sınırsız Kaynak Aktif!", "info");
             } else if(user.toLowerCase() === "cinar") {
-                money = 999999999999999; gems = 999999; playerLevel = 200;
+                money = 999999999999999; gems = 999999; playerLevel = 49;
                 showToast("VIP Girişi Başarılı!", "info");
             } else {
                 money = 0; gems = 50; playerLevel = 1;
                 localStorage.removeItem("planeTycoonSave"); 
             }
             
-            checkAndSetUsernameDisplay();
+            checkAndSetUsernameDisplay(); applyGalaxyTheme();
             document.getElementById('settingNameInput').value = currentName;
             nextRewardTime = Date.now();
             document.getElementById('loginOverlay').style.display = 'none';
@@ -596,13 +593,30 @@
         }
         
         function checkAndSetUsernameDisplay() {
-            if(currentName.toLowerCase() === "test") {
-                document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`;
-            } else if (currentName.toLowerCase() === "cinar") {
-                document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`;
-            } else { 
-                document.getElementById('displayUsername').innerText = `${currentName}`; 
-            }
+            if(currentName.toLowerCase() === "test") { document.getElementById('displayUsername').innerHTML = `🌟 ${currentName}`; } 
+            else if (currentName.toLowerCase() === "cinar") { document.getElementById('displayUsername').innerHTML = `🌟 VIP Çınar`; } 
+            else { document.getElementById('displayUsername').innerText = `${currentName}`; }
+        }
+
+        // --- GALAKSİ TEMASINI UYGULAMA ---
+        function applyGalaxyTheme() {
+            let gIndex = Math.min(galaxyLevel - 1, galaxyData.length - 1);
+            let g = galaxyData[gIndex];
+            document.getElementById("galaxyNameDisplay").innerText = g.name;
+            document.getElementById("galaxyNameDisplay").style.color = g.c1 + "1)";
+            document.getElementById("galaxyNameDisplay").style.textShadow = `0 0 10px ${g.c1}0.8)`;
+            
+            let bgGrid = document.getElementById("dynamicBgGrid");
+            bgGrid.style.backgroundImage = `linear-gradient(${g.c1}0.05) 1px, transparent 1px), linear-gradient(90deg, ${g.c1}0.05) 1px, transparent 1px)`;
+            
+            let tCont = document.getElementById("trackContainer");
+            tCont.style.borderColor = g.c1 + "0.6)";
+            tCont.style.boxShadow = `0 0 60px ${g.c1}0.25), inset 0 0 50px ${g.c1}0.15)`;
+            
+            document.getElementById("dashedLine").style.borderColor = g.c1 + "0.7)";
+            document.getElementById("dashedLine").style.filter = `drop-shadow(0 0 6px ${g.c1}1))`;
+            
+            document.querySelector(".grid-container").style.borderColor = g.c1 + "0.3)";
         }
 
         function startGameLoops() {
@@ -620,14 +634,24 @@
             return num.toExponential(2);
         }
 
-        function getPlaneIncome(level) { return Math.floor(10 * Math.pow(1.15, level)); }
+        // 50 Levele göre yeni optimize ekonomi hesaplaması ve Galaksi Çarpanı (Galaxy Level * 5)
+        function getPlaneIncome(level) { 
+            let base = Math.floor(10 * Math.pow(1.25, level)); 
+            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
+            return base * mult;
+        }
         function getMarketLevel() { return Math.max(1, playerLevel - 2); }
-        function getMarketPrice() { return Math.floor(50 * Math.pow(1.6, getMarketLevel())); }
+        function getMarketPrice() { 
+            let lvl = getMarketLevel();
+            let base = Math.floor(50 * Math.pow(1.35, lvl)); 
+            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
+            return base * mult;
+        }
 
         function saveGame() {
             if(!gameStarted) return;
             const data = {
-                money, gems, playerLevel, currentName,
+                money, gems, playerLevel, currentName, galaxyLevel,
                 boostMoneyEnd, boostMoneyMult, boostSpeedEnd, boostSpeedMult,
                 ownedFrames, activeFrame, nextRewardTime, currentMinuteReward,
                 gridSlots: gridSlots, claimedLevels: claimedLevels,
@@ -636,35 +660,72 @@
             localStorage.setItem("planeTycoonSave", JSON.stringify(data));
         }
 
+        // --- GALAKTİK SIÇRAMA (PRESTIGE) ---
+        function checkPrestige() {
+            if(playerLevel >= MAX_LEVEL) {
+                document.getElementById("btnPrestige").style.display = "block";
+            } else {
+                document.getElementById("btnPrestige").style.display = "none";
+            }
+        }
+
+        function openPrestigeModal() { document.getElementById("prestigeModal").style.display = "flex"; }
+        
+        function doPrestige() {
+            document.getElementById("prestigeModal").style.display = "none";
+            createExplosion();
+            
+            // Verileri Sıfırla
+            money = 0; playerLevel = 1; galaxyLevel++; claimedLevels = [];
+            gridSlots = new Array(10).fill(null);
+            flyingPlanes.forEach(p => p.element.remove());
+            flyingPlanes = [];
+            
+            applyGalaxyTheme(); initGrid(); updateUI(); saveGame();
+            showToast("BÜYÜK SIÇRAMA GERÇEKLEŞTİ! Gelirlerin uçuşa geçti!", "info");
+        }
+
+        function createExplosion() {
+            const expCont = document.createElement("div");
+            expCont.style.position = "fixed"; expCont.style.top = "0"; expCont.style.left = "0";
+            expCont.style.width = "100%"; expCont.style.height = "100%";
+            expCont.style.pointerEvents = "none"; expCont.style.zIndex = "99999999";
+            document.body.appendChild(expCont);
+
+            for (let i = 0; i < 80; i++) {
+                let p = document.createElement("div");
+                p.innerText = Math.random() > 0.5 ? "❂" : "✨";
+                p.style.position = "absolute"; p.style.left = "50%"; p.style.top = "50%";
+                p.style.fontSize = (Math.random() * 30 + 20) + "px";
+                p.style.color = Math.random() > 0.5 ? "#f1c40f" : "#00ffff";
+                p.style.textShadow = "0 0 10px currentColor";
+                let tx = (Math.random() - 0.5) * window.innerWidth * 1.5;
+                let ty = (Math.random() - 0.5) * window.innerHeight * 1.5;
+                p.animate([
+                    { transform: 'translate(-50%, -50%) scale(1)', opacity: 1 },
+                    { transform: `translate(${tx}px, ${ty}px) scale(0)`, opacity: 0 }
+                ], { duration: Math.random() * 1500 + 1000, easing: 'cubic-bezier(0.1, 0.8, 0.1, 1)', fill: 'forwards' });
+                expCont.appendChild(p);
+            }
+            setTimeout(() => expCont.remove(), 3000);
+        }
+
         // --- SIRALAMA GÖSTERİMİ ---
         function openLeaderboard() {
-            const list = document.getElementById("leaderboardList");
-            list.innerHTML = "";
-            
+            const list = document.getElementById("leaderboardList"); list.innerHTML = "";
             let allPlayers = [...bots];
             allPlayers.push({ name: currentName, money: money, isPlayer: true });
             allPlayers.sort((a, b) => b.money - a.money);
-            
             let html = "";
             allPlayers.forEach((p, index) => {
-                let rankStr = index + 1;
-                let rankClass = "";
+                let rankStr = index + 1; let rankClass = "";
                 if(index === 0) { rankStr = "👑"; rankClass = "lb-rank-1"; }
                 else if(index === 1) { rankStr = "2."; rankClass = "lb-rank-2"; }
                 else if(index === 2) { rankStr = "3."; rankClass = "lb-rank-3"; }
-                
                 let isPClass = p.isPlayer ? "is-player" : "";
-                
-                html += `
-                    <div class="lb-item ${isPClass}">
-                        <div class="lb-rank ${rankClass}">${rankStr}</div>
-                        <div class="lb-name">${p.name} ${p.isPlayer ? '(Sen)' : ''}</div>
-                        <div class="lb-money">❂ ${formatNumber(p.money)}</div>
-                    </div>
-                `;
+                html += `<div class="lb-item ${isPClass}"><div class="lb-rank ${rankClass}">${rankStr}</div><div class="lb-name">${p.name} ${p.isPlayer ? '(Sen)' : ''}</div><div class="lb-money">❂ ${formatNumber(p.money)}</div></div>`;
             });
-            list.innerHTML = html;
-            document.getElementById("leaderboardModal").style.display = "flex";
+            list.innerHTML = html; document.getElementById("leaderboardModal").style.display = "flex";
         }
         function closeLeaderboard() { document.getElementById("leaderboardModal").style.display = "none"; }
 
@@ -676,12 +737,12 @@
 
         function openMissionsMenu() {
             const list = document.getElementById("missionsList"); list.innerHTML = "";
-            let highestToShow = playerLevel + 1; if(highestToShow > 200) highestToShow = 200;
+            let highestToShow = playerLevel + 1; if(highestToShow > MAX_LEVEL) highestToShow = MAX_LEVEL;
             let html = "";
             for(let i = 2; i <= highestToShow; i++) {
                 let isClaimed = claimedLevels.includes(i); let isUnlocked = i <= playerLevel;
                 if(isClaimed) { html += `<div class="mission-item" style="opacity:0.5; border-color:#555; box-shadow:none;"><div class="mission-info"><div class="mission-title" style="color:#aaa;">Lv.${i} Uçak Aç</div><div class="mission-reward" style="color:#777; text-shadow:none;">Alındı</div></div><button class="btn-claim-mission" disabled>✓</button></div>`; } 
-                else if(isUnlocked) { html += `<div class="mission-item"><div class="mission-info"><div class="mission-title">Lv.${i} Uçak Aç</div><div class="mission-reward">💎 2 Elmas</div></div><button class="btn-claim-mission" onclick="claimMissionReward(${i})">Al</button></div>`; } 
+                else if(isUnlocked) { html += `<div class="mission-item"><div class="mission-info"><div class="mission-title">Lv.${i} Uçak Aç</div><div class="mission-reward">💎 3 Elmas</div></div><button class="btn-claim-mission" onclick="claimMissionReward(${i})">Al</button></div>`; } 
                 else { html += `<div class="mission-item" style="border-color:#e74c3c; box-shadow: inset 0 0 10px rgba(231,76,60,0.2);"><div class="mission-info"><div class="mission-title" style="color:#e74c3c;">Lv.${i} Uçak Aç</div><div class="mission-reward" style="color:#e74c3c; text-shadow:none;">Kilitli</div></div><button class="btn-claim-mission" style="background:rgba(231,76,60,0.2); box-shadow:none;" disabled>🔒</button></div>`; }
             }
             list.innerHTML = html; document.getElementById("missionsModal").style.display = "flex"; updateMissionsBadge();
@@ -690,7 +751,7 @@
 
         function claimMissionReward(level) {
             if(level <= playerLevel && !claimedLevels.includes(level)) {
-                gems += 2; claimedLevels.push(level); saveGame(); updateUI(); openMissionsMenu(); showToast(`Seviye ${level} Görevi: 2 Elmas Kazandın!`, "info");
+                gems += 3; claimedLevels.push(level); saveGame(); updateUI(); openMissionsMenu(); showToast(`Seviye ${level} Görevi: 3 Elmas Kazandın!`, "info");
             }
         }
 
@@ -706,7 +767,7 @@
             const grid = document.getElementById("frameShopGrid"); grid.innerHTML = "";
             framesData.forEach(frame => {
                 const isOwned = ownedFrames.includes(frame.id); const isEquipped = activeFrame === frame.id; let btnHtml = "";
-                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px;">Kuşanıldı</div>`;
+                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px; text-shadow:0 0 5px #00ffff;">Kuşanıldı</div>`;
                 else if(isOwned) btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #2ecc71, #27ae60); border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="equipFrame('${frame.id}')">Kuşan</button>`;
                 else btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #00ffff, #3498db); border:none; border-radius:5px; color:black; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="buyFrame('${frame.id}', ${frame.price})">Al (💎 ${frame.price})</button>`;
                 let innerHTML = (frame.id === 'god' || frame.id === 'hacker') ? '<div class="inner" style="z-index:5;">?</div>' : '?';
@@ -741,25 +802,33 @@
             saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
         }
 
-        // --- DÜKKANDA Lvl - 2 UYGULAMASI ---
+        // DÜKKAN LİMİTİ: En Yüksek Seviye - 2
         function openGeneralShop() {
             updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
-            let limit = getMarketLevel(); // playerLevel - 2 veya en az 1
+            let limit = getMarketLevel();
             for(let i = 1; i <= limit; i++) {
-                let price = Math.floor(50 * Math.pow(1.6, i)); let income = getPlaneIncome(i); let planeSVG = getJetSVG(i, false); 
-                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid #bc13fe; background: #000; padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:18px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
+                let price = getMarketPriceForLevel(i); let income = getPlaneIncome(i); let planeSVG = getJetSVG(i, false); 
+                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.6); padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0; text-shadow: 0 0 5px #f1c40f;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:16px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
             }
             document.getElementById("generalShopModal").style.display = "flex";
         }
+        function getMarketPriceForLevel(lvl) {
+            let base = Math.floor(50 * Math.pow(1.35, lvl)); 
+            let mult = galaxyLevel >= 2 ? Math.pow(5, galaxyLevel - 1) : 1;
+            return base * mult;
+        }
+
         function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
         function buySpecificPlane(level, price) {
             if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok!", "error"); } } 
             else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
-        // --- FPS DOSTU (Filtresiz) JET ÇİZİMİ VE ROKET ANİMASYONU ---
+        // --- GALAKSİ RENGİNE DUYARLI JET ÇİZİMİ ---
         function getJetSVG(level, isFlying = true) {
-            let l = level; let hueBase = (l * 37) % 360; 
+            let l = level; 
+            // Galaksi değiştikçe uçakların base rengine 60 ekleyelim
+            let hueBase = ((l * 37) + (galaxyLevel * 60)) % 360; 
             let c1 = `hsl(${hueBase}, 85%, 55%)`; let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
             let cG = `#74b9ff`; let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
 
@@ -794,6 +863,7 @@
             flyingPlanes.forEach(plane => { totalCps += (getPlaneIncome(plane.level) * currentIncomeMult) / 4; });
             document.getElementById("cpsDisplay").innerText = formatNumber(totalCps) + " / sn";
             updateMissionsBadge();
+            checkPrestige();
         }
 
         const trashBin = document.getElementById("trashBin"); const trackEl = document.getElementById("trackContainer");
@@ -843,10 +913,8 @@
                 }
                 trashBin.style.display = "none"; trashBin.classList.remove("drag-over");
 
-                // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ (KESİN ÇARPIŞMA)
+                // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ
                 if(!isDeleted) {
-                    
-                    // A. Slot BoundingBox Çarpışma Testi
                     let targetSlotIndex = -1;
                     const slots = document.querySelectorAll('.slot');
                     slots.forEach(slot => {
@@ -856,32 +924,34 @@
                         }
                     });
 
-                    // B. Pist BoundingBox Çarpışma Testi
                     let droppedOnTrack = false;
                     const trackRect = trackEl.getBoundingClientRect();
                     if(touch.clientX >= trackRect.left && touch.clientX <= trackRect.right && touch.clientY >= trackRect.top && touch.clientY <= trackRect.bottom) {
                         droppedOnTrack = true;
                     }
 
-                    // --- Eylemi Gerçekleştir ---
                     if (targetSlotIndex !== -1) { 
-                        // Hangara Bırakıldı
                         const targetIndex = targetSlotIndex; const targetItem = gridSlots[targetIndex];
                         if (activeTouchData.type === 'track') { 
                             gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); 
                             if (!targetItem) { gridSlots[targetIndex] = { level: activeTouchData.level, isFlying: false }; } 
-                            else if (targetItem.level === activeTouchData.level) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } 
+                            else if (targetItem.level === activeTouchData.level && targetItem.level < MAX_LEVEL) { 
+                                gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; animatedIndex = targetIndex; 
+                                if(targetItem.level + 1 > playerLevel) { playerLevel = targetItem.level + 1; updateFrameUI(); } 
+                            } 
                         } 
                         else if (activeTouchData.type === 'grid') { 
                             const sourceIndex = activeTouchData.index; 
                             if (sourceIndex !== targetIndex) { 
                                 const sourceItem = gridSlots[sourceIndex]; 
                                 if (!targetItem) { gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null; } 
-                                else if (targetItem.level === sourceItem.level && !targetItem.isFlying) { gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); } } 
+                                else if (targetItem.level === sourceItem.level && targetItem.level < MAX_LEVEL && !targetItem.isFlying) { 
+                                    gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex; 
+                                    if(targetItem.level + 1 > playerLevel) { playerLevel = targetItem.level + 1; updateFrameUI(); } 
+                                } 
                             } 
                         } 
                     } else if (droppedOnTrack) { 
-                        // Piste Bırakıldı
                         if (activeTouchData.type === 'grid') { 
                             const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; 
                             if (activeTrackCount < MAX_PLANES) { 
@@ -942,9 +1012,9 @@
 
                 if(!targetItem) { 
                     gridSlots[targetIndex] = sourceItem; gridSlots[sourceIndex] = null;
-                } else if (targetItem.level === sourceItem.level) {
+                } else if (targetItem.level === sourceItem.level && targetItem.level < MAX_LEVEL) {
                     gridSlots[targetIndex] = { level: targetItem.level + 1, isFlying: false }; gridSlots[sourceIndex] = null; animatedIndex = targetIndex;
-                    if(targetItem.level + 1 > playerLevel && playerLevel !== 200) { playerLevel = targetItem.level + 1; updateFrameUI(); }
+                    if(targetItem.level + 1 > playerLevel) { playerLevel = targetItem.level + 1; updateFrameUI(); }
                 }
             } 
             initGrid(); saveGame();
@@ -992,7 +1062,7 @@
             setTimeout(() => pop.remove(), 1500); 
         }
 
-        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist Uyumlu) ---
+        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME VE LERP (TERS DÖNMEYİ ENGELLER) ---
         function getPosAt(progress) {
             const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
             const cx = 152; const cy = 252; 
@@ -1131,7 +1201,7 @@
         }
         function takeCaseReward() {
             document.getElementById("btnTakeReward").style.display = "none";
-            if (currentWonReward.type === 'plane') { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel !== 200) { playerLevel = currentWonReward.value; updateFrameUI(); } } } 
+            if (currentWonReward.type === 'plane') { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { gridSlots[emptyIndex] = { level: currentWonReward.value, isFlying: false }; animatedIndex = emptyIndex; if(currentWonReward.value > playerLevel && playerLevel < MAX_LEVEL) { playerLevel = currentWonReward.value; updateFrameUI(); } } } 
             else if (currentWonReward.type === 'money') { money += currentWonReward.value; } else if (currentWonReward.type === 'gem') { gems += currentWonReward.value; } 
             else if (currentWonReward.type === 'boost') {
                 let duration = 3 * 60 * 1000; let now = Date.now();
