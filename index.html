@@ -23,248 +23,224 @@
         
         h1, h2, h3, .loading-title, .bottom-btn span.big, #trashBin, .lb-rank { font-family: 'Teko', sans-serif; letter-spacing: 1px; }
 
-        /* HAREKETLİ NEON SİBER IZGARA VE UZAY ARKA PLANI */
+        /* SİMSİYAH, MOR VE TURKUAZ NEON ARKA PLAN (Sıfır Kasma) */
         body { 
             margin: 0; padding: 0; 
-            background-color: #030408;
+            background-color: #020202; /* Tam Siyah */
+            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
+            position: relative;
+        }
+
+        /* Arka plan siber ızgarası (FPS Dostu) */
+        .bg-grid {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image: 
                 linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.08), transparent 25%),
-                radial-gradient(circle at 85% 30%, rgba(188, 19, 254, 0.08), transparent 25%),
-                linear-gradient(45deg, #05050a, #0b192c, #130822, #071318);
-            background-size: 25px 25px, 25px 25px, 100% 100%, 100% 100%, 400% 400%;
-            animation: gradientBG 15s ease infinite, moveGrid 20s linear infinite;
-            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 35px 35px;
+            animation: moveGrid 20s linear infinite;
         }
-        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        @keyframes moveGrid { 0% { background-position: 0px 0px, 0px 0px, center, center, center; } 100% { background-position: 25px 25px, 25px 25px, center, center, center; } }
+        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 35px 35px; } }
+
+        /* FPS Katili "blur" filtresi silindi! Yerine gradient kullanıldı. Oyun artık yağ gibi. */
+        .nebula { position: absolute; border-radius: 50%; z-index: -1; pointer-events: none; animation: floatNebula 20s infinite alternate ease-in-out; }
+        .nebula-1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(188,19,254,0.15) 0%, transparent 70%); top: -150px; left: -150px; }
+        .nebula-2 { width: 600px; height: 600px; background: radial-gradient(circle, rgba(0,255,255,0.15) 0%, transparent 70%); bottom: -200px; right: -200px; animation-delay: -5s; }
+        @keyframes floatNebula { 0% { transform: scale(0.9) translate(0, 0); } 100% { transform: scale(1.1) translate(30px, 30px); } }
 
         #gameContainer { 
             width: 100%; max-width: 450px; height: 100%; position: relative; 
-            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px);
-            display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 255, 0.1); overflow: hidden; z-index: 1;
+            background: rgba(0, 0, 0, 0.6); /* Daha koyu ve saydam */
+            display: flex; flex-direction: column; overflow: hidden; z-index: 1;
         }
 
-        /* SİBERPUNK TARAMA ÇİZGİLERİ */
-        #gameContainer::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%);
-            background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.3;
-        }
-
-        /* YILDIZLAR */
-        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
-        .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 6px #fff; } }
+        /* YILDIZLAR (Performans için gölgeler silindi) */
+        .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .star { position: absolute; background: #fff; border-radius: 50%; animation: twinkle infinite alternate; }
+        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 0.8; transform: scale(1.2); } }
 
         /* YÜKLEME EKRANI */
-        #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; background: #05050a; transition: opacity 0.5s ease; }
-        .loading-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('icon_2.jpg') center/cover; filter: blur(25px) brightness(0.3); z-index: 0; transform: scale(1.1); }
+        #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; background: #020202; transition: opacity 0.5s ease; }
         .loading-content { z-index: 1; display: flex; flex-direction: column; align-items: center; width: 85%; }
-        .loading-logo { width: 150px; height: 150px; border-radius: 35px; box-shadow: 0 0 50px #00ffff; border: 4px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
-        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 40px #00ffff; } 50% { transform: translateY(-15px); box-shadow: 0 0 70px #00ffff; } }
-        .loading-title { font-size: 50px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; text-shadow: 0 0 30px rgba(0,255,255,0.5); font-weight: 700; text-align: center; }
-        .loading-bar-container { width: 100%; height: 12px; background: rgba(0,0,0,0.8); border-radius: 10px; overflow: hidden; border: 2px solid rgba(0,255,255,0.6); box-shadow: 0 0 20px rgba(0,255,255,0.4); }
-        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 25px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        .loading-logo { width: 150px; height: 150px; border-radius: 35px; box-shadow: 0 0 30px #bc13fe; border: 4px solid #00ffff; margin-bottom: 30px; object-fit: cover; animation: floatLogo 3s ease-in-out infinite; }
+        @keyframes floatLogo { 0%, 100% { transform: translateY(0); box-shadow: 0 0 20px #bc13fe; } 50% { transform: translateY(-15px); box-shadow: 0 0 40px #00ffff; } }
+        .loading-title { font-size: 55px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin: 0 0 40px 0; font-weight: 700; text-align: center; }
+        .loading-bar-container { width: 100%; height: 12px; background: #000; border-radius: 10px; overflow: hidden; border: 2px solid #bc13fe; box-shadow: 0 0 15px rgba(188,19,254,0.5); }
+        .loading-bar-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ffff, #bc13fe); box-shadow: 0 0 20px #00ffff; animation: loadBar 4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
         .loading-text { margin-top: 20px; font-size: 18px; color: #00ffff; animation: pulseText 1s infinite alternate; font-weight: bold; letter-spacing: 2px;}
         @keyframes loadBar { 0% { width: 0%; } 100% { width: 100%; } }
-        @keyframes pulseText { 0% { opacity: 0.4; text-shadow: 0 0 0px #00ffff; } 100% { opacity: 1; text-shadow: 0 0 15px #00ffff; } }
+        @keyframes pulseText { 0% { opacity: 0.4; } 100% { opacity: 1; } }
 
         /* BİLDİRİMLER (TOAST) */
         #toastContainer { position: absolute; top: 15px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; gap: 10px; z-index: 100000; pointer-events: none; width: 90%; }
-        .custom-toast { background: rgba(10, 15, 30, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); backdrop-filter: blur(10px); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
-        .custom-toast.error { border-color: #ff003c; box-shadow: 0 0 20px rgba(255,0,60,0.4); animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
-        .custom-toast.info { border-color: #00ffff; box-shadow: 0 0 20px rgba(0,255,255,0.4); }
+        .custom-toast { background: rgba(5, 5, 10, 0.95); border-left: 6px solid; color: white; padding: 14px 20px; border-radius: 12px; font-weight: bold; font-size: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.9); display: flex; align-items: center; gap: 12px; animation: toastEnter 0.5s forwards; }
+        .custom-toast.error { border-color: #ff003c; animation: toastEnter 0.5s forwards, shakeToast 0.4s ease-in-out 0.5s; }
+        .custom-toast.info { border-color: #00ffff; }
         .custom-toast.leaving { animation: toastLeave 0.4s ease-in forwards !important; }
         @keyframes toastEnter { 0% { opacity: 0; transform: translateY(-60px) scale(0.8); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
         @keyframes toastLeave { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-60px) scale(0.8); } }
         @keyframes shakeToast { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-6px); } 40% { transform: translateX(6px); } 60% { transform: translateX(-4px); } 80% { transform: translateX(4px); } }
 
         /* GİRİŞ EKRANI */
-        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 10, 0.95); justify-content: center; align-items: center; z-index: 99999; backdrop-filter: blur(20px); }
-        .login-box { background: rgba(10, 15, 25, 0.85); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #00ffff; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 30px rgba(0,255,255,0.15); }
-        .login-box h1 { margin: 0 0 10px 0; font-size: 44px; background: linear-gradient(to right, #00ffff, #bc13fe); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(0,255,255,0.6)); font-weight: 700; }
-        .slogan { font-size: 15px; color: #00ffff; margin-bottom: 30px; letter-spacing: 1px; text-shadow: 0 0 5px #00ffff; }
-        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.7); border: 2px solid #3498db; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; box-shadow: inset 0 0 15px rgba(188,19,254,0.2); font-weight: bold; }
-        .login-box input:focus { border-color: #00ffff; box-shadow: 0 0 25px rgba(0,255,255,0.5), inset 0 0 15px rgba(0,255,255,0.3); }
-        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #fff; font-size: 24px; font-weight: 700; cursor: pointer; margin-top: 10px; box-shadow: 0 0 30px rgba(0,255,255,0.5); transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px 3px black; font-family: 'Teko', sans-serif;}
-        .login-btn:active { transform: scale(0.95); box-shadow: 0 0 15px rgba(0,255,255,0.4); }
+        #loginOverlay { display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(2, 2, 5, 0.95); justify-content: center; align-items: center; z-index: 99999; }
+        .login-box { background: rgba(5, 5, 10, 0.95); padding: 45px 30px; border-radius: 20px; text-align: center; width: 85%; border: 2px solid #bc13fe; box-shadow: 0 0 30px rgba(188,19,254,0.3); }
+        .login-box h1 { margin: 0 0 10px 0; font-size: 44px; color: #00ffff; font-weight: 700; text-shadow: 0 0 10px #00ffff; }
+        .slogan { font-size: 16px; color: #bc13fe; margin-bottom: 30px; letter-spacing: 1px; text-shadow: 0 0 5px #bc13fe; font-weight: bold;}
+        .login-box input { width: 100%; padding: 15px; margin-bottom: 15px; background: #000; border: 2px solid #00ffff; border-radius: 10px; color: #00ffff; font-size: 22px; text-align: center; outline: none; transition: 0.3s; font-weight: bold; }
+        .login-box input:focus { border-color: #bc13fe; box-shadow: 0 0 15px rgba(188,19,254,0.5); }
+        .login-btn { width: 100%; padding: 15px; background: linear-gradient(45deg, #00ffff, #bc13fe); border: none; border-radius: 10px; color: #000; font-size: 26px; font-weight: 700; cursor: pointer; margin-top: 10px; transition: 0.2s; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif;}
+        .login-btn:active { transform: scale(0.95); }
 
-        /* MODALLAR */
-        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(12px); }
-        .modal-content { background: rgba(10, 15, 25, 0.95); border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 50px rgba(0,255,255,0.3), inset 0 0 25px rgba(0,255,255,0.15); text-align: center; position: relative; }
-        .modal-content h2 { margin-top: 0; font-size: 32px; color: #00ffff; text-shadow: 0 0 15px rgba(0,255,255,0.7); letter-spacing: 1px; font-weight: 700; }
-        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: rgba(0, 0, 0, 0.6); border: 1px solid rgba(0,255,255,0.4); border-radius: 8px; color: #00ffff; font-size: 18px; outline: none; text-align: center; font-weight: bold; }
-        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #fff; transition: 0.2s; box-shadow: 0 0 15px rgba(0,255,255,0.3); text-transform: uppercase; text-shadow: 1px 1px 2px black; font-family: 'Teko', sans-serif;}
+        /* MODALLAR (Karanlık Tema) */
+        .modal-overlay { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
+        .modal-content { background: #05050a; border: 2px solid #00ffff; border-radius: 15px; padding: 25px; width: 92%; max-height: 85%; overflow-y: auto; box-shadow: 0 0 30px rgba(0,255,255,0.2); text-align: center; position: relative; }
+        .modal-content h2 { margin-top: 0; font-size: 32px; color: #bc13fe; text-shadow: 0 0 15px rgba(188,19,254,0.5); letter-spacing: 1px; font-weight: 700; }
+        .modal-content input, .modal-content select { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #00ffff; border-radius: 8px; color: #00ffff; font-size: 18px; outline: none; text-align: center; font-weight: bold; }
+        .modal-btn { width: 100%; padding: 12px; border: none; border-radius: 8px; font-size: 22px; font-weight: 700; cursor: pointer; margin-bottom: 10px; color: #000; transition: 0.2s; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .modal-btn:active { transform: scale(0.95); }
-        .btn-save { background: linear-gradient(45deg, #00ffff, #3498db); } 
-        .btn-close { background: linear-gradient(45deg, #ff003c, #c0392b); box-shadow: 0 0 15px rgba(255,0,60,0.5); border: 1px solid #ff003c; }
+        .btn-save { background: linear-gradient(45deg, #00ffff, #bc13fe); } 
+        .btn-close { background: transparent; color: #ff003c; border: 2px solid #ff003c; }
 
         /* GÖREVLER VE SIRALAMA LİSTELERİ */
-        .mission-item, .lb-item { background: rgba(0,0,0,0.7); border: 1px solid #3498db; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; box-shadow: inset 0 0 15px rgba(52,152,219,0.15); transition: 0.3s; }
-        .mission-item:hover, .lb-item:hover { background: rgba(0,255,255,0.1); transform: translateX(5px); border-color: #00ffff; box-shadow: inset 0 0 20px rgba(0,255,255,0.4); }
+        .mission-item, .lb-item { background: #000; border: 1px solid #bc13fe; border-radius: 12px; padding: 15px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s; }
+        .mission-item:hover, .lb-item:hover { border-color: #00ffff; box-shadow: inset 0 0 15px rgba(0,255,255,0.2); }
         .mission-info { text-align: left; }
-        .mission-title { font-size: 16px; font-weight: bold; color: #00ffff; margin-bottom: 5px; text-shadow: 0 0 5px rgba(0,255,255,0.5); letter-spacing: 1px;}
-        .mission-reward { font-size: 15px; color: #f1c40f; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-weight: bold; }
-        .btn-claim-mission { background: linear-gradient(45deg, #2ecc71, #27ae60); border: 1px solid #2ecc71; border-radius: 8px; color: white; padding: 8px 18px; font-weight: bold; cursor: pointer; box-shadow: 0 0 15px rgba(46,204,113,0.6); transition: 0.2s; font-size: 18px; font-family: 'Teko', sans-serif;}
+        .mission-title { font-size: 15px; font-weight: bold; color: #00ffff; margin-bottom: 5px; }
+        .mission-reward { font-size: 14px; color: #f1c40f; text-shadow: 0 0 5px rgba(241,196,15,0.5); font-weight: bold; }
+        .btn-claim-mission { background: #2ecc71; border: none; border-radius: 8px; color: #000; padding: 8px 18px; font-weight: 700; cursor: pointer; transition: 0.2s; font-size: 20px; font-family: 'Teko', sans-serif;}
         .btn-claim-mission:active { transform: scale(0.9); }
-        .btn-claim-mission:disabled { background: rgba(255,255,255,0.1); box-shadow: none; border-color: transparent; cursor: not-allowed; color: #555; }
-        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #090a0f; box-shadow: 0 0 15px red; z-index: 20; animation: pulseBadge 1.5s infinite; font-family: 'Share Tech Mono', sans-serif;}
-        @keyframes pulseBadge { 0% { transform: scale(1); } 50% { transform: scale(1.15); box-shadow: 0 0 25px red; } 100% { transform: scale(1); } }
+        .btn-claim-mission:disabled { background: #222; color: #555; cursor: not-allowed; }
+        .mission-badge { position: absolute; top: -5px; right: -5px; background: #ff003c; color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 13px; display: flex; justify-content: center; align-items: center; font-weight: bold; border: 2px solid #000; }
 
         /* SIRALAMA (LEADERBOARD) SPESİFİK */
         .leaderboard-list { display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto; padding-right: 5px; }
-        .lb-item { padding: 12px 15px; border-color: #444; }
-        .lb-item.is-player { background: rgba(0,255,255,0.15); border-color: #00ffff; box-shadow: 0 0 15px rgba(0,255,255,0.4); }
-        .lb-rank { font-size: 20px; font-weight: bold; width: 30px; text-align: center; font-family: 'Teko', sans-serif; }
-        .lb-rank-1 { color: #f1c40f; text-shadow: 0 0 10px #f1c40f; font-size: 24px; }
-        .lb-rank-2 { color: #bdc3c7; text-shadow: 0 0 10px #bdc3c7; font-size: 22px; }
-        .lb-rank-3 { color: #cd7f32; text-shadow: 0 0 10px #cd7f32; font-size: 20px; }
-        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; text-shadow: 0 0 5px rgba(255,255,255,0.3); }
-        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; text-shadow: 0 0 8px rgba(241,196,15,0.6); font-family: 'Share Tech Mono', sans-serif; }
+        .lb-item.is-player { background: rgba(0,255,255,0.1); border-color: #00ffff; }
+        .lb-rank { font-size: 20px; font-weight: bold; width: 30px; text-align: center; }
+        .lb-rank-1 { color: #f1c40f; font-size: 24px; }
+        .lb-rank-2 { color: #bdc3c7; font-size: 22px; }
+        .lb-rank-3 { color: #cd7f32; font-size: 20px; }
+        .lb-name { flex-grow: 1; text-align: left; padding-left: 15px; font-size: 15px; font-weight: bold; color: #fff; }
+        .lb-money { font-size: 16px; color: #f1c40f; font-weight: bold; }
 
         /* ÇERÇEVELER */
         .frame-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; margin-bottom: 15px; }
-        .frame-card { background: rgba(0,0,0,0.6); padding: 15px 5px; border-radius: 12px; border: 1px solid #444; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
-        .frame-card:hover { border-color: #00ffff; box-shadow: inset 0 0 20px rgba(0,255,255,0.2); }
+        .frame-card { background: #000; padding: 15px 5px; border-radius: 12px; border: 1px solid #333; cursor: pointer; position: relative; transition: 0.2s; overflow: visible; }
+        .frame-card:hover { border-color: #bc13fe; }
         .frame-card:active { transform: scale(0.95); }
-        .frame-card.owned { border-color: #00ffff; background: rgba(0,255,255,0.08); }
-        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.15); box-shadow: 0 0 25px rgba(241,196,15,0.4); }
-        .profile-pic-container { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; background: #102a43; color: white; text-shadow: 1px 1px 3px black; position: relative; z-index: 2; box-shadow: 0 0 15px rgba(0,0,0,0.8); margin: 0 auto 10px auto; font-family: 'Teko', sans-serif;}
+        .frame-card.owned { border-color: #00ffff; }
+        .frame-card.equipped { border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
+        .profile-pic-container { width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-weight: 900; font-size: 18px; background: #000; color: white; position: relative; z-index: 2; margin: 0 auto 10px auto; font-family: 'Teko', sans-serif;}
         
-        .f-default { border: 2px solid rgba(255,255,255,0.5); }
-        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 15px #f1c40f; }
-        .f-ice { border: 2px solid #00ffff; box-shadow: 0 0 15px #00ffff, inset 0 0 10px #ffffff; background: rgba(0,255,255,0.3); animation: iceGlow 2s infinite alternate; }
-        @keyframes iceGlow { 0% { box-shadow: 0 0 10px #00ffff; } 100% { box-shadow: 0 0 25px #00ffff, inset 0 0 15px white; } }
-        .f-fire { border: 2px solid #ff003c; box-shadow: 0 0 15px #ff003c, 0 0 5px #f39c12 inset; animation: fireGlow 0.5s infinite alternate; background: #c0392b; }
-        @keyframes fireGlow { 0% { box-shadow: 0 0 10px #ff003c, 0 -5px 10px #f39c12; } 100% { box-shadow: 0 0 25px #f39c12, 0 -10px 15px #ff003c; } }
-        .f-poison { border: 2px dashed #bc13fe; box-shadow: 0 0 20px #00ffff; background: rgba(0,255,255,0.1); animation: poisonPulse 1.5s infinite; }
-        @keyframes poisonPulse { 0% { border-color: #bc13fe; box-shadow: 0 0 10px #00ffff; } 50% { border-color: #00ffff; box-shadow: 0 0 25px #bc13fe; } 100% { border-color: #bc13fe; box-shadow: 0 0 10px #00ffff; } }
-        .f-neon { border: 3px solid #0f0; box-shadow: 0 0 15px #0f0, inset 0 0 15px #0f0; border-radius: 10px; animation: neonPulse 1s infinite alternate; }
-        @keyframes neonPulse { 0% { filter: drop-shadow(0 0 5px #0f0); } 100% { filter: drop-shadow(0 0 20px #0f0) drop-shadow(0 0 10px #0ff); border-color: #0ff; } }
-        .f-hacker { border: none; background: transparent; }
-        .f-hacker::before { content: ''; position: absolute; inset: -4px; border: 2px dotted #0f0; border-radius: 50%; animation: hackerSpin 4s linear infinite; box-shadow: 0 0 10px #0f0; }
-        @keyframes hackerSpin { 100% { transform: rotate(360deg); } }
-        .f-cosmic { background: radial-gradient(circle, #00ffff, #bc13fe, #090a0f); border: 2px solid white; box-shadow: 0 0 20px #bc13fe; animation: cosmicPulse 3s infinite alternate; }
-        @keyframes cosmicPulse { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
-        .f-void { border: 3px dashed #bc13fe; box-shadow: 0 0 20px #bc13fe, inset 0 0 20px black; background: #111; animation: voidSpin 4s linear infinite; }
-        @keyframes voidSpin { 0% { transform: rotate(0deg) scale(0.95); } 50% { transform: rotate(180deg) scale(1.05); } 100% { transform: rotate(360deg) scale(0.95); } }
-        .f-god { background: #102a43; border: none; }
-        .f-god::before { content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px; border-radius: 50%; border: 3px solid transparent; border-top-color: #00ffff; border-bottom-color: #bc13fe; animation: godSpin 2s linear infinite; z-index: -1; }
-        .f-god::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; border: 2px solid transparent; border-left-color: #f1c40f; border-right-color: #e74c3c; animation: godSpinReverse 1.5s linear infinite; z-index: -1; }
-        @keyframes godSpin { 100% { transform: rotate(360deg); } } @keyframes godSpinReverse { 100% { transform: rotate(-360deg); } }
+        .f-default { border: 2px solid #555; }
+        .f-gold { border: 3px solid #f1c40f; box-shadow: 0 0 10px #f1c40f; }
+        .f-ice { border: 2px solid #00ffff; box-shadow: 0 0 10px #00ffff; }
+        .f-fire { border: 2px solid #ff003c; box-shadow: 0 0 10px #ff003c; }
+        .f-poison { border: 2px dashed #bc13fe; box-shadow: 0 0 10px #bc13fe; }
+        .f-neon { border: 3px solid #0f0; box-shadow: 0 0 10px #0f0; }
+        .f-hacker { border: 2px dotted #0f0; }
+        .f-cosmic { border: 2px solid #bc13fe; }
+        .f-void { border: 3px dashed #555; }
+        .f-god { border: 3px solid #00ffff; }
 
         /* TIER BAR VE KASALAR */
-        .tier-container { display: flex; gap: 4px; justify-content: center; margin: 20px 0; padding: 10px; background: rgba(0,0,0,0.6); border-radius: 10px; border: 1px solid rgba(0,255,255,0.3); box-shadow: inset 0 0 10px rgba(0,255,255,0.1); }
-        .tier-slot { flex: 1; height: 12px; background: rgba(0,255,255,0.1); border-radius: 3px; border: 1px solid rgba(0,255,255,0.3); transition: 0.3s; }
-        .tier-slot.filled { background: #00ffff; border-color: #fff; box-shadow: 0 0 10px #00ffff; }
+        .tier-container { display: flex; gap: 4px; justify-content: center; margin: 20px 0; padding: 10px; background: #000; border-radius: 10px; border: 1px solid #bc13fe; }
+        .tier-slot { flex: 1; height: 12px; background: #222; border-radius: 3px; border: 1px solid #444; transition: 0.3s; }
+        .tier-slot.filled { background: #00ffff; border-color: #fff; box-shadow: 0 0 8px #00ffff; }
 
         .case-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 15px; }
-        .case-item { position: relative; background: rgba(0,0,0,0.7); border: 1px solid rgba(0,255,255,0.3); border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); }
-        .case-item:hover { box-shadow: inset 0 0 30px rgba(0,255,255,0.2); transform: translateY(-3px); border-color: #00ffff; }
+        .case-item { position: relative; background: #000; border: 1px solid #bc13fe; border-radius: 12px; padding: 15px 5px; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; }
+        .case-item:hover { transform: translateY(-3px); border-color: #00ffff; }
         .case-item:active { transform: scale(0.95); }
-        .case-icon { font-size: 35px; margin-bottom: 8px; filter: drop-shadow(0 0 8px rgba(255,255,255,0.4)); } 
+        .case-icon { font-size: 35px; margin-bottom: 8px; } 
         .case-name { font-size: 13px; font-weight: bold; margin-bottom: 5px; letter-spacing: 0.5px; } 
-        .case-price { font-size: 16px; color: #00ffff; font-weight: bold; text-shadow: 0 0 8px rgba(0,255,255,0.6); }
+        .case-price { font-size: 16px; color: #00ffff; font-weight: bold; }
         
-        #crateInfoModal { z-index: 10500; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); }
-        .case-info-btn { position: absolute; bottom: 8px; right: 8px; font-size: 14px; background: rgba(0,255,255,0.15); border: 1px solid #00ffff; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; z-index: 10; box-shadow: 0 0 8px rgba(0,255,255,0.6); }
-        .case-info-btn:hover { background: #00ffff; color: #000; box-shadow: 0 0 15px #00ffff; }
+        .case-info-btn { position: absolute; bottom: 8px; right: 8px; font-size: 14px; background: #000; border: 1px solid #00ffff; color: #00ffff; border-radius: 50%; width: 28px; height: 28px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s; z-index: 10; }
+        .case-info-btn:hover { background: #00ffff; color: #000; }
         .case-info-btn:active { transform: scale(0.9); }
 
         #rouletteContainer { display: none; flex-direction: column; align-items: center; width: 100%; padding: 10px; }
-        .roulette-window { width: 100%; height: 120px; background: #05050a; border: 2px solid #00ffff; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px; box-shadow: 0 0 25px rgba(0,255,255,0.4), inset 0 0 40px rgba(0,0,0,0.9); }
+        .roulette-window { width: 100%; height: 120px; background: #000; border: 2px solid #bc13fe; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; margin-bottom: 20px; }
         .roulette-strip { display: flex; position: absolute; left: 0; transition: transform 4s cubic-bezier(0.1, 0.7, 0.1, 1); }
-        .roulette-item { width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid rgba(0,255,255,0.2); background: rgba(15, 20, 35, 0.9); flex-shrink: 0; margin: 5px; border-radius: 10px; position: relative; box-sizing: border-box; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
-        .roulette-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #ff003c; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 20px #ff003c; border-radius: 5px; }
+        .roulette-item { width: 100px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; border-right: 1px solid #333; background: #05050a; flex-shrink: 0; margin: 5px; border-radius: 10px; position: relative; box-sizing: border-box; }
+        .roulette-center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: #ff003c; transform: translateX(-50%); z-index: 10; box-shadow: 0 0 10px #ff003c; border-radius: 5px; }
 
         /* ÜST BAR VE MENÜ */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; z-index: 10; }
-        .user-info { display: flex; align-items: center; gap: 10px; background: rgba(10, 15, 30, 0.8); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(0, 255, 255, 0.4); cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
-        .user-info:hover { border-color: #00ffff; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,255,255,0.3); }
+        .user-info { display: flex; align-items: center; gap: 10px; background: #000; padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid #00ffff; cursor: pointer; transition: 0.2s; }
         .user-info:active { transform: scale(0.95); }
-        .username { font-size: 16px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
+        .username { font-size: 16px; font-weight: bold; color: white; }
         .settings-icon { font-size: 16px; margin-left: 2px; opacity: 0.8; }
 
         .currencies { display: flex; gap: 10px; }
-        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
-        .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
-        .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
+        .currency { background: #000; color: white; border: 1px solid #bc13fe; border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; }
+        .currency.money span { color: #f1c40f; font-size: 20px; } 
+        .currency.gem span { color: #00ffff; font-size: 20px; }
 
-        /* YAN MENÜLER (KÖŞELERE YASLANDI) */
+        /* YAN MENÜLER */
         .side-menu { position: absolute; top: 90px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: scale(0.9); }
         .side-menu.left { left: 5px; transform-origin: top left; } .side-menu.right { right: 5px; align-items: center; transform-origin: top right; }
-        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; text-shadow: 0 0 8px rgba(0,0,0,0.9); }
-        .menu-btn .icon { background: rgba(10, 15, 30, 0.9); border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); box-shadow: 0 5px 20px rgba(0,0,0,0.7), inset 0 0 15px rgba(0,255,255,0.25); transition: 0.2s; backdrop-filter: blur(8px); }
-        .menu-btn:hover .icon { transform: scale(1.1); box-shadow: 0 5px 25px rgba(0,255,255,0.4), inset 0 0 20px rgba(0,255,255,0.4); border-color: #00ffff; }
+        .menu-btn { position: relative; display: flex; flex-direction: column; align-items: center; font-size: 13px; font-weight: bold; cursor: pointer; color: #a4c8ff; }
+        .menu-btn .icon { background: #000; border-radius: 50%; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; font-size: 24px; margin-bottom: 5px; border: 2px solid rgba(0, 255, 255, 0.5); transition: 0.2s; }
+        .menu-btn:hover .icon { transform: scale(1.1); border-color: #00ffff; }
         .menu-btn:active .icon { transform: scale(0.9); }
 
-        /* MERKEZ İSTATİSTİKLER (SADECE CPS, Üstte konumlu) */
-        .center-stats { position: absolute; top: 11%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
-        .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 15px #00ffff; letter-spacing: 1.5px; }
+        /* MERKEZ İSTATİSTİKLER (SADECE CPS) */
+        .center-stats { position: absolute; top: 12%; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+        .center-stats p { margin: 0; font-size: 22px; color: #00ffff; font-weight: bold; text-shadow: 0 0 10px #00ffff; letter-spacing: 1.5px; }
         #activeBoosts { margin-top: 5px; display: flex; flex-direction: column; align-items: center; gap: 5px; pointer-events: none; }
-        .boost-tag { background: rgba(0, 0, 0, 0.85); padding: 6px 14px; border-radius: 15px; font-size: 15px; font-weight: bold; border: 1px solid #f1c40f; box-shadow: 0 0 15px rgba(241,196,15,0.5); animation: pulseBoost 1.5s infinite alternate; color: #f1c40f; }
+        .boost-tag { background: #000; padding: 6px 14px; border-radius: 15px; font-size: 14px; font-weight: bold; border: 1px solid #f1c40f; color: #f1c40f; }
 
-        /* ORİJİNAL MERKEZİ DİKEY BÜYÜK PİST */
-        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 28px solid rgba(16, 42, 67, 0.85); border-radius: 180px; background-color: transparent; box-shadow: 0 0 60px rgba(0, 255, 255, 0.25), inset 0 0 50px rgba(0, 255, 255, 0.15); pointer-events: none; z-index: 2; transition: all 0.3s; backdrop-filter: blur(3px); }
-        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 332px; height: 532px; border: 4px dashed rgba(0, 255, 255, 0.7); border-radius: 166px; box-sizing: border-box; filter: drop-shadow(0 0 6px #00ffff); }
-        .finish-line { position: absolute; top: 50%; right: -28px; transform: translateY(-50%); width: 28px; height: 60px; background: repeating-linear-gradient(0deg, rgba(255,255,255,0.9), rgba(255,255,255,0.9) 10px, rgba(0,255,255,0.9) 10px, rgba(0,255,255,0.9) 20px); z-index: 1; border-left: 2px solid #fff; border-right: 2px solid #fff; box-shadow: 0 0 20px #00ffff; }
-        .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; filter: blur(10px); opacity: 0; z-index: 5; pointer-events: none; }
-        @keyframes flashAnim { 0% { opacity: 1; transform: translateY(-50%) scale(1.5); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
-        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.6); box-shadow: 0 0 80px rgba(0, 255, 255, 0.6) inset; }
+        /* KASMAMASI İÇİN FİLTRESİZ, DÜZ RENKLİ PİST */
+        #trackContainer { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); width: 360px; height: 560px; border: 26px solid #0b192c; border-radius: 180px; background-color: transparent; pointer-events: none; z-index: 2; transition: all 0.3s; }
+        #dashedLine { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 334px; height: 534px; border: 3px dashed rgba(0, 255, 255, 0.4); border-radius: 167px; box-sizing: border-box; }
+        .finish-line { position: absolute; top: 50%; right: -26px; transform: translateY(-50%); width: 26px; height: 60px; background: repeating-linear-gradient(0deg, #fff, #fff 10px, #bc13fe 10px, #bc13fe 20px); z-index: 1; border-left: 2px solid #00ffff; border-right: 2px solid #00ffff; }
+        .finish-flash { position: absolute; top: 50%; right: -20px; transform: translateY(-50%); width: 30px; height: 80px; background: white; opacity: 0; z-index: 5; pointer-events: none; }
+        @keyframes flashAnim { 0% { opacity: 0.8; transform: translateY(-50%) scale(1.2); } 100% { opacity: 0; transform: translateY(-50%) scale(1); } }
+        #trackContainer.drag-active { border-color: rgba(0, 255, 255, 0.4); }
 
-        /* UÇAKLAR (HARDWARE ACCELERATION İLE 120 FPS) */
-        /* CSS Filtresi zayıflatıldı, Performans arttı */
-        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; filter: drop-shadow(0 0 5px rgba(0, 255, 255, 0.5)); transform: translateZ(0); }
-        .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; filter: drop-shadow(0 0 15px rgba(0, 255, 255, 0.8)); }
+        /* UÇAKLAR (HARDWARE ACCELERATION İLE %100 AKICI - 120 FPS) */
+        /* FPS katili SVG Shadow tamamen silindi! Sadece Translate3D kullanıldı */
+        .flying-plane { position: absolute; top: 0; left: 0; width: 65px; height: 65px; pointer-events: auto; cursor: grab; z-index: 3; will-change: transform; transform: translateZ(0); }
+        .flying-plane:active { cursor: grabbing; transform: scale(1.2) translateZ(0) !important; }
 
         /* Z-INDEX 999999 İLE PARA EKRANIN EN ÜSTÜNE ÇIKARILDI */
-        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 34px; text-shadow: 0 0 15px #f39c12, 0 0 25px #e67e22, 2px 2px 2px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
+        .floating-money { position: fixed; color: #f1c40f; font-weight: 900; font-size: 34px; text-shadow: 2px 2px 0px #000; pointer-events: none; z-index: 9999999; animation: popUpMoney 1.5s cubic-bezier(0.1, 0.8, 0.1, 1) forwards; font-family: 'Teko', sans-serif; }
         @keyframes popUpMoney { 0% { opacity: 1; transform: translate(0, 0) scale(0.5); } 20% { transform: translate(-10px, -50px) scale(1.4); opacity: 1; } 80% { opacity: 1; transform: translate(-10px, -70px) scale(1); } 100% { opacity: 0; transform: translate(-10px, -100px) scale(0.8); } }
 
-        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde, 2x5 Düzeni) */
-        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(9, 10, 15, 0.65); border-radius: 24px; box-shadow: 0 15px 40px rgba(0,0,0,0.9), inset 0 0 25px rgba(0, 255, 255, 0.15); border: 2px solid rgba(0, 255, 255, 0.25); backdrop-filter: blur(8px); }
-        .slot { width: 100%; height: 100%; background: rgba(0,0,0,0.5); border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.15); position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.9); transition: 0.2s; }
-        .slot.drag-over { background: rgba(0,255,255,0.25); border-color: #00ffff; box-shadow: inset 0 0 25px rgba(0,255,255,0.6); transform: scale(1.05); }
+        /* ORİJİNAL DİKEY HANGAR (Pistin İçinde) */
+        .grid-container { position: absolute; top: 48%; left: 50%; transform: translate(-50%, -50%); display: grid; grid-template-columns: repeat(2, 78px); grid-template-rows: repeat(5, 78px); gap: 10px; z-index: 20; padding: 12px; background: rgba(5, 5, 10, 0.8); border-radius: 24px; border: 2px solid #bc13fe; }
+        .slot { width: 100%; height: 100%; background: #000; border-radius: 16px; display: flex; justify-content: center; align-items: center; border: 2px solid rgba(0, 255, 255, 0.3); position: relative; transition: 0.2s; }
+        .slot.drag-over { background: rgba(0,255,255,0.2); border-color: #00ffff; transform: scale(1.05); }
 
         .plane-item { width: 70px; height: 70px; cursor: grab; position: relative; display: flex; justify-content: center; align-items: center; animation: floatHangar 4s ease-in-out infinite; }
         .plane-item:active { cursor: grabbing; animation: none; transform: scale(0.9); }
         .plane-item.ghost { opacity: 0.4; filter: grayscale(50%); animation: none; cursor: pointer; transition: 0.2s; }
         .plane-item.ghost:hover { opacity: 0.8; filter: grayscale(10%); transform: scale(1.1); }
         @keyframes floatHangar { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #0f172a; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 13px; font-weight: 900; border: 1px solid #00ffff; box-shadow: 0 0 10px rgba(0,255,255,0.6); z-index: 10; font-family: 'Teko', sans-serif; }
+        .level-tag { position: absolute; bottom: -4px; right: -4px; background: #000; color: #00ffff; padding: 2px 6px; border-radius: 6px; font-size: 14px; font-weight: 900; border: 1px solid #00ffff; z-index: 10; font-family: 'Teko', sans-serif; }
         .merge-anim { animation: mergeFlash 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important; }
-        @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3) drop-shadow(0 0 25px #00ffff); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5) drop-shadow(0 0 40px #00ffff); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
+        @keyframes mergeFlash { 0% { transform: scale(0.3) rotate(-20deg); filter: brightness(3); } 50% { transform: scale(1.3) rotate(10deg); filter: brightness(1.5); } 100% { transform: scale(1) rotate(0); filter: brightness(1); } }
 
         /* MOBİL UYUMLU DÜZELTİLMİŞ ÇÖP KUTUSU (BoundingBox ile Çarpışma Testi) */
-        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: rgba(255, 0, 60, 0.95); border: 3px dashed #fff; border-radius: 15px; padding: 15px 35px; color: white; font-weight: bold; font-size: 20px; display: none; align-items: center; justify-content: center; z-index: 9999; box-shadow: 0 10px 40px rgba(255,0,60,0.7); backdrop-filter: blur(10px); pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; }
-        #trashBin.drag-over { background: #ff003c; border: 3px solid #fff; box-shadow: 0 0 50px #ff003c; font-size: 24px; }
-        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; filter: drop-shadow(0 15px 30px rgba(0,0,0,0.9)); }
+        #trashBin { position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: 90%; height: 60px; background: #ff003c; border: 3px dashed #fff; border-radius: 15px; color: white; font-weight: bold; font-size: 24px; display: none; align-items: center; justify-content: center; z-index: 9999; pointer-events: auto; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 0 20px #ff003c;}
+        #trashBin.drag-over { background: #fff; color: #ff003c; border: 3px solid #ff003c; font-size: 28px; }
+        #dragGhost { position: fixed; pointer-events: none; z-index: 100000; width: 70px; height: 70px; transform: translate(-50%, -50%) scale(1.2); display: none; }
 
         /* ALT BAR */
-        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 10px; padding: 0 15px; z-index: 30; }
-        .bottom-btn { flex: 1; background: rgba(10, 15, 30, 0.85); border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 15px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); transition: 0.2s; backdrop-filter: blur(12px); }
-        .bottom-btn:hover { background: rgba(10, 15, 30, 0.95); transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(0,255,255,0.3); border-color: #00ffff; }
-        .bottom-btn:active { transform: translateY(5px); box-shadow: 0 2px 5px rgba(0,0,0,0.6), inset 0 0 10px rgba(0,255,255,0.4); }
-        .bottom-btn.shop { border-color: rgba(188, 19, 254, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(188, 19, 254, 0.15); }
-        .bottom-btn.shop:hover { border-color: #bc13fe; box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(188, 19, 254, 0.3); }
-        .bottom-btn.speed { border-color: rgba(241, 196, 15, 0.5); box-shadow: 0 10px 25px rgba(0,0,0,0.6), inset 0 0 15px rgba(241, 196, 15, 0.15); }
-        .bottom-btn.speed:hover { border-color: #f1c40f; box-shadow: 0 15px 30px rgba(0,0,0,0.7), inset 0 0 25px rgba(241, 196, 15, 0.3); }
-        .bottom-btn span.big { font-size: 24px; display: block; margin-bottom: 2px; }
-        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; text-shadow: 0 0 8px rgba(241,196,15,0.6); }
+        .bottom-bar { position: absolute; bottom: 15px; width: 100%; display: flex; justify-content: center; gap: 12px; padding: 0 15px; z-index: 30; }
+        .bottom-btn { flex: 1; background: #000; border: 2px solid #00ffff; border-radius: 15px; padding: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white; font-weight: 900; font-size: 14px; cursor: pointer; transition: 0.2s; }
+        .bottom-btn:hover { background: #0a0a0a; transform: translateY(-3px); border-color: #bc13fe; }
+        .bottom-btn:active { transform: translateY(5px); }
+        .bottom-btn.shop { border-color: #bc13fe; }
+        .bottom-btn.shop:hover { border-color: #00ffff; }
+        .bottom-btn.speed { border-color: #f1c40f; }
+        .bottom-btn span.big { font-size: 26px; display: block; margin-bottom: 2px; }
+        .bottom-btn span.price { color: #f1c40f; display: flex; align-items: center; gap: 4px; font-size: 18px; }
 
     </style>
 </head>
 <body>
-
-    <svg width="0" height="0" style="position: absolute;">
-        <defs>
-            <filter id="planeShadow">
-                <feDropShadow dx="0" dy="0" stdDeviation="5" flood-opacity="0.9"/>
-            </filter>
-        </defs>
-    </svg>
 
     <div id="dragGhost"></div>
 
@@ -315,9 +291,9 @@
             <div class="modal-content">
                 <h2>🎁 Süpriz Ödül</h2>
                 <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
-                <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);">
-                    <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));">❓</div>
-                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;">...</div>
+                <div style="background: #000; padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px;">
+                    <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px;">❓</div>
+                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; font-family: 'Teko', sans-serif;">...</div>
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
@@ -327,17 +303,17 @@
         <!-- GÖREVLER (MISSIONS) MENÜSÜ -->
         <div id="missionsModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="color: #3498db; text-shadow: 0 0 15px #3498db;">📜 Görevler</h2>
-                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold; text-shadow:0 0 5px #00ffff;">2 Elmas</span> kazan!</p>
+                <h2>📜 Görevler</h2>
+                <p style="font-size:14px; color:#aaa; margin-bottom:20px;">Her yeni uçak keşfinde <span style="color:#00ffff; font-weight:bold;">2 Elmas</span> kazan!</p>
                 <div id="missionsList" style="max-height: 300px; overflow-y: auto; margin-bottom: 15px; padding-right: 5px;"></div>
                 <button class="modal-btn btn-close" onclick="closeMissionsMenu()">Kapat</button>
             </div>
         </div>
 
-        <!-- ELMAS DÜKKANI (ÇERÇEVELER) -->
+        <!-- ELMAS DÜKKANI (ÇERÇEVELER) -> İSİM DÜZELTİLDİ: "ELMAS DÜKYANI" -->
         <div id="diamondShopModal" class="modal-overlay">
             <div class="modal-content">
-                <h2>💎 Elmas Dükkanı</h2>
+                <h2>💎 Elmas Dükyanı</h2>
                 <p style="font-size:13px; color:#aaa;">Profillerine hava katacak neon çerçeveler!</p>
                 <div class="frame-grid" id="frameShopGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeDiamondShop()">Kapat</button>
@@ -347,21 +323,21 @@
         <!-- NORMAL DÜKKAN (Hızlanma ve Uçak Market) -->
         <div id="generalShopModal" class="modal-overlay">
             <div class="modal-content" style="width: 95%; max-width: 400px; padding: 15px;">
-                <h2 style="margin-bottom: 15px; color: #00ffff;">🏪 Dükkan</h2>
+                <h2>🏪 Dükkan</h2>
                 
-                <div style="background: rgba(0,0,0,0.6); padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f; box-shadow: inset 0 0 20px rgba(241,196,15,0.15);">
-                    <h3 style="margin: 0 0 10px 0; color: #f1c40f; text-shadow: 0 0 8px #f1c40f;">⚡ 2x Hızlanma</h3>
-                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maksimum 30Dk)</p>
+                <div style="background: #000; padding: 15px; border-radius: 12px; margin-bottom: 25px; border: 1px solid #f1c40f;">
+                    <h3 style="margin: 0 0 10px 0; color: #f1c40f;">⚡ 2x Hızlanma</h3>
+                    <p style="font-size:12px; color:#aaa; margin-bottom:8px;">Her alım +3 Dakika (Maks. 30Dk)</p>
                     <div class="tier-container" id="shopSpeedTierBar">
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                         <div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div><div class="tier-slot"></div>
                     </div>
-                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px;">Aktif Süre: 00:00</h4>
-                    <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:20px; padding:12px; box-shadow: 0 0 15px rgba(241,196,15,0.6); margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
+                    <h4 id="shopSpeedBoostTimeLeft" style="color:white; margin:8px 0; font-size:22px; font-family:'Teko', sans-serif;">Aktif Süre: 00:00</h4>
+                    <button class="modal-btn" style="background: linear-gradient(45deg, #f1c40f, #e67e22); color: black; font-size:20px; padding:12px; margin-top:5px;" onclick="buySpeedBoost()">+3 Dk Hızlanma (💎 5 Elmas)</button>
                 </div>
 
-                <h3 style="color:#00ffff; margin-bottom:8px; text-shadow: 0 0 8px #00ffff;">✈️ Neon Uçak Galerisi</h3>
+                <h3 style="color:#00ffff; margin-bottom:8px;">✈️ Neon Uçak Galerisi</h3>
                 <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Ulaştığın seviyeye kadar tüm jetler burada.</p>
                 <div class="frame-grid" id="planeShopGrid" style="max-height: 250px; overflow-y: auto; gap: 12px; padding-right: 5px;"></div>
 
@@ -372,8 +348,8 @@
         <!-- KASA İÇERİĞİ EKRANI -->
         <div id="crateInfoModal" class="modal-overlay">
             <div class="modal-content" style="max-width: 350px;">
-                <h2 id="ciTitle" style="color: #00ffff;">Kasa İçeriği</h2>
-                <div id="ciContent" style="text-align: left; background: rgba(0,0,0,0.6); padding: 20px; border-radius: 12px; border: 1px solid #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);"></div>
+                <h2 id="ciTitle">Kasa İçeriği</h2>
+                <div id="ciContent" style="text-align: left; background: #000; padding: 20px; border-radius: 12px; border: 1px solid #00ffff; margin-bottom: 20px;"></div>
                 <button class="modal-btn btn-close" onclick="closeCrateInfo()">Kapat</button>
             </div>
         </div>
@@ -381,13 +357,13 @@
         <!-- KASA AÇMA SİSTEMİ -->
         <div id="caseModal" class="modal-overlay">
             <div class="modal-content" id="caseContent">
-                <h2 style="color: #bc13fe; text-shadow: 0 0 15px #bc13fe;">📦 Kasalar</h2>
+                <h2 style="color: #bc13fe;">📦 Kasalar</h2>
                 <div class="case-grid" id="caseGrid"></div>
                 <button class="modal-btn btn-close" onclick="closeCaseMenu()">Kapat</button>
             </div>
             
             <div class="modal-content" id="rouletteContainer">
-                <h2 id="openingCaseName" style="color:#00ffff; text-shadow: 0 0 15px #00ffff;">Kasa Açılıyor...</h2>
+                <h2 id="openingCaseName">Kasa Açılıyor...</h2>
                 <div class="roulette-window">
                     <div class="roulette-center-line"></div>
                     <div class="roulette-strip" id="rouletteStrip"></div>
@@ -400,7 +376,7 @@
         <!-- SIRALAMA (LEADERBOARD) EKRANI -->
         <div id="leaderboardModal" class="modal-overlay">
             <div class="modal-content">
-                <h2 style="color: #f1c40f; text-shadow: 0 0 15px #f1c40f;">🏆 Canlı Sıralama</h2>
+                <h2 style="color: #f1c40f;">🏆 Canlı Sıralama</h2>
                 <p style="font-size:12px; color:#aaa; margin-bottom:15px;">Dünyanın en zengin pilotları!</p>
                 <div class="leaderboard-list" id="leaderboardList"></div>
                 <button class="modal-btn btn-close" style="margin-top: 15px;" onclick="closeLeaderboard()">Kapat</button>
@@ -426,7 +402,7 @@
         <div class="side-menu left">
             <div class="menu-btn" onclick="openRewardsMenu()"><div class="icon">🎁</div>Ödüller</div>
             <div class="menu-btn" onclick="openMissionsMenu()" style="position: relative;">
-                <div class="icon" style="border-color:#3498db; color: #3498db; text-shadow: 0 0 8px #3498db;">📜</div>Görevler
+                <div class="icon" style="border-color:#3498db; color: #3498db;">📜</div>Görevler
                 <div id="missionBadge" class="mission-badge" style="display: none;">0</div>
             </div>
         </div>
@@ -452,7 +428,7 @@
         <div class="grid-container" id="grid"></div>
         
         <!-- ÇÖP KUTUSU -->
-        <div id="trashBin">🗑️ Uçağı Sil</div>
+        <div id="trashBin">🗑️ UÇAĞI SİL</div>
 
         <!-- ALT BUTONLAR -->
         <div class="bottom-bar">
@@ -464,16 +440,16 @@
                 <span class="price">❂ <span id="buyPriceDisplay">80</span></span>
             </div>
             <div class="bottom-btn shop" onclick="openDiamondShop()">
-                <span class="big" style="color: #00ffff; text-shadow: 0 0 8px #00ffff;">💎</span> Elmas
+                <span class="big" style="color: #00ffff;">💎</span> Elmas Dükyanı
             </div>
         </div>
     </div>
 
     <script>
-        // --- ARKA PLAN YILDIZLARINI OLUŞTUR ---
+        // --- ARKA PLAN YILDIZLARINI OLUŞTUR (FPS DOSTU) ---
         function createStars() {
             const container = document.getElementById('starContainer');
-            for(let i=0; i<60; i++) {
+            for(let i=0; i<40; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 star.style.width = Math.random() * 3 + 'px';
@@ -486,7 +462,6 @@
             }
         }
 
-        // --- BİLDİRİM FONKSİYONU ---
         function showToast(message, type = "error") {
             const container = document.getElementById("toastContainer");
             const toast = document.createElement("div");
@@ -560,7 +535,7 @@
                     } catch(e) {}
                     document.getElementById('loginOverlay').style.display = 'flex';
                 }, 500);
-            }, 4000); 
+            }, 3000); 
         };
 
         function loadGame() {
@@ -731,11 +706,11 @@
             const grid = document.getElementById("frameShopGrid"); grid.innerHTML = "";
             framesData.forEach(frame => {
                 const isOwned = ownedFrames.includes(frame.id); const isEquipped = activeFrame === frame.id; let btnHtml = "";
-                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px; text-shadow:0 0 5px #00ffff; font-family:'Orbitron', sans-serif;">Kuşanıldı</div>`;
+                if(isEquipped) btnHtml = `<div style="color:#00ffff; font-weight:bold; font-size:14px;">Kuşanıldı</div>`;
                 else if(isOwned) btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #2ecc71, #27ae60); border:none; border-radius:5px; color:white; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="equipFrame('${frame.id}')">Kuşan</button>`;
                 else btnHtml = `<button style="padding:8px 12px; background: linear-gradient(45deg, #00ffff, #3498db); border:none; border-radius:5px; color:black; font-weight:bold; cursor:pointer; font-family:'Teko', sans-serif; font-size: 18px;" onclick="buyFrame('${frame.id}', ${frame.price})">Al (💎 ${frame.price})</button>`;
                 let innerHTML = (frame.id === 'god' || frame.id === 'hacker') ? '<div class="inner" style="z-index:5;">?</div>' : '?';
-                grid.innerHTML += `<div class="frame-card ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}"><div class="profile-pic-container ${frame.cssClass}" style="margin: 0 auto 10px auto;">${innerHTML}</div><div style="font-size:14px; font-weight:bold; color: #fff; margin-bottom:10px; font-family:'Share Tech Mono', sans-serif;">${frame.name}</div>${btnHtml}</div>`;
+                grid.innerHTML += `<div class="frame-card ${isOwned ? 'owned' : ''} ${isEquipped ? 'equipped' : ''}"><div class="profile-pic-container ${frame.cssClass}" style="margin: 0 auto 10px auto;">${innerHTML}</div><div style="font-size:14px; font-weight:bold; color: #fff; margin-bottom:10px;">${frame.name}</div>${btnHtml}</div>`;
             });
             document.getElementById("diamondShopModal").style.display = "flex";
         }
@@ -766,17 +741,19 @@
             saveGame(); updateUI(); updateSpeedModalUI(); showToast("⚡ Hızlanma eklendi!", "info");
         }
 
+        // --- DÜKKANDA Lvl - 2 UYGULAMASI ---
         function openGeneralShop() {
             updateSpeedModalUI(); const grid = document.getElementById("planeShopGrid"); grid.innerHTML = "";
-            for(let i = 1; i <= playerLevel; i++) {
+            let limit = getMarketLevel(); // playerLevel - 2 veya en az 1
+            for(let i = 1; i <= limit; i++) {
                 let price = Math.floor(50 * Math.pow(1.6, i)); let income = getPlaneIncome(i); let planeSVG = getJetSVG(i, false); 
-                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid rgba(0,255,255,0.3); background: rgba(0,0,0,0.6); padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0; text-shadow: 0 0 5px #f1c40f; font-family:'Orbitron', sans-serif;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold; font-family:'Share Tech Mono', sans-serif;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:16px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
+                grid.innerHTML += `<div class="frame-card" style="display:flex; flex-direction:column; align-items:center; border: 1px solid #bc13fe; background: #000; padding: 12px;"><div style="width:55px; height:55px; position:relative; margin-bottom:5px;">${planeSVG}<div class="level-tag" style="bottom:-5px; right:-5px; font-size:10px;">Lv.${i}</div></div><div style="font-size:14px; color:#f1c40f; font-weight:bold; margin: 5px 0 2px 0;">❂ ${formatNumber(price)}</div><div style="font-size:12px; color:#2ecc71; margin-bottom: 8px; font-weight:bold;">+❂ ${formatNumber(income)}/sn</div><button class="modal-btn btn-save" style="padding:8px; font-size:18px; margin:0;" onclick="buySpecificPlane(${i}, ${price})">Satın Al</button></div>`;
             }
             document.getElementById("generalShopModal").style.display = "flex";
         }
         function closeGeneralShop() { document.getElementById("generalShopModal").style.display = "none"; }
         function buySpecificPlane(level, price) {
-            if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok! Uçakları piste sürükle.", "error"); } } 
+            if(money >= price) { const emptyIndex = gridSlots.indexOf(null); if(emptyIndex !== -1) { money -= price; gridSlots[emptyIndex] = { level: level, isFlying: false }; initGrid(); saveGame(); updateUI(); showToast(`Lv.${level} uçak satın alındı!`, "info"); } else { showToast("Hangarda yer yok!", "error"); } } 
             else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
@@ -868,6 +845,8 @@
 
                 // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ (KESİN ÇARPIŞMA)
                 if(!isDeleted) {
+                    
+                    // A. Slot BoundingBox Çarpışma Testi
                     let targetSlotIndex = -1;
                     const slots = document.querySelectorAll('.slot');
                     slots.forEach(slot => {
@@ -877,13 +856,16 @@
                         }
                     });
 
+                    // B. Pist BoundingBox Çarpışma Testi
                     let droppedOnTrack = false;
                     const trackRect = trackEl.getBoundingClientRect();
                     if(touch.clientX >= trackRect.left && touch.clientX <= trackRect.right && touch.clientY >= trackRect.top && touch.clientY <= trackRect.bottom) {
                         droppedOnTrack = true;
                     }
 
+                    // --- Eylemi Gerçekleştir ---
                     if (targetSlotIndex !== -1) { 
+                        // Hangara Bırakıldı
                         const targetIndex = targetSlotIndex; const targetItem = gridSlots[targetIndex];
                         if (activeTouchData.type === 'track') { 
                             gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); 
@@ -899,6 +881,7 @@
                             } 
                         } 
                     } else if (droppedOnTrack) { 
+                        // Piste Bırakıldı
                         if (activeTouchData.type === 'grid') { 
                             const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; 
                             if (activeTrackCount < MAX_PLANES) { 
@@ -911,7 +894,7 @@
             });
         }
 
-        // PC MOUSE DRAG/DROP
+        // PC Mouse Drop Logic
         gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
         gameContainer.addEventListener("drop", e => { e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
             if (dragSource && dragSource.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; } gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame(); }
@@ -1000,6 +983,7 @@
             flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
+        // --- EN ÜST KATMAN PARA ANİMASYONU ---
         function popMoneyFixed(amount) { 
             money += amount; updateUI(); 
             const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
@@ -1076,6 +1060,7 @@
             if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
             if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
             
+            // Botları saniye başı güncelle
             if(bots.length > 0) {
                 bots.forEach(b => { b.money += b.cps; });
                 const lbModal = document.getElementById("leaderboardModal");
@@ -1159,4 +1144,3 @@
     </script>
 </body>
 </html>
-
