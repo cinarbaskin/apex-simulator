@@ -15,7 +15,7 @@
     <link rel="icon" type="image/jpeg" sizes="512x512" href="icon_2.jpg">
     <link rel="shortcut icon" href="icon_2.jpg">
 
-    <!-- Efsanevi Siber-Tech Fontları -->
+    <!-- "Schriftbild" Hissi Veren Efsanevi Siber-Tech Fontları -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
     <style>
@@ -27,36 +27,23 @@
         body { 
             margin: 0; padding: 0; 
             background-color: #030408;
-            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
-            position: relative;
-        }
-
-        /* Köşeleri karartan sinematik efekt (Vignette) */
-        body::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            box-shadow: inset 0 0 150px rgba(0,0,0,1); z-index: 0; pointer-events: none;
-        }
-
-        .bg-grid {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
             background-image: 
                 linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: moveGrid 15s linear infinite;
+                linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px),
+                radial-gradient(circle at 15% 50%, rgba(0, 255, 255, 0.08), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(188, 19, 254, 0.08), transparent 25%),
+                linear-gradient(45deg, #05050a, #0b192c, #130822, #071318);
+            background-size: 25px 25px, 25px 25px, 100% 100%, 100% 100%, 400% 400%;
+            animation: gradientBG 15s ease infinite, moveGrid 20s linear infinite;
+            color: white; display: flex; justify-content: center; height: 100vh; overflow: hidden; 
         }
-        @keyframes moveGrid { 0% { background-position: 0px 0px; } 100% { background-position: 30px 30px; } }
-
-        /* FPS DOSTU HAFİF NEBULALAR (Blur filtresi kaldırıldı, performans %500 arttı) */
-        .nebula { position: absolute; border-radius: 50%; opacity: 0.5; z-index: -1; animation: floatNebula 20s infinite alternate ease-in-out; }
-        .nebula-1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(188,19,254,0.4) 0%, transparent 70%); top: -100px; left: -100px; }
-        .nebula-2 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(0,255,255,0.4) 0%, transparent 70%); bottom: -150px; right: -150px; animation-delay: -5s; }
-        @keyframes floatNebula { 0% { transform: scale(0.8) translate(0, 0); } 100% { transform: scale(1.2) translate(40px, 40px); } }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        @keyframes moveGrid { 0% { background-position: 0px 0px, 0px 0px, center, center, center; } 100% { background-position: 25px 25px, 25px 25px, center, center, center; } }
 
         #gameContainer { 
             width: 100%; max-width: 450px; height: 100%; position: relative; 
-            background: rgba(5, 8, 15, 0.4); backdrop-filter: blur(4px);
-            display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 255, 0.05); overflow: hidden; z-index: 1;
+            background: rgba(0, 0, 0, 0.25); backdrop-filter: blur(8px);
+            display: flex; flex-direction: column; box-shadow: 0 0 50px rgba(0, 255, 255, 0.1); overflow: hidden; z-index: 1;
         }
 
         /* SİBERPUNK TARAMA ÇİZGİLERİ */
@@ -66,17 +53,10 @@
             background-size: 100% 4px; z-index: 99998; pointer-events: none; opacity: 0.3;
         }
 
-        /* FPS DOSTU YILDIZLAR */
+        /* YILDIZLAR */
         .stars { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
         .star { position: absolute; background: white; border-radius: 50%; animation: twinkle infinite alternate; }
-        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.4); } }
-
-        /* DİNAMİK ROKET ATEŞİ ANİMASYONU */
-        @keyframes enginePulse {
-            0% { transform: scaleY(0.7); opacity: 0.7; filter: brightness(1) hue-rotate(0deg); }
-            100% { transform: scaleY(1.4); opacity: 1; filter: brightness(1.5) hue-rotate(15deg); }
-        }
-        .thrust-anim { transform-origin: top center; animation: enginePulse 0.08s infinite alternate cubic-bezier(0.4, 0, 0.2, 1); }
+        @keyframes twinkle { 0% { opacity: 0.1; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.3); box-shadow: 0 0 6px #fff; } }
 
         /* YÜKLEME EKRANI */
         #loadingOverlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; overflow: hidden; background: #05050a; transition: opacity 0.5s ease; }
@@ -204,11 +184,11 @@
         .user-info { display: flex; align-items: center; gap: 10px; background: rgba(10, 15, 30, 0.8); padding: 5px 15px 5px 5px; border-radius: 30px; border: 1px solid rgba(0, 255, 255, 0.4); cursor: pointer; transition: 0.2s; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
         .user-info:hover { border-color: #00ffff; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,255,255,0.3); }
         .user-info:active { transform: scale(0.95); }
-        .username { font-size: 17px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
+        .username { font-size: 16px; font-weight: bold; color: white; text-shadow: 0 0 8px rgba(255,255,255,0.6); }
         .settings-icon { font-size: 16px; margin-left: 2px; opacity: 0.8; }
 
         .currencies { display: flex; gap: 10px; }
-        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 18px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
+        .currency { background: rgba(10, 15, 30, 0.8); color: white; border: 1px solid rgba(0, 255, 255, 0.4); border-radius: 12px; padding: 8px 14px; font-weight: 900; display: flex; align-items: center; gap: 6px; font-size: 17px; box-shadow: 0 5px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,255,255,0.15); backdrop-filter: blur(8px); }
         .currency.money span { color: #f1c40f; font-size: 20px; text-shadow: 0 0 12px #f1c40f; } 
         .currency.gem span { color: #00ffff; font-size: 20px; text-shadow: 0 0 12px #00ffff; }
 
@@ -337,7 +317,7 @@
                 <p id="rewardDesc" style="color: #a4c8ff; margin-bottom: 20px;">Sıradaki ödülün hazır!</p>
                 <div style="background: rgba(0,0,0,0.6); padding: 20px; border-radius: 10px; border: 2px dashed #00ffff; margin-bottom: 20px; box-shadow: inset 0 0 20px rgba(0,255,255,0.2);">
                     <div id="rewardIcon" style="font-size: 45px; margin-bottom: 10px; filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));">❓</div>
-                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff; font-family: 'Teko', sans-serif;">...</div>
+                    <div id="rewardText" style="font-size: 24px; font-weight: bold; color: #00ffff; text-shadow: 0 0 8px #00ffff;">...</div>
                 </div>
                 <button class="modal-btn btn-save" id="btnClaimReward" onclick="claimMinuteReward()">Ödülü Al</button>
                 <button class="modal-btn btn-close" onclick="closeRewardsMenu()">Kapat</button>
@@ -800,12 +780,12 @@
             else { showToast("Yetersiz bakiye kral!", "error"); }
         }
 
-        // --- ROKET ANİMASYONLU YENİ JET ÇİZİMİ ---
+        // --- FPS DOSTU (Filtresiz) JET ÇİZİMİ VE ROKET ANİMASYONU ---
         function getJetSVG(level, isFlying = true) {
             let l = level; let hueBase = (l * 37) % 360; 
             let c1 = `hsl(${hueBase}, 85%, 55%)`; let c2 = `hsl(${(hueBase + 50) % 360}, 90%, 45%)`; let c3 = `hsl(${(hueBase + 180) % 360}, 95%, 60%)`; 
             let cG = `#74b9ff`; let cTo = `hsl(${(hueBase + 150) % 360}, 100%, 60%)`; let cT = `hsl(${(hueBase + 30) % 360}, 100%, 75%)`; 
-            
+
             let bodyType = l % 6; let wingType = l % 6; let tailType = l % 4; let engineType = l % 3;
             
             let svg = ''; let tL = isFlying ? 150 : 110; let tO = isFlying ? 0.8 : 0.3; 
@@ -845,7 +825,7 @@
 
         // --- MOBİL İÇİN KESİN ÇARPIŞMA TESTİ VE SİLME YÖNTEMİ ---
         function setupDragAndDropForElement(el, data) {
-            // MOUSE (PC) EVENTS
+            // PC MOUSE EVENTS
             el.addEventListener("dragstart", (e) => { dragSource = data; setTimeout(() => { trashBin.style.display = "flex"; trackEl.classList.add("drag-active"); }, 10); });
             el.addEventListener("dragend", () => { trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); });
             
@@ -886,10 +866,8 @@
                 }
                 trashBin.style.display = "none"; trashBin.classList.remove("drag-over");
 
-                // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ
+                // 2. SİLİNMEDİYSE PİST VEYA HANGARA BIRAKMA İŞLEMİ (KESİN ÇARPIŞMA)
                 if(!isDeleted) {
-                    
-                    // A. Slot BoundingBox Çarpışma Testi
                     let targetSlotIndex = -1;
                     const slots = document.querySelectorAll('.slot');
                     slots.forEach(slot => {
@@ -899,16 +877,13 @@
                         }
                     });
 
-                    // B. Pist BoundingBox Çarpışma Testi
                     let droppedOnTrack = false;
                     const trackRect = trackEl.getBoundingClientRect();
                     if(touch.clientX >= trackRect.left && touch.clientX <= trackRect.right && touch.clientY >= trackRect.top && touch.clientY <= trackRect.bottom) {
                         droppedOnTrack = true;
                     }
 
-                    // --- Eylemi Gerçekleştir ---
                     if (targetSlotIndex !== -1) { 
-                        // Hangara Bırakıldı
                         const targetIndex = targetSlotIndex; const targetItem = gridSlots[targetIndex];
                         if (activeTouchData.type === 'track') { 
                             gridSlots[activeTouchData.sourceSlotIndex].isFlying = false; removeFlyingPlaneBySlot(activeTouchData.sourceSlotIndex); 
@@ -924,7 +899,6 @@
                             } 
                         } 
                     } else if (droppedOnTrack) { 
-                        // Piste Bırakıldı
                         if (activeTouchData.type === 'grid') { 
                             const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; 
                             if (activeTrackCount < MAX_PLANES) { 
@@ -937,7 +911,7 @@
             });
         }
 
-        // PC Mouse Drop Logic
+        // PC MOUSE DRAG/DROP
         gameContainer.addEventListener("dragover", e => { e.preventDefault(); });
         gameContainer.addEventListener("drop", e => { e.preventDefault(); trashBin.style.display = "none"; trackEl.classList.remove("drag-active"); if (e.target.closest('.slot') || e.target.closest('#trashBin')) return;
             if (dragSource && dragSource.type === 'grid') { const activeTrackCount = gridSlots.filter(p => p && p.isFlying).length; if (activeTrackCount >= MAX_PLANES) { showToast(`Pist dolu! Maksimum ${MAX_PLANES} uçak uçabilir.`, "error"); return; } gridSlots[dragSource.index].isFlying = true; spawnTrackPlane(gridSlots[dragSource.index].level, dragSource.index); initGrid(); saveGame(); }
@@ -1026,7 +1000,6 @@
             flashEl.style.animation = 'none'; flashEl.offsetHeight; flashEl.style.animation = 'flashAnim 0.4s ease-out forwards'; 
         }
 
-        // --- EN ÜST KATMAN PARA ANİMASYONU ---
         function popMoneyFixed(amount) { 
             money += amount; updateUI(); 
             const pop = document.createElement("div"); pop.className = "floating-money"; pop.innerText = "+" + formatNumber(amount); 
@@ -1035,7 +1008,7 @@
             setTimeout(() => pop.remove(), 1500); 
         }
 
-        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist) ---
+        // --- ATAN2 İLE GERÇEKÇİ KUSURSUZ YÖRÜNGE İZLEME (Orijinal Dikey Pist Uyumlu) ---
         function getPosAt(progress) {
             const L = 200; const R = 166; const P = 2 * L + 2 * Math.PI * R; 
             const cx = 152; const cy = 252; 
@@ -1103,7 +1076,6 @@
             if (now < boostMoneyEnd) { let left = Math.ceil((boostMoneyEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; container.innerHTML += `<div class="boost-tag" style="color:#f1c40f; border-color:#f1c40f;">❂ ${boostMoneyMult}x Para (${m}:${s < 10 ? '0'+s : s})</div>`; } else { boostMoneyMult = 1; }
             if (now < boostSpeedEnd) { let left = Math.ceil((boostSpeedEnd - now) / 1000); let m = Math.floor(left/60); let s = left%60; let shopEl = document.getElementById("generalShopModal"); if(shopEl && shopEl.style.display === "flex") { updateSpeedModalUI(); } } else { boostSpeedMult = 1; }
             
-            // Botları saniye başı güncelle
             if(bots.length > 0) {
                 bots.forEach(b => { b.money += b.cps; });
                 const lbModal = document.getElementById("leaderboardModal");
@@ -1187,3 +1159,4 @@
     </script>
 </body>
 </html>
+
